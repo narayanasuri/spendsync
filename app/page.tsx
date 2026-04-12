@@ -1,19 +1,24 @@
-import { Button } from "@/components/ui/button"
+import { HomeClient } from "@/components/home/home-client"
 
-export default function Page() {
+export default function HomePage() {
   return (
-    <div className="flex min-h-svh p-6">
-      <div className="flex max-w-md min-w-0 flex-col gap-4 text-sm leading-loose">
-        <div>
-          <h1 className="font-medium">Project ready!</h1>
-          <p>You may now add components and start building.</p>
-          <p>We&apos;ve already added the button component for you.</p>
-          <Button className="mt-2">Button</Button>
-        </div>
-        <div className="font-mono text-xs text-muted-foreground">
-          (Press <kbd>d</kbd> to toggle dark mode)
-        </div>
+    <main className="mx-auto w-full max-w-4xl flex-1 p-6">
+      <div className="mb-6">
+        <h2 className="text-xl font-semibold tracking-tight">Hello, Suri!</h2>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Here's your expense summary for the month
+        </p>
+        <HomeClient />
       </div>
-    </div>
+    </main>
+    // <div className="flex min-h-screen flex-col">
+    //   <main className="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-3 p-6">
+    //     <h2 className="text-xl font-semibold tracking-tight">Hello, Suri!</h2>
+    //     <p className="text-sm text-muted-foreground">
+    //       Here's your expense summary for the month
+    //     </p>
+    //     <HomeClient />
+    //   </main>
+    // </div>
   )
 }
