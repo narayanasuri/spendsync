@@ -96,6 +96,7 @@ export function RecentTransactions({ dateRange }: { dateRange: DateRange }) {
               {transactions.map((t) => (
                 <TransactionItem
                   key={t.id}
+                  id={t.id}
                   name={t.name}
                   description={t.description}
                   category={t.category as CategoryEnum}

@@ -27,52 +27,86 @@ export function Navbar() {
   if (pathname === "/login") return null
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border bg-background/80 backdrop-blur-sm">
-      <div className="mx-auto flex h-12 max-w-4xl items-center justify-between px-6">
-        {/* Logo */}
-        <div className="flex items-center gap-1.5">
-          <Avatar>
-            <AvatarImage src="/icon.png" alt="cheeez" />
-            <AvatarFallback>CZ</AvatarFallback>
-          </Avatar>
-          <span className="hidden text-sm font-semibold tracking-tight sm:inline">
-            cheeez.
-          </span>
+    <>
+      {/* Desktop: sticky top bar */}
+      <header className="sticky top-0 z-50 hidden w-full border-b border-border bg-background/80 backdrop-blur-sm sm:block">
+        <div className="mx-auto flex h-12 max-w-4xl items-center justify-between px-6">
+          <div className="flex items-center gap-1.5">
+            <Avatar>
+              <AvatarImage src="/icon.png" alt="cheeez" />
+              <AvatarFallback>CZ</AvatarFallback>
+            </Avatar>
+            <span className="text-sm font-semibold tracking-tight">
+              cheeez.
+            </span>
+          </div>
+
+          <nav className="flex items-center gap-1">
+            {navItems.map(({ label, href, icon: Icon }) => {
+              const active = pathname === href
+              return (
+                <Link
+                  key={href}
+                  href={href}
+                  className={cn(
+                    "flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm transition-colors",
+                    active
+                      ? "bg-muted font-medium text-foreground"
+                      : "text-muted-foreground hover:bg-muted/60 hover:text-foreground"
+                  )}
+                >
+                  <Icon className="size-4" />
+                  <span>{label}</span>
+                </Link>
+              )
+            })}
+          </nav>
+
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() =>
+              setTheme(resolvedTheme === "dark" ? "light" : "dark")
+            }
+            aria-label="Toggle theme"
+          >
+            <SunIcon className="size-4 dark:hidden" />
+            <MoonIcon className="hidden size-4 dark:block" />
+          </Button>
         </div>
+      </header>
 
-        {/* Nav links */}
-        <nav className="flex items-center gap-1">
-          {navItems.map(({ label, href, icon: Icon }) => {
-            const active = pathname === href
-            return (
-              <Link
-                key={href}
-                href={href}
-                className={cn(
-                  "flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm transition-colors",
-                  active
-                    ? "bg-muted font-medium text-foreground"
-                    : "text-muted-foreground hover:bg-muted/60 hover:text-foreground"
-                )}
-              >
-                <Icon className="size-4" />
-                <span className="hidden sm:inline">{label}</span>
-              </Link>
-            )
-          })}
-        </nav>
-
-        {/* Dark mode toggle */}
-        <Button
-          variant="ghost"
-          size="icon"
+      {/* Mobile: fixed bottom bar */}
+      <nav className="fixed right-0 bottom-0 left-0 z-50 flex items-center border-t border-border bg-background/90 backdrop-blur-sm sm:hidden">
+        {navItems.map(({ label, href, icon: Icon }) => {
+          const active = pathname === href
+          return (
+            <Link
+              key={href}
+              href={href}
+              className={cn(
+                "flex flex-1 flex-col items-center gap-1 py-3 text-xs transition-colors",
+                active ? "text-foreground" : "text-muted-foreground"
+              )}
+            >
+              <Icon className={cn("size-5", active && "stroke-[2.5]")} />
+              <span>{label}</span>
+            </Link>
+          )
+        })}
+        <button
+          className="flex flex-1 flex-col items-center gap-1 py-3 text-xs text-muted-foreground transition-colors"
           onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
           aria-label="Toggle theme"
         >
-          <SunIcon className="size-4 dark:hidden" />
-          <MoonIcon className="hidden size-4 dark:block" />
-        </Button>
-      </div>
-    </header>
+          <SunIcon className="size-5 dark:hidden" />
+          <MoonIcon className="hidden size-5 dark:block" />
+          <span>Theme</span>
+        </button>
+      </nav>
+
+      {/* Spacer so content isn't hidden behind the mobile bottom bar */}
+      <div className="h-16 sm:hidden" />
+    </>
   )
 }

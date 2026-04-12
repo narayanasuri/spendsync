@@ -1,10 +1,14 @@
+"use client"
+
+import { useRouter } from "next/navigation"
 import { TableCell, TableRow } from "@/components/ui/table"
 import { CategoryEnum, PaymentModeEnum } from "@/lib/enums"
-import { CATEGORY_LABEL, PAYMENT_MODE_LABEL } from "@/lib/constants"
+import { PAYMENT_MODE_LABEL } from "@/lib/constants"
 import { abbreviate } from "@/lib/utils"
 import { CategoryIcon } from "@/components/shared/category-icon"
 
 type TransactionItemProps = {
+  id: number
   name: string
   description?: string | null
   category: CategoryEnum
@@ -14,6 +18,7 @@ type TransactionItemProps = {
 }
 
 export function TransactionItem({
+  id,
   name,
   description,
   category,
@@ -21,13 +26,18 @@ export function TransactionItem({
   amount,
   spent_at,
 }: TransactionItemProps) {
+  const router = useRouter()
+
   const date = new Date(spent_at).toLocaleDateString("en-IN", {
     day: "numeric",
     month: "short",
   })
 
   return (
-    <TableRow>
+    <TableRow
+      className="cursor-pointer"
+      onClick={() => router.push(`/expenses/${id}`)}
+    >
       <TableCell className="w-10">
         <CategoryIcon category={category} onlyIcon={false} />
       </TableCell>

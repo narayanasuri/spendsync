@@ -37,15 +37,22 @@ function Icon({ category, size }: { category: CategoryEnum; size: number }) {
 export function CategoryIcon({
   category,
   onlyIcon = true,
+  size = 40,
 }: {
   category: CategoryEnum
   onlyIcon?: boolean
+  size?: number
 }) {
-  if (onlyIcon) return <Icon category={category} size={24} />
+  if (onlyIcon) return <Icon category={category} size={size} />
+
+  const iconSize = Math.round(size * 0.5)
 
   return (
-    <div className="flex size-8 items-center justify-center rounded-sm bg-muted">
-      <Icon category={category} size={16} />
+    <div
+      className="flex shrink-0 items-center justify-center rounded-sm bg-muted"
+      style={{ width: size, height: size }}
+    >
+      <Icon category={category} size={iconSize} />
     </div>
   )
 }

@@ -7,24 +7,22 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty"
-import { BadgeIndianRupeeIcon } from "lucide-react"
+import { BrushCleaningIcon } from "lucide-react"
 import Link from "next/link"
 
-export function ExpensesEmptyState() {
+export function ExpenseNotFound() {
   return (
     <Empty>
       <EmptyHeader>
         <EmptyMedia variant="icon">
-          <BadgeIndianRupeeIcon />
+          <BrushCleaningIcon />
         </EmptyMedia>
-        <EmptyTitle>No expenses found.</EmptyTitle>
-        <EmptyDescription>
-          Try changing the dates or removing any filters if applied.
-        </EmptyDescription>
+        <EmptyTitle>Expense not found</EmptyTitle>
+        <EmptyDescription>We could not find that expense</EmptyDescription>
       </EmptyHeader>
       <EmptyContent>
         <Button variant="outline" size="sm" asChild>
-          <Link href="/add">Add New</Link>
+          <Link href="/expenses">View all expenses</Link>
         </Button>
       </EmptyContent>
     </Empty>

@@ -1,6 +1,7 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useCallback, useMemo, Suspense } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
 import { type DateRange } from "react-day-picker"
 import { subDays } from "date-fns"
 import { Table, TableBody } from "@/components/ui/table"
@@ -15,29 +16,80 @@ type Expense = Tables<"Expenses">
 
 const ALL = "all"
 
-export default function ExpensesPage() {
+function ExpensesContent() {
+  const router = useRouter()
+  const searchParams = useSearchParams()
+
+  // Stable defaults — computed once on mount, not on every render
+  const defaultFrom = useMemo(() => subDays(new Date(), 7).toISOString(), [])
+  const defaultTo = useMemo(() => new Date().toISOString(), [])
+
+  const fromParam = searchParams.get("from") ?? defaultFrom
+  const toParam = searchParams.get("to") ?? defaultTo
+  const categoryParam = searchParams.get("category") ?? ALL
+  const paymentModeParam = searchParams.get("payment_mode") ?? ALL
+
+  const dateRange: DateRange = {
+    from: new Date(fromParam),
+    to: new Date(toParam),
+  }
+
   const [expenses, setExpenses] = useState<Expense[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [category, setCategory] = useState<string>(ALL)
-  const [paymentMode, setPaymentMode] = useState<string>(ALL)
-  const [dateRange, setDateRange] = useState<DateRange>({
-    from: subDays(new Date(), 7),
-    to: new Date(),
-  })
+
+  // Push updated params to URL
+  const updateParams = useCallback(
+    (updates: Record<string, string>) => {
+      const params = new URLSearchParams(searchParams.toString())
+      Object.entries(updates).forEach(([key, value]) => {
+        if (value === ALL || value === "") {
+          params.delete(key)
+        } else {
+          params.set(key, value)
+        }
+      })
+      router.replace(`/expenses?${params.toString()}`, { scroll: false })
+    },
+    [router, searchParams]
+  )
+
+  function setDateRange(range: DateRange) {
+    if (!range.from || !range.to) return
+    updateParams({
+      from: range.from.toISOString(),
+      to: range.to.toISOString(),
+    })
+  }
+
+  function setCategory(value: string) {
+    updateParams({ category: value })
+  }
+
+  function setPaymentMode(value: string) {
+    updateParams({ payment_mode: value })
+  }
+
+  function handleClearFilters() {
+    const params = new URLSearchParams()
+    // Keep date range, clear category and payment_mode
+    params.set("from", fromParam)
+    params.set("to", toParam)
+    router.replace(`/expenses?${params.toString()}`, { scroll: false })
+  }
 
   useEffect(() => {
-    if (!dateRange.from || !dateRange.to) return
     setLoading(true)
     setError(null)
 
     async function fetchExpenses() {
       try {
         const params = new URLSearchParams({ limit: "200" })
-        if (category !== ALL) params.set("category", category)
-        if (paymentMode !== ALL) params.set("payment_mode", paymentMode)
-        params.set("from", dateRange.from!.toISOString())
-        params.set("to", dateRange.to!.toISOString())
+        if (categoryParam !== ALL) params.set("category", categoryParam)
+        if (paymentModeParam !== ALL)
+          params.set("payment_mode", paymentModeParam)
+        params.set("from", fromParam)
+        params.set("to", toParam)
 
         const res = await fetch(`/api/expenses?${params}`)
         const json = await res.json()
@@ -58,12 +110,7 @@ export default function ExpensesPage() {
     }
 
     fetchExpenses()
-  }, [category, paymentMode, dateRange.from, dateRange.to])
-
-  function handleClearFilters() {
-    setCategory(ALL)
-    setPaymentMode(ALL)
-  }
+  }, [fromParam, toParam, categoryParam, paymentModeParam])
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -78,14 +125,13 @@ export default function ExpensesPage() {
         <FilterBar
           dateRange={dateRange}
           setDateRange={setDateRange}
-          category={category}
+          category={categoryParam}
           setCategory={setCategory}
-          paymentMode={paymentMode}
+          paymentMode={paymentModeParam}
           setPaymentMode={setPaymentMode}
           onClear={handleClearFilters}
         />
 
-        {/* Results */}
         {loading ? (
           <div className="mt-3 flex flex-col gap-3">
             {Array.from({ length: 8 }).map((_, i) => (
@@ -112,6 +158,7 @@ export default function ExpensesPage() {
               {expenses.map((e) => (
                 <TransactionItem
                   key={e.id}
+                  id={e.id}
                   name={e.name}
                   description={e.description}
                   category={e.category as CategoryEnum}
@@ -125,5 +172,13 @@ export default function ExpensesPage() {
         )}
       </main>
     </div>
+  )
+}
+
+export default function ExpensesPage() {
+  return (
+    <Suspense>
+      <ExpensesContent />
+    </Suspense>
   )
 }
