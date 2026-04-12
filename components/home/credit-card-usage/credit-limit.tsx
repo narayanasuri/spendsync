@@ -3,6 +3,7 @@ import { Progress } from "../../ui/progress"
 import { CARD_LIMITS, PAYMENT_MODE_LABEL } from "@/lib/constants"
 import { abbreviate } from "@/lib/utils"
 import { BankIcon } from "@/components/shared/bank-icon"
+import { CURRENCY } from "@/config"
 
 export function CreditLimit({ mode, spent }: { mode: string; spent: number }) {
   const limit = CARD_LIMITS[mode]
@@ -13,7 +14,7 @@ export function CreditLimit({ mode, spent }: { mode: string; spent: number }) {
         <TableCell className="font-medium">
           {PAYMENT_MODE_LABEL[mode]}
         </TableCell>
-        <TableCell>₹{abbreviate(spent)} spent</TableCell>
+        <TableCell>{CURRENCY}{abbreviate(spent)} spent</TableCell>
         <TableCell>Limit unknown</TableCell>
       </TableRow>
     )
@@ -31,7 +32,7 @@ export function CreditLimit({ mode, spent }: { mode: string; spent: number }) {
       <TableCell>
         <Progress value={percentage} className="my-1" />
         <span className="mt-1 text-sm text-muted-foreground">
-          {percentage.toFixed(2)}% - ₹{abbreviate(spent)} of ₹
+          {percentage.toFixed(2)}% - {CURRENCY}{abbreviate(spent)} of {CURRENCY}
           {abbreviate(limit)}
         </span>
       </TableCell>

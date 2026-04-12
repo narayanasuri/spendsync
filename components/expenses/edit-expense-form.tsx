@@ -29,6 +29,7 @@ import {
   InputGroupText,
 } from "@/components/ui/input-group"
 import { CategorySelect } from "@/components/shared/category-select"
+import { CURRENCY } from "@/config"
 import { PaymentModeSelect } from "@/components/shared/payment-mode-select"
 import {
   expenseSchema,
@@ -139,7 +140,7 @@ export function EditExpenseForm({
                 {...register("amount")}
               />
               <InputGroupAddon>
-                <InputGroupText>₹</InputGroupText>
+                <InputGroupText>{CURRENCY}</InputGroupText>
               </InputGroupAddon>
             </InputGroup>
             {errors.amount && <FieldError>{errors.amount.message}</FieldError>}

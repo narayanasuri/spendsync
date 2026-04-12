@@ -1,6 +1,7 @@
 import { abbreviate } from "@/lib/utils"
 import { CATEGORY_LABEL } from "@/lib/constants"
 import { Card, CardContent } from "@/components/ui/card"
+import { CURRENCY } from "@/config"
 
 const SIZE = 48
 const STROKE = 4
@@ -60,10 +61,10 @@ export function BudgetTile({ category, spent, budget }: IProps) {
           <span
             className={`text-base font-semibold tabular-nums ${isOver ? "text-destructive" : ""}`}
           >
-            ₹{abbreviate(spent)}
+            {CURRENCY}{abbreviate(spent)}
           </span>
           <span className="text-xs text-muted-foreground">
-            {percentage.toFixed(0)}% of ₹{abbreviate(budget)}
+            {percentage.toFixed(0)}% of {CURRENCY}{abbreviate(budget)}
           </span>
         </div>
       </CardContent>

@@ -9,7 +9,7 @@ import { CategoryIcon } from "@/components/shared/category-icon"
 import { BankIcon } from "@/components/shared/bank-icon"
 import { EditExpenseForm } from "@/components/expenses/edit-expense-form"
 import { CATEGORY_LABEL, PAYMENT_MODE_LABEL } from "@/lib/constants"
-import { LOCALE, TIMEZONE } from "@/config"
+import { CURRENCY, LOCALE, TIMEZONE } from "@/config"
 import { abbreviate } from "@/lib/utils"
 import type { Tables } from "@/lib/database.types"
 import { ExpenseActionMenu } from "@/components/expenses/details/action-menu"
@@ -129,7 +129,7 @@ function ExpenseDetail({ expense }: { expense: Expense }) {
           )}
         </div>
         <p className="text-2xl font-bold tabular-nums">
-          ₹{abbreviate(Number(expense.amount))}
+          {CURRENCY}{abbreviate(Number(expense.amount))}
         </p>
       </div>
 

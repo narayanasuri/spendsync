@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation"
 import { TableCell, TableRow } from "@/components/ui/table"
-import { LOCALE, TIMEZONE } from "@/config"
+import { CURRENCY, LOCALE, TIMEZONE } from "@/config"
 import { PAYMENT_MODE_LABEL } from "@/lib/constants"
 import { abbreviate } from "@/lib/utils"
 import { CategoryIcon } from "@/components/shared/category-icon"
@@ -49,7 +49,7 @@ export function TransactionItem({
         </p>
       </TableCell>
       <TableCell className="text-right">
-        <p className="font-medium tabular-nums">₹{abbreviate(amount)}</p>
+        <p className="font-medium tabular-nums">{CURRENCY}{abbreviate(amount)}</p>
       </TableCell>
     </TableRow>
   )

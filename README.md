@@ -18,7 +18,7 @@ A self-hosted personal expense tracker built with Next.js and Supabase. Fork it,
 
 ```bash
 git clone https://github.com/narayanasuri/spendsync
-cd cheeez
+cd spendsync
 npm install
 ```
 

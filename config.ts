@@ -6,7 +6,7 @@
  *
  * APP_NAME   – shown in the navbar and login page
  *
- * CURRENCY   – currency symbol prefix  (e.g. "₹", "$", "€")
+ * CURRENCY   – currency symbol prefix  (e.g. "₹", "$", "€", "£")
  * LOCALE     – date/number formatting  (e.g. "en-IN", "en-US")
  * TIMEZONE   – display timezone        (e.g. "UTC", "Asia/Kolkata", "America/New_York")
  *
@@ -90,4 +90,5 @@ export const PAYMENT_MODES: PaymentModeConfig[] = [
     fallback: "CC",
     limit: 5000,
   },
+  { value: "gbp", label: "GBP", logoUrl: "", fallback: "GB" },
 ]
