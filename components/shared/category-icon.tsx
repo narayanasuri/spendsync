@@ -1,37 +1,11 @@
-import { CategoryEnum } from "@/lib/enums"
-import {
-  CarIcon,
-  CircleQuestionMarkIcon,
-  FilmIcon,
-  HandHelpingIcon,
-  HeartPlusIcon,
-  MilkIcon,
-  PizzaIcon,
-  ScooterIcon,
-  ShoppingCartIcon,
-} from "lucide-react"
+import { CATEGORIES } from "@/config"
+import { CircleQuestionMarkIcon } from "lucide-react"
 
-function Icon({ category, size }: { category: CategoryEnum; size: number }) {
-  switch (category) {
-    case CategoryEnum.DINEOUT:
-      return <PizzaIcon size={size} />
-    case CategoryEnum.TAKEOUT:
-      return <ScooterIcon size={size} />
-    case CategoryEnum.ENTERTAINMENT:
-      return <FilmIcon size={size} />
-    case CategoryEnum.GROCERIES:
-      return <MilkIcon size={size} />
-    case CategoryEnum.HEALTH:
-      return <HeartPlusIcon size={size} />
-    case CategoryEnum.SERVICES:
-      return <HandHelpingIcon size={size} />
-    case CategoryEnum.SHOPPING:
-      return <ShoppingCartIcon size={size} />
-    case CategoryEnum.TRANSPORT:
-      return <CarIcon size={size} />
-    default:
-      return <CircleQuestionMarkIcon size={size} />
-  }
+const iconMap = Object.fromEntries(CATEGORIES.map((c) => [c.value, c.icon]))
+
+function Icon({ category, size }: { category: string; size: number }) {
+  const LucideIcon = iconMap[category] ?? CircleQuestionMarkIcon
+  return <LucideIcon size={size} />
 }
 
 export function CategoryIcon({
@@ -39,7 +13,7 @@ export function CategoryIcon({
   onlyIcon = true,
   size = 40,
 }: {
-  category: CategoryEnum
+  category: string
   onlyIcon?: boolean
   size?: number
 }) {

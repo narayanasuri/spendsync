@@ -7,7 +7,6 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { CATEGORY_OPTIONS } from "@/lib/constants"
-import { CategoryEnum } from "@/lib/enums"
 import { CategoryIcon } from "./category-icon"
 
 interface PaymentModeSelectProps {
@@ -33,7 +32,7 @@ export function CategorySelect({
           {allowSelectAll && <SelectItem value="all">All</SelectItem>}
           {CATEGORY_OPTIONS.map(({ label, value }) => (
             <SelectItem key={value} value={value}>
-              <CategoryIcon category={value as CategoryEnum} />
+              <CategoryIcon category={value} />
               {label}
             </SelectItem>
           ))}

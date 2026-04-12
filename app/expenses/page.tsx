@@ -7,7 +7,6 @@ import { subDays } from "date-fns"
 import { Table, TableBody } from "@/components/ui/table"
 import { TransactionItem } from "@/components/shared/transaction-item"
 import { Skeleton } from "@/components/ui/skeleton"
-import { CategoryEnum, PaymentModeEnum } from "@/lib/enums"
 import type { Tables } from "@/lib/database.types"
 import { FilterBar } from "@/components/expenses/filter-bar"
 import { ExpensesEmptyState } from "@/components/shared/expenses-empty-state"
@@ -21,17 +20,31 @@ function ExpensesContent() {
   const searchParams = useSearchParams()
 
   // Stable defaults — computed once on mount, not on every render
-  const defaultFrom = useMemo(() => subDays(new Date(), 7).toISOString(), [])
-  const defaultTo = useMemo(() => new Date().toISOString(), [])
+  const defaultFrom = useMemo(() => {
+    const d = subDays(new Date(), 7)
+    const pad = (n: number) => String(n).padStart(2, "0")
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
+  }, [])
+  const defaultTo = useMemo(() => {
+    const d = new Date()
+    const pad = (n: number) => String(n).padStart(2, "0")
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
+  }, [])
 
   const fromParam = searchParams.get("from") ?? defaultFrom
   const toParam = searchParams.get("to") ?? defaultTo
   const categoryParam = searchParams.get("category") ?? ALL
   const paymentModeParam = searchParams.get("payment_mode") ?? ALL
 
+  // Parse YYYY-MM-DD as local date (not UTC) for the calendar display
+  function parseLocalDate(str: string): Date {
+    const [y, m, d] = str.split("-").map(Number)
+    return new Date(y, m - 1, d)
+  }
+
   const dateRange: DateRange = {
-    from: new Date(fromParam),
-    to: new Date(toParam),
+    from: parseLocalDate(fromParam),
+    to: parseLocalDate(toParam),
   }
 
   const [expenses, setExpenses] = useState<Expense[]>([])
@@ -56,10 +69,11 @@ function ExpensesContent() {
 
   function setDateRange(range: DateRange) {
     if (!range.from || !range.to) return
-    updateParams({
-      from: range.from.toISOString(),
-      to: range.to.toISOString(),
-    })
+    // Send plain dates — API handles start/end of day in UTC
+    const pad = (n: number) => String(n).padStart(2, "0")
+    const fmt = (d: Date) =>
+      `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
+    updateParams({ from: fmt(range.from), to: fmt(range.to) })
   }
 
   function setCategory(value: string) {
@@ -161,8 +175,8 @@ function ExpensesContent() {
                   id={e.id}
                   name={e.name}
                   description={e.description}
-                  category={e.category as CategoryEnum}
-                  payment_mode={e.payment_mode as PaymentModeEnum}
+                  category={e.category}
+                  payment_mode={e.payment_mode}
                   amount={Number(e.amount)}
                   spent_at={e.spent_at}
                 />

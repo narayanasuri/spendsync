@@ -17,10 +17,12 @@ interface DateRangeInputProps {
   onChange: (range: DateRange) => void
 }
 
+import { LOCALE } from "@/config"
+
 function formatRange(range: DateRange): string {
   const opts: Intl.DateTimeFormatOptions = { day: "numeric", month: "short" }
-  const from = range.from?.toLocaleDateString("en-IN", opts) ?? "—"
-  const to = range.to?.toLocaleDateString("en-IN", opts) ?? "—"
+  const from = range.from?.toLocaleDateString(LOCALE, opts) ?? "—"
+  const to = range.to?.toLocaleDateString(LOCALE, opts) ?? "—"
   return `${from} – ${to}`
 }
 

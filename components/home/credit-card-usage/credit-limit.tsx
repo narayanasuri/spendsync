@@ -1,17 +1,10 @@
 import { TableCell, TableRow } from "@/components/ui/table"
 import { Progress } from "../../ui/progress"
-import { PaymentModeEnum } from "@/lib/enums"
 import { CARD_LIMITS, PAYMENT_MODE_LABEL } from "@/lib/constants"
 import { abbreviate } from "@/lib/utils"
 import { BankIcon } from "@/components/shared/bank-icon"
 
-export function CreditLimit({
-  mode,
-  spent,
-}: {
-  mode: PaymentModeEnum
-  spent: number
-}) {
+export function CreditLimit({ mode, spent }: { mode: string; spent: number }) {
   const limit = CARD_LIMITS[mode]
 
   if (!limit) {

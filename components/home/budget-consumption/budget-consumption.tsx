@@ -8,7 +8,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { CategoryEnum } from "@/lib/enums"
 import { BudgetTile } from "./budget-tile"
 import { Skeleton } from "@/components/ui/skeleton"
 import type { DateRange } from "@/lib/utils"
@@ -53,7 +52,7 @@ export function BudgetConsumption({ dateRange }: { dateRange: DateRange }) {
     fetchSummary()
   }, [dateRange.from, dateRange.to])
 
-  const budgetCategories = Object.keys(BUDGET_LIMITS) as CategoryEnum[]
+  const budgetCategories = Object.keys(BUDGET_LIMITS)
 
   return (
     <Card className="mx-auto w-full">
@@ -64,7 +63,7 @@ export function BudgetConsumption({ dateRange }: { dateRange: DateRange }) {
       <CardContent>
         {loading ? (
           <div className="flex flex-wrap gap-2">
-            {Array.from({ length: 6 }).map((_, i) => (
+            {Array.from({ length: 4 }).map((_, i) => (
               <div
                 key={i}
                 className="flex w-full items-center gap-3 rounded-lg border border-border p-3 sm:flex-1"

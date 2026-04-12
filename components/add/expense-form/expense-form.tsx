@@ -202,9 +202,11 @@ export function ExpenseForm() {
               control={control}
               name="spent_at"
               render={({ field }) => {
-                const timeValue = field.value
-                  ? `${String(field.value.getHours()).padStart(2, "0")}:${String(field.value.getMinutes()).padStart(2, "0")}`
-                  : "00:00"
+                const [timeInput, setTimeInput] = useState(
+                  field.value
+                    ? `${String(field.value.getHours()).padStart(2, "0")}:${String(field.value.getMinutes()).padStart(2, "0")}`
+                    : "00:00"
+                )
 
                 function handleDateSelect(date: Date | undefined) {
                   if (!date) return
@@ -221,7 +223,10 @@ export function ExpenseForm() {
                 function handleTimeChange(
                   e: React.ChangeEvent<HTMLInputElement>
                 ) {
-                  const [hours, minutes] = e.target.value.split(":").map(Number)
+                  const val = e.target.value
+                  setTimeInput(val)
+                  if (!/^\d{2}:\d{2}$/.test(val)) return
+                  const [hours, minutes] = val.split(":").map(Number)
                   const updated = new Date(field.value ?? new Date())
                   updated.setHours(hours, minutes)
                   field.onChange(updated)
@@ -259,7 +264,7 @@ export function ExpenseForm() {
                             <InputGroupInput
                               id="spent-at-time"
                               type="time"
-                              value={timeValue}
+                              value={timeInput}
                               onChange={handleTimeChange}
                               className="appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
                             />

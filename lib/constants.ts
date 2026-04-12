@@ -1,107 +1,38 @@
-import { CategoryEnum, PaymentModeEnum, TimeRangeEnum } from "./enums"
-import { OptionType } from "./types"
+/**
+ * Derived from config.ts — do not edit by hand.
+ * Add/remove categories and payment modes in config.ts instead.
+ */
+import { CATEGORIES, PAYMENT_MODES } from "@/config"
+import { TimeRangeEnum } from "./enums"
+import type { OptionType } from "./types"
 
-export const CATEGORY_LABEL: Record<CategoryEnum, string> = {
-  [CategoryEnum.DINEOUT]: "Dineout",
-  [CategoryEnum.TAKEOUT]: "Takeout",
-  [CategoryEnum.HEALTH]: "Health",
-  [CategoryEnum.GROCERIES]: "Groceries",
-  [CategoryEnum.ENTERTAINMENT]: "Entertainment",
-  [CategoryEnum.TRANSPORT]: "Transport",
-  [CategoryEnum.SHOPPING]: "Shopping",
-  [CategoryEnum.SERVICES]: "Services",
-  [CategoryEnum.MISC]: "Misc",
-}
+export const CATEGORY_OPTIONS: OptionType[] = CATEGORIES.map((c) => ({
+  label: c.label,
+  value: c.value,
+}))
 
-export const CATEGORY_OPTIONS: OptionType[] = [
-  {
-    label: CATEGORY_LABEL[CategoryEnum.DINEOUT],
-    value: CategoryEnum.DINEOUT,
-  },
-  {
-    label: CATEGORY_LABEL[CategoryEnum.TAKEOUT],
-    value: CategoryEnum.TAKEOUT,
-  },
-  {
-    label: CATEGORY_LABEL[CategoryEnum.HEALTH],
-    value: CategoryEnum.HEALTH,
-  },
-  {
-    label: CATEGORY_LABEL[CategoryEnum.GROCERIES],
-    value: CategoryEnum.GROCERIES,
-  },
-  {
-    label: CATEGORY_LABEL[CategoryEnum.ENTERTAINMENT],
-    value: CategoryEnum.ENTERTAINMENT,
-  },
-  {
-    label: CATEGORY_LABEL[CategoryEnum.TRANSPORT],
-    value: CategoryEnum.TRANSPORT,
-  },
-  {
-    label: CATEGORY_LABEL[CategoryEnum.SHOPPING],
-    value: CategoryEnum.SHOPPING,
-  },
-  {
-    label: CATEGORY_LABEL[CategoryEnum.SERVICES],
-    value: CategoryEnum.SERVICES,
-  },
-  {
-    label: CATEGORY_LABEL[CategoryEnum.MISC],
-    value: CategoryEnum.MISC,
-  },
-]
+export const CATEGORY_LABEL: Record<string, string> = Object.fromEntries(
+  CATEGORIES.map((c) => [c.value, c.label])
+)
 
-export const PAYMENT_MODE_LABEL: Record<PaymentModeEnum, string> = {
-  [PaymentModeEnum.SAVINGS]: "Savings",
-  [PaymentModeEnum.ZEN]: "Zen",
-  [PaymentModeEnum.NEO]: "Neo",
-  [PaymentModeEnum.MYZONE]: "MyZone",
-  [PaymentModeEnum.AMAZON]: "Amazon",
-  [PaymentModeEnum.LEGEND]: "Legend",
-}
+export const PAYMENT_MODE_OPTIONS: OptionType[] = PAYMENT_MODES.map((p) => ({
+  label: p.label,
+  value: p.value,
+}))
 
-export const PAYMENT_MODE_OPTIONS: OptionType[] = [
-  {
-    label: PAYMENT_MODE_LABEL[PaymentModeEnum.SAVINGS],
-    value: PaymentModeEnum.SAVINGS,
-  },
-  {
-    label: PAYMENT_MODE_LABEL[PaymentModeEnum.ZEN],
-    value: PaymentModeEnum.ZEN,
-  },
-  {
-    label: PAYMENT_MODE_LABEL[PaymentModeEnum.NEO],
-    value: PaymentModeEnum.NEO,
-  },
-  {
-    label: PAYMENT_MODE_LABEL[PaymentModeEnum.MYZONE],
-    value: PaymentModeEnum.MYZONE,
-  },
-  {
-    label: PAYMENT_MODE_LABEL[PaymentModeEnum.AMAZON],
-    value: PaymentModeEnum.AMAZON,
-  },
-  {
-    label: PAYMENT_MODE_LABEL[PaymentModeEnum.LEGEND],
-    value: PaymentModeEnum.LEGEND,
-  },
-]
+export const PAYMENT_MODE_LABEL: Record<string, string> = Object.fromEntries(
+  PAYMENT_MODES.map((p) => [p.value, p.label])
+)
 
-export const BUDGET_LIMITS: Partial<Record<CategoryEnum, number>> = {
-  [CategoryEnum.DINEOUT]: 6000,
-  [CategoryEnum.SHOPPING]: 5000,
-  [CategoryEnum.TRANSPORT]: 2000,
-  [CategoryEnum.TAKEOUT]: 4000,
-}
+/** Categories that have a budget set in config.ts */
+export const BUDGET_LIMITS: Record<string, number> = Object.fromEntries(
+  CATEGORIES.filter((c) => c.budget != null).map((c) => [c.value, c.budget!])
+)
 
-export const CARD_LIMITS: Partial<Record<PaymentModeEnum, number>> = {
-  [PaymentModeEnum.ZEN]: 236000,
-  [PaymentModeEnum.NEO]: 40000,
-  [PaymentModeEnum.MYZONE]: 40000,
-  [PaymentModeEnum.AMAZON]: 350000,
-  [PaymentModeEnum.LEGEND]: 75000,
-}
+/** Payment modes that have a credit limit set in config.ts */
+export const CARD_LIMITS: Record<string, number> = Object.fromEntries(
+  PAYMENT_MODES.filter((p) => p.limit != null).map((p) => [p.value, p.limit!])
+)
 
 export const TIME_RANGE_LABEL: Record<TimeRangeEnum, string> = {
   [TimeRangeEnum.THIS_WEEK]: "This Week",

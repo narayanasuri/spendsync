@@ -1,5 +1,4 @@
 import { abbreviate } from "@/lib/utils"
-import { CategoryEnum } from "@/lib/enums"
 import { CATEGORY_LABEL } from "@/lib/constants"
 import { Card, CardContent } from "@/components/ui/card"
 
@@ -41,7 +40,7 @@ function CircularProgress({ percentage }: { percentage: number }) {
 }
 
 type IProps = {
-  category: CategoryEnum
+  category: string
   spent: number
   budget: number
 }

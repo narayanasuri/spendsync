@@ -1,5 +1,11 @@
 import { z } from "zod"
-import { CategoryEnum, PaymentModeEnum } from "@/lib/enums"
+import { CATEGORIES, PAYMENT_MODES } from "@/config"
+
+const categoryValues = CATEGORIES.map((c) => c.value) as [string, ...string[]]
+const paymentModeValues = PAYMENT_MODES.map((p) => p.value) as [
+  string,
+  ...string[],
+]
 
 export const expenseSchema = z.object({
   name: z.string().min(1, "Expense title is required."),
@@ -11,17 +17,14 @@ export const expenseSchema = z.object({
     })
     .transform((v) => parseFloat(v)),
   description: z.string().optional(),
-  category: z.nativeEnum(CategoryEnum, {
+  category: z.enum(categoryValues, {
     message: "Please select a category.",
   }),
-  payment_mode: z.nativeEnum(PaymentModeEnum, {
+  payment_mode: z.enum(paymentModeValues, {
     message: "Please select a payment mode.",
   }),
   spent_at: z.date({ message: "Please select a date." }),
 })
 
-// Input type (what the form fields hold — amount is a string)
 export type ExpenseFormInput = z.input<typeof expenseSchema>
-
-// Output type (after validation/transform — amount is a number)
 export type ExpenseFormValues = z.output<typeof expenseSchema>

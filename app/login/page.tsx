@@ -7,6 +7,8 @@ import { Field, FieldDescription, FieldError } from "@/components/ui/field"
 import { Button } from "@/components/ui/button"
 import { Spinner } from "@/components/ui/spinner"
 
+import { APP_NAME } from "@/config"
+
 function LoginForm() {
   const [password, setPassword] = useState("")
   const [error, setError] = useState(false)
@@ -38,7 +40,7 @@ function LoginForm() {
 
   return (
     <div className="w-full max-w-sm px-6">
-      <h1 className="mb-1 text-xl font-semibold">cheeez.</h1>
+      <h1 className="mb-1 text-xl font-semibold">{APP_NAME}</h1>
       <Field>
         {!error && (
           <FieldDescription>

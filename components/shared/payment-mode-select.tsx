@@ -8,7 +8,6 @@ import {
 } from "@/components/ui/select"
 import { PAYMENT_MODE_OPTIONS } from "@/lib/constants"
 import { BankIcon } from "./bank-icon"
-import { PaymentModeEnum } from "@/lib/enums"
 
 interface PaymentModeSelectProps {
   resetKey?: number
@@ -33,7 +32,7 @@ export function PaymentModeSelect({
           {allowSelectAll && <SelectItem value="all">All</SelectItem>}
           {PAYMENT_MODE_OPTIONS.map(({ label, value }) => (
             <SelectItem key={value} value={value}>
-              <BankIcon mode={value as PaymentModeEnum} size="small" />
+              <BankIcon mode={value} size="small" />
               {label}
             </SelectItem>
           ))}

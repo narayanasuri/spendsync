@@ -9,7 +9,7 @@ import { CategoryIcon } from "@/components/shared/category-icon"
 import { BankIcon } from "@/components/shared/bank-icon"
 import { EditExpenseForm } from "@/components/expenses/edit-expense-form"
 import { CATEGORY_LABEL, PAYMENT_MODE_LABEL } from "@/lib/constants"
-import { CategoryEnum, PaymentModeEnum } from "@/lib/enums"
+import { LOCALE, TIMEZONE } from "@/config"
 import { abbreviate } from "@/lib/utils"
 import type { Tables } from "@/lib/database.types"
 import { ExpenseActionMenu } from "@/components/expenses/details/action-menu"
@@ -95,20 +95,22 @@ export default function ExpenseDetailPage() {
 }
 
 function ExpenseDetail({ expense }: { expense: Expense }) {
-  const category = expense.category as CategoryEnum
-  const paymentMode = expense.payment_mode as PaymentModeEnum
+  const category = expense.category
+  const paymentMode = expense.payment_mode
 
-  const date = new Date(expense.spent_at).toLocaleDateString("en-IN", {
+  const date = new Date(expense.spent_at).toLocaleDateString(LOCALE, {
     weekday: "long",
     day: "numeric",
     month: "long",
     year: "numeric",
+    timeZone: TIMEZONE,
   })
 
-  const time = new Date(expense.spent_at).toLocaleTimeString("en-IN", {
+  const time = new Date(expense.spent_at).toLocaleTimeString(LOCALE, {
     hour: "2-digit",
     minute: "2-digit",
     hour12: true,
+    timeZone: TIMEZONE,
   })
 
   return (

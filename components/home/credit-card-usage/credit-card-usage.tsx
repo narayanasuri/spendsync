@@ -10,7 +10,6 @@ import {
 } from "@/components/ui/card"
 import { Table, TableBody } from "@/components/ui/table"
 import { CreditLimit } from "./credit-limit"
-import { PaymentModeEnum } from "@/lib/enums"
 import { Skeleton } from "@/components/ui/skeleton"
 import type { DateRange } from "@/lib/utils"
 import { CARD_LIMITS } from "@/lib/constants"
@@ -56,7 +55,7 @@ export function CreditCardUsage({ dateRange }: { dateRange: DateRange }) {
     fetchSummary()
   }, [dateRange.from, dateRange.to])
 
-  const creditModes = Object.keys(CARD_LIMITS) as PaymentModeEnum[]
+  const creditModes = Object.keys(CARD_LIMITS)
 
   return (
     <Card className="mx-auto w-full">

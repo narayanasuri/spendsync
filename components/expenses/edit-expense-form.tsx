@@ -45,6 +45,20 @@ function formatLocalISO(date: Date): string {
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`
 }
 
+// Parse a UTC ISO string into a local Date whose wall-clock values match
+// the stored UTC time, so the form fields show the correct hours/minutes.
+function utcToLocalDate(iso: string): Date {
+  const d = new Date(iso)
+  return new Date(
+    d.getUTCFullYear(),
+    d.getUTCMonth(),
+    d.getUTCDate(),
+    d.getUTCHours(),
+    d.getUTCMinutes(),
+    d.getUTCSeconds()
+  )
+}
+
 interface EditExpenseFormProps {
   expense: Expense
   onSave: (updated: Expense) => void
@@ -59,7 +73,7 @@ export function EditExpenseForm({
   const [serverError, setServerError] = useState<string | null>(null)
   const [resetKey, setResetKey] = useState(0)
 
-  const spentAt = new Date(expense.spent_at)
+  const spentAt = utcToLocalDate(expense.spent_at)
 
   const {
     register,
@@ -182,9 +196,11 @@ export function EditExpenseForm({
               control={control}
               name="spent_at"
               render={({ field }) => {
-                const timeValue = field.value
-                  ? `${String(field.value.getHours()).padStart(2, "0")}:${String(field.value.getMinutes()).padStart(2, "0")}`
-                  : "00:00"
+                const [timeInput, setTimeInput] = useState(
+                  field.value
+                    ? `${String(field.value.getHours()).padStart(2, "0")}:${String(field.value.getMinutes()).padStart(2, "0")}`
+                    : "00:00"
+                )
 
                 function handleDateSelect(date: Date | undefined) {
                   if (!date) return
@@ -200,7 +216,10 @@ export function EditExpenseForm({
                 function handleTimeChange(
                   e: React.ChangeEvent<HTMLInputElement>
                 ) {
-                  const [hours, minutes] = e.target.value.split(":").map(Number)
+                  const val = e.target.value
+                  setTimeInput(val)
+                  if (!/^\d{2}:\d{2}$/.test(val)) return
+                  const [hours, minutes] = val.split(":").map(Number)
                   const updated = new Date(field.value ?? new Date())
                   updated.setHours(hours, minutes)
                   field.onChange(updated)
@@ -238,7 +257,7 @@ export function EditExpenseForm({
                             <InputGroupInput
                               id="edit-time"
                               type="time"
-                              value={timeValue}
+                              value={timeInput}
                               onChange={handleTimeChange}
                               className="appearance-none [&::-webkit-calendar-picker-indicator]:hidden"
                             />

@@ -11,7 +11,6 @@ import {
 import { Table, TableBody } from "@/components/ui/table"
 import { TransactionItem } from "../../shared/transaction-item"
 import type { Tables } from "@/lib/database.types"
-import { CategoryEnum, PaymentModeEnum } from "@/lib/enums"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
@@ -99,8 +98,8 @@ export function RecentTransactions({ dateRange }: { dateRange: DateRange }) {
                   id={t.id}
                   name={t.name}
                   description={t.description}
-                  category={t.category as CategoryEnum}
-                  payment_mode={t.payment_mode as PaymentModeEnum}
+                  category={t.category}
+                  payment_mode={t.payment_mode}
                   amount={Number(t.amount)}
                   spent_at={t.spent_at}
                 />

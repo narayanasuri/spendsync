@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation"
 import { TableCell, TableRow } from "@/components/ui/table"
-import { CategoryEnum, PaymentModeEnum } from "@/lib/enums"
+import { LOCALE, TIMEZONE } from "@/config"
 import { PAYMENT_MODE_LABEL } from "@/lib/constants"
 import { abbreviate } from "@/lib/utils"
 import { CategoryIcon } from "@/components/shared/category-icon"
@@ -11,8 +11,8 @@ type TransactionItemProps = {
   id: number
   name: string
   description?: string | null
-  category: CategoryEnum
-  payment_mode: PaymentModeEnum
+  category: string
+  payment_mode: string
   amount: number
   spent_at: string
 }
@@ -28,9 +28,10 @@ export function TransactionItem({
 }: TransactionItemProps) {
   const router = useRouter()
 
-  const date = new Date(spent_at).toLocaleDateString("en-IN", {
+  const date = new Date(spent_at).toLocaleDateString(LOCALE, {
     day: "numeric",
     month: "short",
+    timeZone: TIMEZONE,
   })
 
   return (

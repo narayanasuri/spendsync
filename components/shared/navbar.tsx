@@ -13,6 +13,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar"
+import { APP_NAME } from "@/config"
 
 const navItems = [
   { label: "Summary", href: "/", icon: ChartSplineIcon },
@@ -33,11 +34,13 @@ export function Navbar() {
         <div className="mx-auto flex h-12 max-w-4xl items-center justify-between px-6">
           <div className="flex items-center gap-1.5">
             <Avatar>
-              <AvatarImage src="/icon.png" alt="cheeez" />
-              <AvatarFallback>CZ</AvatarFallback>
+              <AvatarImage src="/icon.png" alt={APP_NAME} />
+              <AvatarFallback>
+                {APP_NAME.slice(0, 2).toUpperCase()}
+              </AvatarFallback>
             </Avatar>
             <span className="text-sm font-semibold tracking-tight">
-              cheeez.
+              {APP_NAME}
             </span>
           </div>
 
@@ -104,9 +107,6 @@ export function Navbar() {
           <span>Theme</span>
         </button>
       </nav>
-
-      {/* Spacer so content isn't hidden behind the mobile bottom bar */}
-      <div className="h-16 sm:hidden" />
     </>
   )
 }

@@ -31,10 +31,8 @@ export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl
   const from = searchParams.get("from")
   const to = searchParams.get("to")
-  const category = searchParams.get("category") as CategoryEnum | null
-  const payment_mode = searchParams.get(
-    "payment_mode"
-  ) as PaymentModeEnum | null
+  const category = searchParams.get("category")
+  const payment_mode = searchParams.get("payment_mode")
   const limit = Math.min(parseInt(searchParams.get("limit") ?? "50"), 200)
 
   // Validate date formats if provided
@@ -73,13 +71,13 @@ export async function GET(req: NextRequest) {
     .order("spent_at", { ascending: false })
     .limit(limit)
 
-  if (from) query = query.gte("spent_at", new Date(from).toISOString())
-  if (to) {
-    // Include the full end day by going to end of day
-    const toDate = new Date(to)
-    toDate.setHours(23, 59, 59, 999)
-    query = query.lte("spent_at", toDate.toISOString())
-  }
+  if (from)
+    query = query.gte(
+      "spent_at",
+      new Date(from + "T00:00:00.000Z").toISOString()
+    )
+  if (to)
+    query = query.lte("spent_at", new Date(to + "T23:59:59.999Z").toISOString())
   if (category) query = query.eq("category", category)
   if (payment_mode) query = query.eq("payment_mode", payment_mode)
 

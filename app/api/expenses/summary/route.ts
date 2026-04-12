@@ -27,12 +27,9 @@ function parseDateRange(searchParams: URLSearchParams) {
   if (from && isNaN(Date.parse(from))) return { error: "Invalid 'from' date." }
   if (to && isNaN(Date.parse(to))) return { error: "Invalid 'to' date." }
 
-  const toDate = to ? new Date(to) : null
-  if (toDate) toDate.setHours(23, 59, 59, 999)
-
   return {
-    from: from ? new Date(from).toISOString() : null,
-    to: toDate ? toDate.toISOString() : null,
+    from: from ? new Date(from + "T00:00:00.000Z").toISOString() : null,
+    to: to ? new Date(to + "T23:59:59.999Z").toISOString() : null,
   }
 }
 
@@ -58,10 +55,8 @@ export async function GET(req: NextRequest) {
   }
 
   // Validate optional filter values
-  const categoryFilter = searchParams.get("category") as CategoryEnum | null
-  const paymentModeFilter = searchParams.get(
-    "payment_mode"
-  ) as PaymentModeEnum | null
+  const categoryFilter = searchParams.get("category")
+  const paymentModeFilter = searchParams.get("payment_mode")
 
   if (categoryFilter && !Object.values(CategoryEnum).includes(categoryFilter)) {
     return NextResponse.json(

@@ -43,6 +43,8 @@ export default function RootLayout({
           <TooltipProvider>
             <Navbar />
             {children}
+            {/* Prevent content from being hidden behind the mobile bottom nav */}
+            <div className="h-16 sm:hidden" />
           </TooltipProvider>
         </ThemeProvider>
       </body>
