@@ -42,9 +42,10 @@ import {
 export const APP_NAME = "my expenses" as const
 
 // ─── Settings ────────────────────────────────────────────────────────────────
-export const CURRENCY = "₹" as const
 
-export const LOCALE = "en-IN" as const
+export const CURRENCY = "$" as const
+
+export const LOCALE = "en-US" as const
 
 export const TIMEZONE = "UTC" as const
 
@@ -58,18 +59,13 @@ export type CategoryConfig = {
 }
 
 export const CATEGORIES: CategoryConfig[] = [
-  { value: "dineout", label: "Dineout", icon: PizzaIcon, budget: 6000 },
-  { value: "takeout", label: "Takeout", icon: ScooterIcon, budget: 4000 },
+  { value: "dineout", label: "Dineout", icon: PizzaIcon },
+  { value: "takeout", label: "Takeout", icon: ScooterIcon },
   { value: "groceries", label: "Groceries", icon: MilkIcon },
   { value: "health", label: "Health", icon: HeartPlusIcon },
   { value: "entertainment", label: "Entertainment", icon: FilmIcon },
-  { value: "transport", label: "Transport", icon: CarIcon, budget: 2000 },
-  {
-    value: "shopping",
-    label: "Shopping",
-    icon: ShoppingCartIcon,
-    budget: 5000,
-  },
+  { value: "transport", label: "Transport", icon: CarIcon },
+  { value: "shopping", label: "Shopping", icon: ShoppingCartIcon },
   { value: "services", label: "Services", icon: HandHelpingIcon },
   { value: "misc", label: "Misc", icon: CircleQuestionMarkIcon },
 ]
@@ -85,45 +81,13 @@ export type PaymentModeConfig = {
 }
 
 export const PAYMENT_MODES: PaymentModeConfig[] = [
+  { value: "cash", label: "Cash", logoUrl: "", fallback: "CA" },
+  { value: "debit", label: "Debit Card", logoUrl: "", fallback: "DB" },
   {
-    value: "savings",
-    label: "Savings",
-    logoUrl: "/phonepe.png",
-    fallback: "SV",
-  },
-  {
-    value: "zen",
-    label: "Zen",
-    logoUrl: "/kotak.png",
-    fallback: "ZN",
-    limit: 236000,
-  },
-  {
-    value: "neo",
-    label: "Neo",
-    logoUrl: "/axis.png",
-    fallback: "NE",
-    limit: 40000,
-  },
-  {
-    value: "myzone",
-    label: "MyZone",
-    logoUrl: "/axis.png",
-    fallback: "MY",
-    limit: 40000,
-  },
-  {
-    value: "amazon",
-    label: "Amazon",
-    logoUrl: "/icici.png",
-    fallback: "AM",
-    limit: 350000,
-  },
-  {
-    value: "legend",
-    label: "Legend",
-    logoUrl: "/indusind.png",
-    fallback: "LG",
-    limit: 75000,
+    value: "credit",
+    label: "Credit Card",
+    logoUrl: "",
+    fallback: "CC",
+    limit: 5000,
   },
 ]
