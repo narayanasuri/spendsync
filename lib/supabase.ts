@@ -10,10 +10,11 @@ type Expense = Tables<"Expenses">
 type ExpenseInsert = TablesInsert<"Expenses">
 type ExpenseUpdate = TablesUpdate<"Expenses">
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+const supabaseUrl = process.env.SUPABASE_URL!
+const supabaseKey = (process.env.SUPABASE_SERVICE_ROLE_KEY ??
+  process.env.SUPABASE_ANON_KEY)!
 
-export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey)
+export const supabase = createClient<Database>(supabaseUrl, supabaseKey)
 
 // --- Expenses ---
 
