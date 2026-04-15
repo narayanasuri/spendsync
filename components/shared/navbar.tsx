@@ -2,15 +2,12 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { useTheme } from "next-themes"
 import {
   ChartSplineIcon,
   CirclePlusIcon,
-  MoonIcon,
   Rows3Icon,
-  SunIcon,
+  SettingsIcon,
 } from "lucide-react"
-import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar"
 import { APP_NAME } from "@/config"
@@ -19,11 +16,11 @@ const navItems = [
   { label: "Summary", href: "/", icon: ChartSplineIcon },
   { label: "New Expense", href: "/add", icon: CirclePlusIcon },
   { label: "Expenses", href: "/expenses", icon: Rows3Icon },
+  { label: "Settings", href: "/settings", icon: SettingsIcon },
 ]
 
 export function Navbar() {
   const pathname = usePathname()
-  const { resolvedTheme, setTheme } = useTheme()
 
   if (pathname === "/login") return null
 
@@ -64,18 +61,6 @@ export function Navbar() {
               )
             })}
           </nav>
-
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() =>
-              setTheme(resolvedTheme === "dark" ? "light" : "dark")
-            }
-            aria-label="Toggle theme"
-          >
-            <SunIcon className="size-4 dark:hidden" />
-            <MoonIcon className="hidden size-4 dark:block" />
-          </Button>
         </div>
       </header>
 
@@ -97,15 +82,6 @@ export function Navbar() {
             </Link>
           )
         })}
-        <button
-          className="flex flex-1 flex-col items-center gap-1 py-3 text-xs text-muted-foreground transition-colors"
-          onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
-          aria-label="Toggle theme"
-        >
-          <SunIcon className="size-5 dark:hidden" />
-          <MoonIcon className="hidden size-5 dark:block" />
-          <span>Theme</span>
-        </button>
       </nav>
     </>
   )

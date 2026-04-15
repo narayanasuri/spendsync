@@ -14,33 +14,154 @@ export type Database = {
   }
   public: {
     Tables: {
+      Budgets: {
+        Row: {
+          budget_amount: number
+          category_id: number
+          id: number
+          user: number | null
+        }
+        Insert: {
+          budget_amount: number
+          category_id: number
+          id?: number
+          user?: number | null
+        }
+        Update: {
+          budget_amount?: number
+          category_id?: number
+          id?: number
+          user?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "Budgets_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "Categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "Budgets_user_fkey"
+            columns: ["user"]
+            isOneToOne: false
+            referencedRelation: "Users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      Categories: {
+        Row: {
+          icon: string | null
+          id: number
+          name: string
+          type: string
+        }
+        Insert: {
+          icon?: string | null
+          id?: number
+          name: string
+          type?: string
+        }
+        Update: {
+          icon?: string | null
+          id?: number
+          name?: string
+          type?: string
+        }
+        Relationships: []
+      }
       Expenses: {
         Row: {
           amount: number
-          category: string
+          category: number
           description: string | null
           id: number
           name: string
-          payment_mode: string
+          paid_by: number
+          payment_mode: number
           spent_at: string
+          transaction_type: string
         }
         Insert: {
           amount: number
-          category: string
+          category: number
           description?: string | null
           id?: number
           name: string
-          payment_mode: string
+          paid_by: number
+          payment_mode: number
           spent_at?: string
+          transaction_type?: string
         }
         Update: {
           amount?: number
-          category?: string
+          category?: number
           description?: string | null
           id?: number
           name?: string
-          payment_mode?: string
+          paid_by?: number
+          payment_mode?: number
           spent_at?: string
+          transaction_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "Expenses_category_fkey"
+            columns: ["category"]
+            isOneToOne: false
+            referencedRelation: "Categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "Expenses_payment_mode_fkey"
+            columns: ["payment_mode"]
+            isOneToOne: false
+            referencedRelation: "PaymentMethods"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "Expenses_paid_by_fkey"
+            columns: ["paid_by"]
+            isOneToOne: false
+            referencedRelation: "Users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      PaymentMethods: {
+        Row: {
+          balance: number | null
+          id: number
+          name: string
+          type: string
+        }
+        Insert: {
+          balance?: number | null
+          id?: number
+          name: string
+          type: string
+        }
+        Update: {
+          balance?: number | null
+          id?: number
+          name?: string
+          type?: string
+        }
+        Relationships: []
+      }
+      Users: {
+        Row: {
+          id: number
+          name: string
+        }
+        Insert: {
+          id?: number
+          name: string
+        }
+        Update: {
+          id?: number
+          name?: string
         }
         Relationships: []
       }
