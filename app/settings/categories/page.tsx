@@ -1,16 +1,26 @@
 "use client"
 
-import { Fragment } from "react"
+import { Fragment, useState } from "react"
 import { useAppStore } from "@/lib/store"
 import { Button } from "@/components/ui/button"
-import { Item, ItemContent, ItemTitle } from "@/components/ui/item"
+import { Item, ItemActions, ItemContent, ItemTitle } from "@/components/ui/item"
 import { Separator } from "@/components/ui/separator"
-import { ArrowLeftIcon, PlusIcon } from "lucide-react"
+import { ArrowLeftIcon, PencilIcon, PlusIcon } from "lucide-react"
 import Link from "next/link"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { CategoryDrawer } from "@/components/settings/category-drawer"
 
 export default function CategoriesSettingsPage() {
   const { categories } = useAppStore()
+  const [open, setOpen] = useState<boolean>(false)
+  const [editingCategory, setEditingCategory] = useState<
+    (typeof categories)[0] | undefined
+  >()
+
+  const handleOpenChange = (open: boolean) => {
+    setOpen(open)
+    if (!open) setEditingCategory(undefined)
+  }
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -43,6 +53,19 @@ export default function CategoriesSettingsPage() {
                           {category.name}
                         </ItemTitle>
                       </ItemContent>
+                      <ItemActions>
+                        <Button
+                          size="icon-xs"
+                          aria-label="Edit Category"
+                          variant="ghost"
+                          onClick={() => {
+                            setEditingCategory(category)
+                            setOpen(true)
+                          }}
+                        >
+                          <PencilIcon />
+                        </Button>
+                      </ItemActions>
                     </Item>
                   </Fragment>
                 ))}
@@ -62,6 +85,19 @@ export default function CategoriesSettingsPage() {
                           {category.name}
                         </ItemTitle>
                       </ItemContent>
+                      <ItemActions>
+                        <Button
+                          size="icon-xs"
+                          aria-label="Edit Category"
+                          variant="ghost"
+                          onClick={() => {
+                            setEditingCategory(category)
+                            setOpen(true)
+                          }}
+                        >
+                          <PencilIcon />
+                        </Button>
+                      </ItemActions>
                     </Item>
                   </Fragment>
                 ))}
@@ -69,10 +105,20 @@ export default function CategoriesSettingsPage() {
           </TabsContent>
         </Tabs>
 
-        <Button variant="outline" className="mt-3">
+        <Button
+          variant="outline"
+          className="mt-3"
+          onClick={() => handleOpenChange(true)}
+        >
           <PlusIcon />
           Add New
         </Button>
+
+        <CategoryDrawer
+          open={open}
+          onOpenChange={handleOpenChange}
+          category={editingCategory}
+        />
       </main>
     </div>
   )

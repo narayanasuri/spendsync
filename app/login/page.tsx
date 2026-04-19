@@ -1,13 +1,12 @@
 "use client"
 
-import { useState, Suspense } from "react"
+import { useState, useEffect, Suspense } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Input } from "@/components/ui/input"
 import { Field, FieldDescription, FieldError } from "@/components/ui/field"
 import { Button } from "@/components/ui/button"
 import { Spinner } from "@/components/ui/spinner"
-
-import { APP_NAME } from "@/config"
+import { APP_NAME } from "@/lib/constants"
 
 function LoginForm() {
   const [password, setPassword] = useState("")
@@ -16,6 +15,26 @@ function LoginForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const from = searchParams.get("from") ?? "/"
+
+  // In PWA standalone mode, try to re-auth silently using stored password
+  useEffect(() => {
+    const stored = localStorage.getItem("pwa_auth")
+    if (!stored) return
+    setLoading(true)
+    fetch("/api/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ password: stored }),
+    })
+      .then((res) => {
+        if (res.ok) router.replace(from)
+        else {
+          localStorage.removeItem("pwa_auth")
+          setLoading(false)
+        }
+      })
+      .catch(() => setLoading(false))
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   function onLogin() {
     setLoading(true)
@@ -26,6 +45,8 @@ function LoginForm() {
     })
       .then((res) => {
         if (res.ok) {
+          // Persist for PWA standalone mode where cookies may not survive
+          localStorage.setItem("pwa_auth", password)
           router.replace(from)
         } else {
           setError(true)

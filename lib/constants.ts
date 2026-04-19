@@ -1,61 +1,80 @@
-/**
- * Derived from config.ts — do not edit by hand.
- * Add/remove categories and payment modes in config.ts instead.
- */
-import { CATEGORIES, PAYMENT_MODES } from "@/config"
-import { TimeRangeEnum } from "./enums"
-import type { OptionType } from "./types"
+import type { CurrencyType } from "./types"
 
-export const CATEGORY_OPTIONS: OptionType[] = CATEGORIES.map((c) => ({
-  label: c.label,
-  value: c.value,
-}))
+export const APP_NAME = "spendsync"
 
-export const CATEGORY_LABEL: Record<string, string> = Object.fromEntries(
-  CATEGORIES.map((c) => [c.value, c.label])
-)
-
-export const PAYMENT_MODE_OPTIONS: OptionType[] = PAYMENT_MODES.map((p) => ({
-  label: p.label,
-  value: p.value,
-}))
-
-export const PAYMENT_MODE_LABEL: Record<string, string> = Object.fromEntries(
-  PAYMENT_MODES.map((p) => [p.value, p.label])
-)
-
-/** Categories that have a budget set in config.ts */
-export const BUDGET_LIMITS: Record<string, number> = Object.fromEntries(
-  CATEGORIES.filter((c) => c.budget != null).map((c) => [c.value, c.budget!])
-)
-
-/** Payment modes that have a credit limit set in config.ts */
-export const CARD_LIMITS: Record<string, number> = Object.fromEntries(
-  PAYMENT_MODES.filter((p) => p.limit != null).map((p) => [p.value, p.limit!])
-)
-
-export const TIME_RANGE_LABEL: Record<TimeRangeEnum, string> = {
-  [TimeRangeEnum.THIS_WEEK]: "This Week",
-  [TimeRangeEnum.THIS_MONTH]: "This Month",
-  [TimeRangeEnum.PAST_WEEK]: "Past Week",
-  [TimeRangeEnum.PAST_MONTH]: "Past Month",
-}
-
-export const TIME_RANGE_OPTIONS: OptionType[] = [
+export const CURRENCIES: CurrencyType[] = [
   {
-    label: TIME_RANGE_LABEL[TimeRangeEnum.THIS_WEEK],
-    value: TimeRangeEnum.THIS_WEEK,
+    id: 1,
+    shortLabel: "USD",
+    fullLabel: "United States Dollar",
+    symbol: "$",
+    flag: "🇺🇸",
   },
   {
-    label: TIME_RANGE_LABEL[TimeRangeEnum.THIS_MONTH],
-    value: TimeRangeEnum.THIS_MONTH,
+    id: 2,
+    shortLabel: "EUR",
+    fullLabel: "Euro",
+    symbol: "€",
+    flag: "🇪🇺",
   },
   {
-    label: TIME_RANGE_LABEL[TimeRangeEnum.PAST_WEEK],
-    value: TimeRangeEnum.PAST_WEEK,
+    id: 3,
+    shortLabel: "GBP",
+    fullLabel: "British Pound Sterling",
+    symbol: "£",
+    flag: "🇬🇧",
   },
   {
-    label: TIME_RANGE_LABEL[TimeRangeEnum.PAST_MONTH],
-    value: TimeRangeEnum.PAST_MONTH,
+    id: 4,
+    shortLabel: "JPY",
+    fullLabel: "Japanese Yen",
+    symbol: "¥",
+    flag: "🇯🇵",
+  },
+  {
+    id: 5,
+    shortLabel: "AUD",
+    fullLabel: "Australian Dollar",
+    symbol: "A$",
+    flag: "🇦🇺",
+  },
+  {
+    id: 6,
+    shortLabel: "CAD",
+    fullLabel: "Canadian Dollar",
+    symbol: "C$",
+    flag: "🇨🇦",
+  },
+  {
+    id: 7,
+    shortLabel: "CHF",
+    fullLabel: "Swiss Franc",
+    symbol: "Fr.",
+    flag: "🇨🇭",
+  },
+  {
+    id: 8,
+    shortLabel: "CNY",
+    fullLabel: "Chinese Yuan",
+    symbol: "¥",
+    flag: "🇨🇳",
+  },
+  {
+    id: 9,
+    shortLabel: "INR",
+    fullLabel: "Indian Rupee",
+    symbol: "₹",
+    flag: "🇮🇳",
+  },
+  {
+    id: 10,
+    shortLabel: "BRL",
+    fullLabel: "Brazilian Real",
+    symbol: "R$",
+    flag: "🇧🇷",
   },
 ]
+
+export const LOCALE = "en-IN" as const
+
+export const TIMEZONE = "UTC" as const

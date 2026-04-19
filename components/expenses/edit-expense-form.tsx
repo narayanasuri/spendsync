@@ -37,6 +37,7 @@ import {
 } from "@/lib/schemas/expense.schema"
 import { cn } from "@/lib/utils"
 import type { Tables } from "@/lib/database.types"
+import { UserSelect } from "../shared/user-select"
 
 type Expense = Tables<"Expenses">
 
@@ -86,16 +87,18 @@ export function EditExpenseForm({
       name: expense.name,
       amount: String(expense.amount),
       description: expense.description ?? "",
-      category: expense.category as ExpenseFormInput["category"],
-      payment_mode: expense.payment_mode as ExpenseFormInput["payment_mode"],
+      category: expense.category.toString() as ExpenseFormInput["category"],
+      payment_mode:
+        expense.payment_mode.toString() as ExpenseFormInput["payment_mode"],
       spent_at: spentAt,
+      paid_by: expense.paid_by.toString() as ExpenseFormInput["paid_by"],
     },
   })
 
   async function onSubmit(data: ExpenseFormValues) {
     setServerError(null)
     try {
-      const res = await fetch(`/api/expenses/${expense.id}`, {
+      const res = await fetch(`/api/logs/${expense.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -188,6 +191,20 @@ export function EditExpenseForm({
             {errors.payment_mode && (
               <FieldError>{errors.payment_mode.message}</FieldError>
             )}
+          </Field>
+
+          <Field>
+            <FieldLabel>Paid By</FieldLabel>
+            <Controller
+              control={control}
+              name="paid_by"
+              render={({ field }) => (
+                <UserSelect
+                  value={field.value as string}
+                  onChange={field.onChange}
+                />
+              )}
+            />
           </Field>
 
           <Field>

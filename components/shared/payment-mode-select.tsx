@@ -6,8 +6,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { PAYMENT_MODE_OPTIONS } from "@/lib/constants"
-import { BankIcon } from "./bank-icon"
+import { useAppStore } from "@/lib/store"
 
 interface PaymentModeSelectProps {
   resetKey?: number
@@ -22,6 +21,8 @@ export function PaymentModeSelect({
   onChange,
   allowSelectAll = false,
 }: PaymentModeSelectProps) {
+  const { paymentMethods } = useAppStore()
+
   return (
     <Select key={resetKey} value={value} onValueChange={onChange}>
       <SelectTrigger id="paymentMode">
@@ -30,10 +31,9 @@ export function PaymentModeSelect({
       <SelectContent>
         <SelectGroup>
           {allowSelectAll && <SelectItem value="all">All</SelectItem>}
-          {PAYMENT_MODE_OPTIONS.map(({ label, value }) => (
-            <SelectItem key={value} value={value}>
-              <BankIcon mode={value} size="small" />
-              {label}
+          {paymentMethods.map(({ id, name }) => (
+            <SelectItem key={id} value={id.toString()}>
+              {name}
             </SelectItem>
           ))}
         </SelectGroup>

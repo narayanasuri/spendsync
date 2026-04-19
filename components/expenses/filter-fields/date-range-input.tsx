@@ -11,13 +11,12 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
+import { LOCALE } from "@/lib/constants"
 
 interface DateRangeInputProps {
   value: DateRange
   onChange: (range: DateRange) => void
 }
-
-import { LOCALE } from "@/config"
 
 function formatRange(range: DateRange): string {
   const opts: Intl.DateTimeFormatOptions = { day: "numeric", month: "short" }

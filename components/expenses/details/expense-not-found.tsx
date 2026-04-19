@@ -22,7 +22,7 @@ export function ExpenseNotFound() {
       </EmptyHeader>
       <EmptyContent>
         <Button variant="outline" size="sm" asChild>
-          <Link href="/expenses">View all expenses</Link>
+          <Link href="/logs">View all expenses</Link>
         </Button>
       </EmptyContent>
     </Empty>

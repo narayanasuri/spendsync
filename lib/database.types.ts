@@ -12,6 +12,31 @@ export type Database = {
   __InternalSupabase: {
     PostgrestVersion: "14.5"
   }
+  graphql_public: {
+    Tables: {
+      [_ in never]: never
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      graphql: {
+        Args: {
+          extensions?: Json
+          operationName?: string
+          query?: string
+          variables?: Json
+        }
+        Returns: Json
+      }
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
   public: {
     Tables: {
       Budgets: {
@@ -19,18 +44,21 @@ export type Database = {
           budget_amount: number
           category_id: number
           id: number
+          period: Database["public"]["Enums"]["BudgetPeriod"]
           user: number | null
         }
         Insert: {
           budget_amount: number
           category_id: number
           id?: number
+          period?: Database["public"]["Enums"]["BudgetPeriod"]
           user?: number | null
         }
         Update: {
           budget_amount?: number
           category_id?: number
           id?: number
+          period?: Database["public"]["Enums"]["BudgetPeriod"]
           user?: number | null
         }
         Relationships: [
@@ -107,20 +135,6 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "Expenses_category_fkey"
-            columns: ["category"]
-            isOneToOne: false
-            referencedRelation: "Categories"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "Expenses_payment_mode_fkey"
-            columns: ["payment_mode"]
-            isOneToOne: false
-            referencedRelation: "PaymentMethods"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "Expenses_paid_by_fkey"
             columns: ["paid_by"]
             isOneToOne: false
@@ -152,14 +166,17 @@ export type Database = {
       }
       Users: {
         Row: {
+          default: boolean | null
           id: number
           name: string
         }
         Insert: {
+          default?: boolean | null
           id?: number
           name: string
         }
         Update: {
+          default?: boolean | null
           id?: number
           name?: string
         }
@@ -170,10 +187,13 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      decrement_balance: {
+        Args: { amount: number; row_id: number }
+        Returns: undefined
+      }
     }
     Enums: {
-      [_ in never]: never
+      BudgetPeriod: "weekly" | "monthly" | "yearly"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -299,7 +319,12 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
-  public: {
+  graphql_public: {
     Enums: {},
+  },
+  public: {
+    Enums: {
+      BudgetPeriod: ["weekly", "monthly", "yearly"],
+    },
   },
 } as const

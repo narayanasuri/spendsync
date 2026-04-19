@@ -12,7 +12,7 @@ export function proxy(req: NextRequest) {
     return NextResponse.next()
   }
 
-  // --- API routes: accept either a valid API key OR a valid UI session cookie ---
+  // --- API routes: accept either a valid API key OR a valid UI session cookie OR PWA auth header ---
   if (pathname.startsWith("/api/")) {
     const apiKey = req.headers.get("x-api-key")
     if (API_SECRET_KEY && apiKey === API_SECRET_KEY) {
@@ -24,6 +24,11 @@ export function proxy(req: NextRequest) {
       return NextResponse.next()
     }
 
+    const pwaAuth = req.headers.get("x-pwa-auth")
+    if (UI_PASSWORD && pwaAuth === UI_PASSWORD) {
+      return NextResponse.next()
+    }
+
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
 
@@ -32,16 +37,25 @@ export function proxy(req: NextRequest) {
     return NextResponse.next()
   }
 
-  // --- All other UI routes: require password cookie ---
+  // --- All other UI routes: require password cookie or PWA auth header ---
   const authCookie = req.cookies.get(AUTH_COOKIE)
-  if (!UI_PASSWORD || authCookie?.value !== UI_PASSWORD) {
-    const loginUrl = req.nextUrl.clone()
-    loginUrl.pathname = "/login"
-    loginUrl.searchParams.set("from", pathname)
-    return NextResponse.redirect(loginUrl)
+  if (UI_PASSWORD && authCookie?.value === UI_PASSWORD) {
+    return NextResponse.next()
   }
 
-  return NextResponse.next()
+  const pwaAuth = req.headers.get("x-pwa-auth")
+  if (UI_PASSWORD && pwaAuth === UI_PASSWORD) {
+    return NextResponse.next()
+  }
+
+  if (!UI_PASSWORD) {
+    return NextResponse.next()
+  }
+
+  const loginUrl = req.nextUrl.clone()
+  loginUrl.pathname = "/login"
+  loginUrl.searchParams.set("from", pathname)
+  return NextResponse.redirect(loginUrl)
 }
 
 export const config = {

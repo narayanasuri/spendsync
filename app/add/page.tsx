@@ -1,17 +1,18 @@
-import { ExpenseForm } from "@/components/add/expense-form/expense-form"
+"use client"
 
-export default async function AddPage() {
+import { LogForm } from "@/components/add/log-form/log-form"
+
+export default function AddPage() {
   return (
     <div className="flex min-h-screen flex-col">
       <main className="mx-auto w-full max-w-4xl flex-1 p-6">
         <div className="mb-6">
-          <h2 className="text-xl font-semibold tracking-tight">New Expense</h2>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Fill the form below and submit to add a new expense!
-          </p>
+          <h2 className="text-xl font-semibold tracking-tight">
+            New Transaction
+          </h2>
         </div>
 
-        <ExpenseForm />
+        <LogForm />
       </main>
     </div>
   )

@@ -1,5 +1,6 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
+import type { DateRange as DayPickerDateRange } from "react-day-picker"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -18,41 +19,40 @@ export function abbreviate(value: number) {
   return `${sign}${(absolute / 1_000_000).toFixed(1)}m`
 }
 
-import { TimeRangeEnum } from "./enums"
+import { startOfMonth, startOfWeek, startOfYear } from "date-fns"
 
 export type DateRange = { from: string; to: string }
 
-// Returns YYYY-MM-DD strings — the API expands them to UTC start/end of day
-export function resolveDateRange(range: TimeRangeEnum): DateRange {
-  const now = new Date()
+export function formatDateToString(d: Date) {
   const pad = (n: number) => String(n).padStart(2, "0")
-  const fmt = (d: Date) =>
-    `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
+}
 
-  switch (range) {
-    case TimeRangeEnum.THIS_WEEK: {
-      const start = new Date(now)
-      start.setDate(now.getDate() - now.getDay())
-      const end = new Date(start)
-      end.setDate(start.getDate() + 6)
-      return { from: fmt(start), to: fmt(end) }
+// Parse YYYY-MM-DD as local date (not UTC) for the calendar display
+export function parseLocalDate(str: string): Date {
+  const [y, m, d] = str.split("-").map(Number)
+  return new Date(y, m - 1, d)
+}
+
+export function getDateRangeForPreset(
+  preset: "weekly" | "monthly" | "yearly"
+): DayPickerDateRange {
+  const DATE_NOW = new Date()
+
+  if (preset === "weekly") {
+    return {
+      from: startOfWeek(DATE_NOW),
+      to: DATE_NOW,
     }
-    case TimeRangeEnum.THIS_MONTH: {
-      const start = new Date(now.getFullYear(), now.getMonth(), 1)
-      const end = new Date(now.getFullYear(), now.getMonth() + 1, 0)
-      return { from: fmt(start), to: fmt(end) }
+  } else if (preset === "monthly") {
+    return {
+      from: startOfMonth(DATE_NOW),
+      to: DATE_NOW,
     }
-    case TimeRangeEnum.PAST_WEEK: {
-      const start = new Date(now)
-      start.setDate(now.getDate() - now.getDay() - 7)
-      const end = new Date(start)
-      end.setDate(start.getDate() + 6)
-      return { from: fmt(start), to: fmt(end) }
-    }
-    case TimeRangeEnum.PAST_MONTH: {
-      const start = new Date(now.getFullYear(), now.getMonth() - 1, 1)
-      const end = new Date(now.getFullYear(), now.getMonth(), 0)
-      return { from: fmt(start), to: fmt(end) }
-    }
+  }
+
+  return {
+    from: startOfYear(DATE_NOW),
+    to: DATE_NOW,
   }
 }

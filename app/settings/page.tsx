@@ -2,14 +2,17 @@
 
 import { Button } from "@/components/ui/button"
 import { Item, ItemActions, ItemContent, ItemTitle } from "@/components/ui/item"
-import { Separator } from "@/components/ui/separator"
 import { Switch } from "@/components/ui/switch"
+import { useCurrency } from "@/hooks/use-currency"
+import { useAppStore } from "@/lib/store"
 import { ChevronRightIcon } from "lucide-react"
 import { useTheme } from "next-themes"
 import Link from "next/link"
 
 export default function SettingsPage() {
   const { resolvedTheme, setTheme } = useTheme()
+  const { categories, paymentMethods, users } = useAppStore()
+  const { currency } = useCurrency()
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -37,14 +40,27 @@ export default function SettingsPage() {
               />
             </ItemActions>
           </Item>
-          <Separator />
+          <Item className="h-[50px]" asChild>
+            <Link href="/settings/currency">
+              <ItemContent>
+                <ItemTitle>Currency</ItemTitle>
+              </ItemContent>
+              <ItemActions>
+                {currency.flag} {currency.shortLabel}
+                <Button variant="ghost" size="icon-xs" asChild>
+                  <ChevronRightIcon />
+                </Button>
+              </ItemActions>
+            </Link>
+          </Item>
           <Item className="h-[50px]" asChild>
             <Link href="/settings/categories">
               <ItemContent>
                 <ItemTitle>Categories</ItemTitle>
               </ItemContent>
               <ItemActions>
-                <Button variant="ghost" size="icon-sm" asChild>
+                {categories.length}
+                <Button variant="ghost" size="icon-xs" asChild>
                   <ChevronRightIcon />
                 </Button>
               </ItemActions>
@@ -56,7 +72,8 @@ export default function SettingsPage() {
                 <ItemTitle>Payment Methods</ItemTitle>
               </ItemContent>
               <ItemActions>
-                <Button variant="ghost" size="icon-sm" asChild>
+                {paymentMethods.length}
+                <Button variant="ghost" size="icon-xs" asChild>
                   <ChevronRightIcon />
                 </Button>
               </ItemActions>
@@ -68,7 +85,8 @@ export default function SettingsPage() {
                 <ItemTitle>Users</ItemTitle>
               </ItemContent>
               <ItemActions>
-                <Button variant="ghost" size="icon-sm" asChild>
+                {users.length}
+                <Button variant="ghost" size="icon-xs" asChild>
                   <ChevronRightIcon />
                 </Button>
               </ItemActions>

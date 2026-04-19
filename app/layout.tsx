@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils"
 import "./globals.css"
 import { Navbar } from "@/components/shared/navbar"
 import { AppStoreInitializer } from "@/components/app-store-initializer"
-import { APP_NAME } from "@/config"
+import { APP_NAME } from "@/lib/constants"
 
 const geist = Geist({ subsets: ["latin"], variable: "--font-sans" })
 
