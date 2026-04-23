@@ -6,11 +6,11 @@ import { ArrowLeftIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { CategoryIcon } from "@/components/shared/category-icon"
-import { EditExpenseForm } from "@/components/expenses/edit-expense-form"
+import { EditLogForm } from "@/components/logs/edit-log-form"
 import { abbreviate } from "@/lib/utils"
 import type { Tables } from "@/lib/database.types"
-import { ExpenseActionMenu } from "@/components/expenses/details/action-menu"
-import { ExpenseNotFound } from "@/components/expenses/details/expense-not-found"
+import { ExpenseActionMenu } from "@/components/logs/details/action-menu"
+import { LogNotFound } from "@/components/logs/details/log-not-found"
 import { useAppStore } from "@/lib/store"
 import { useCurrency } from "@/hooks/use-currency"
 import { LOCALE, TIMEZONE } from "@/lib/constants"
@@ -74,10 +74,10 @@ export default function ExpenseDetailPage() {
           <DetailSkeleton />
         ) : error ? (
           // <p className="py-12 text-center text-sm text-destructive">{error}</p>
-          <ExpenseNotFound />
+          <LogNotFound />
         ) : expense ? (
           editing ? (
-            <EditExpenseForm
+            <EditLogForm
               expense={expense}
               onSave={(updated) => {
                 setExpense(updated)

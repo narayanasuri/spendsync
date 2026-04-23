@@ -1,7 +1,7 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { DateRangeInput } from "@/components/expenses/filter-fields/date-range-input"
+import { DateRangeInput } from "@/components/logs/filter-fields/date-range-input"
 import { Field, FieldLabel } from "@/components/ui/field"
 import { FilterBarProps } from "../filter-bar"
 import { PaymentModeSelect } from "@/components/shared/payment-mode-select"

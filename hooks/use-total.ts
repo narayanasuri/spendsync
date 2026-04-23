@@ -1,5 +1,5 @@
 import { TotalItem } from "@/lib/types"
-import { formatDateToString } from "@/lib/utils"
+import { formatDate } from "@/lib/utils"
 import { useEffect, useMemo, useState } from "react"
 
 const DATE_NOW = new Date()
@@ -35,10 +35,10 @@ export function useTotal({
       p.set("paymentId", paymentId)
     }
     if (from) {
-      p.set("from", formatDateToString(from))
+      p.set("from", formatDate(from))
     }
     if (to) {
-      p.set("to", formatDateToString(to))
+      p.set("to", formatDate(to))
     }
     return p
   }, [categoryId, from, limit, to])

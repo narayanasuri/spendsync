@@ -2,6 +2,11 @@ import { NextRequest, NextResponse } from "next/server"
 import { createClient } from "@supabase/supabase-js"
 import type { Database, TablesUpdate } from "@/lib/database.types"
 
+interface UpdateExpenseDataWithDecrement extends TablesUpdate<"Expenses"> {
+  old_payment_method_id: number
+  old_amount: number
+}
+
 const supabaseUrl = process.env.SUPABASE_URL
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
 const supabaseAnonKey = process.env.SUPABASE_ANON_KEY
@@ -64,15 +69,45 @@ export async function PATCH(
   if (!numericId)
     return NextResponse.json({ error: "Invalid expense ID." }, { status: 400 })
 
-  let body: TablesUpdate<"Expenses">
+  let bodyWithOldData: UpdateExpenseDataWithDecrement
   try {
-    body = await req.json()
+    bodyWithOldData = await req.json()
   } catch {
     return NextResponse.json({ error: "Invalid JSON body." }, { status: 400 })
   }
 
+  const { old_amount, old_payment_method_id, ...body } = bodyWithOldData
+
   console.log(`[PATCH /api/logs/${id}] Updating:`, body)
 
+  // 1. REVERT: Add the old amount back to the old payment method
+  const { error: revertError } = await supabase.rpc("decrement_balance", {
+    row_id: old_payment_method_id,
+    amount: -old_amount, // Negative decrement = Increment
+  })
+
+  if (revertError) {
+    return NextResponse.json(
+      { error: "Failed to revert old balance" },
+      { status: 500 }
+    )
+  }
+
+  // 2. APPLY: Subtract the new amount from the (possibly new) payment method
+  // We use body.payment_mode (new ID) and body.amount (new amount)
+  if (body.payment_mode && body.amount) {
+    const { error: applyError } = await supabase.rpc("decrement_balance", {
+      row_id: body.payment_mode,
+      amount: body.amount,
+    })
+
+    if (applyError) {
+      // Critical: If this fails, the DB is now in an inconsistent state (money added back but not re-deducted)
+      console.error("Balance deduction failed after revert!")
+    }
+  }
+
+  // 3. Update the Expense record
   const { data, error } = await supabase
     .from("Expenses")
     .update(body)

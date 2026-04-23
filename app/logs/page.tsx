@@ -1,56 +1,55 @@
 "use client"
 
-import { useEffect, useState, useCallback, useMemo, Suspense } from "react"
-import { useRouter, useSearchParams } from "next/navigation"
-import { type DateRange } from "react-day-picker"
-import { subDays } from "date-fns"
 import { Table, TableBody } from "@/components/ui/table"
-import { TransactionItem } from "@/components/shared/transaction-item"
+import { LogItem } from "@/components/shared/log-item"
 import { Skeleton } from "@/components/ui/skeleton"
-import { FilterBar } from "@/components/expenses/filter-bar"
-import { ExpensesEmptyState } from "@/components/shared/expenses-empty-state"
-import { Expense } from "@/lib/types"
+import { FilterBar } from "@/components/logs/filter-bar"
+import { LogsEmptyState } from "@/components/shared/logs-empty-state"
+import { useLogs } from "@/hooks/use-logs"
+import { Suspense, useCallback, useEffect, useMemo } from "react"
+import { DateRange } from "react-day-picker"
+import { useRouter, useSearchParams } from "next/navigation"
+import { formatDate, parseDate } from "@/lib/utils"
 
 const ALL = "all"
+const PARAM_CATEGORY = "categoryId"
+const PARAM_PAYMENT_METHOD = "paymentMethodId"
+const PARAM_FROM = "from"
+const PARAM_TO = "to"
 
-function ExpensesContent() {
+function LogsContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
 
-  // Stable defaults — computed once on mount, not on every render
-  const defaultFrom = useMemo(() => {
-    const d = subDays(new Date(), 7)
-    const pad = (n: number) => String(n).padStart(2, "0")
-    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
-  }, [])
+  const DATE_NOW = new Date()
+  const DATE_MONTH_START = new Date(
+    DATE_NOW.getFullYear(),
+    DATE_NOW.getMonth(),
+    1
+  )
 
-  const defaultTo = useMemo(() => {
-    const d = new Date()
-    const pad = (n: number) => String(n).padStart(2, "0")
-    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
-  }, [])
+  const fromParam = searchParams.get(PARAM_FROM)
+  const toParam = searchParams.get(PARAM_TO)
+  const categoryParam = searchParams.get(PARAM_CATEGORY) ?? ALL
+  const paymentMethodParam = searchParams.get(PARAM_PAYMENT_METHOD) ?? ALL
 
-  const fromParam = searchParams.get("from") ?? defaultFrom
-  const toParam = searchParams.get("to") ?? defaultTo
-  const categoryParam = searchParams.get("category") ?? ALL
-  const paymentModeParam = searchParams.get("payment_mode") ?? ALL
+  const dateFrom = useMemo<Date>(
+    () => (fromParam ? parseDate(fromParam) : DATE_MONTH_START),
+    [fromParam]
+  )
 
-  // Parse YYYY-MM-DD as local date (not UTC) for the calendar display
-  function parseLocalDate(str: string): Date {
-    const [y, m, d] = str.split("-").map(Number)
-    return new Date(y, m - 1, d)
-  }
+  const dateTo = useMemo<Date>(
+    () => (toParam ? parseDate(toParam) : DATE_NOW),
+    [toParam]
+  )
 
-  const dateRange: DateRange = {
-    from: parseLocalDate(fromParam),
-    to: parseLocalDate(toParam),
-  }
+  const { logs, loading, error } = useLogs({
+    from: dateFrom,
+    to: dateTo,
+    categoryId: categoryParam,
+    paymentMethodId: paymentMethodParam,
+  })
 
-  const [expenses, setExpenses] = useState<Expense[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-
-  // Push updated params to URL
   const updateParams = useCallback(
     (updates: Record<string, string>) => {
       const params = new URLSearchParams(searchParams.toString())
@@ -66,79 +65,67 @@ function ExpensesContent() {
     [router, searchParams]
   )
 
-  function setDateRange(range: DateRange) {
-    if (!range.from || !range.to) return
-    // Send plain dates — API handles start/end of day in UTC
-    const pad = (n: number) => String(n).padStart(2, "0")
-    const fmt = (d: Date) =>
-      `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
-    updateParams({ from: fmt(range.from), to: fmt(range.to) })
-  }
+  const updateDateRange = useCallback(
+    (range: DateRange) => {
+      if (range.from && range.to) {
+        updateParams({
+          [PARAM_FROM]: formatDate(range.from),
+          [PARAM_TO]: formatDate(range.to),
+        })
+      }
+    },
+    [updateParams]
+  )
 
-  function setCategory(value: string) {
-    updateParams({ category: value })
-  }
+  const updateCategory = useCallback(
+    (categoryId: string) => {
+      updateParams({
+        [PARAM_CATEGORY]: categoryId,
+      })
+    },
+    [updateParams]
+  )
 
-  function setPaymentMode(value: string) {
-    updateParams({ payment_mode: value })
-  }
+  const updatePaymentMethod = useCallback(
+    (paymentMethodId: string) => {
+      updateParams({
+        [PARAM_PAYMENT_METHOD]: paymentMethodId,
+      })
+    },
+    [updateParams]
+  )
 
-  function handleClearFilters() {
+  const handleClearFilters = useCallback(() => {
     const params = new URLSearchParams()
     // Keep date range, clear category and payment_mode
-    params.set("from", fromParam)
-    params.set("to", toParam)
+    params.set(PARAM_FROM, formatDate(dateFrom))
+    params.set(PARAM_TO, formatDate(dateTo))
     router.replace(`/logs?${params.toString()}`, { scroll: false })
-  }
+  }, [])
 
   useEffect(() => {
-    setLoading(true)
-    setError(null)
-
-    async function fetchExpenses() {
-      try {
-        const params = new URLSearchParams({ limit: "200" })
-        if (categoryParam !== ALL) params.set("category", categoryParam)
-        if (paymentModeParam !== ALL)
-          params.set("payment_mode", paymentModeParam)
-        params.set("from", fromParam)
-        params.set("to", toParam)
-
-        const res = await fetch(`/api/logs?${params}`)
-        const json = await res.json()
-
-        if (!res.ok) {
-          setError(json.error ?? "Failed to load expenses.")
-          return
-        }
-
-        setExpenses(json)
-      } catch (err) {
-        setError(
-          err instanceof Error ? err.message : "Failed to load expenses."
-        )
-      } finally {
-        setLoading(false)
-      }
+    if (!fromParam && !toParam) {
+      const params = new URLSearchParams(searchParams.toString())
+      params.set(PARAM_FROM, formatDate(DATE_MONTH_START))
+      params.set(PARAM_TO, formatDate(DATE_NOW))
+      router.replace(`/logs?${params.toString()}`, { scroll: false })
     }
-
-    fetchExpenses()
-  }, [fromParam, toParam, categoryParam, paymentModeParam])
+  }, [fromParam, toParam])
 
   return (
     <div className="flex min-h-screen flex-col">
       <main className="mx-auto w-full max-w-4xl flex-1 p-6">
         <div className="mb-6">
-          <h2 className="text-xl font-semibold tracking-tight">Transactions</h2>
+          <h2 className="text-xl font-semibold tracking-tight">Logs</h2>
         </div>
 
         <FilterBar
-          dateRange={dateRange}
-          setDateRange={setDateRange}
+          dateRange={{ from: dateFrom, to: dateTo }}
+          setDateRange={updateDateRange}
           category={categoryParam}
-          setCategory={setCategory}
-          paymentMode={paymentModeParam}
-          setPaymentMode={setPaymentMode}
+          setCategory={updateCategory}
+          paymentMode={paymentMethodParam}
+          setPaymentMode={updatePaymentMethod}
           onClear={handleClearFilters}
         />
 
@@ -160,13 +147,13 @@ function ExpensesContent() {
           </div>
         ) : error ? (
           <p className="py-12 text-center text-sm text-destructive">{error}</p>
-        ) : expenses.length === 0 ? (
-          <ExpensesEmptyState />
+        ) : logs.length === 0 ? (
+          <LogsEmptyState />
         ) : (
           <Table>
             <TableBody>
-              {expenses.map((expense) => (
-                <TransactionItem key={expense.id} expense={expense} />
+              {logs.map((log) => (
+                <LogItem key={log.id} log={log} />
               ))}
             </TableBody>
           </Table>
@@ -176,10 +163,10 @@ function ExpensesContent() {
   )
 }
 
-export default function ExpensesPage() {
+export default function LogsPage() {
   return (
     <Suspense>
-      <ExpensesContent />
+      <LogsContent />
     </Suspense>
   )
 }

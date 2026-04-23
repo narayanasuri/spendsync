@@ -32,14 +32,22 @@ export function CategorySelect({
 
   return (
     <Select key={resetKey} value={value} onValueChange={onChange}>
-      <SelectTrigger id="category">
+      <SelectTrigger id="category" className="text-base md:text-sm">
         <SelectValue placeholder="Select a category" />
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>
-          {allowSelectAll && <SelectItem value="all">All</SelectItem>}
+          {allowSelectAll && (
+            <SelectItem value="all" className="text-base md:text-sm">
+              All
+            </SelectItem>
+          )}
           {filteredCategories.map(({ id, name }) => (
-            <SelectItem key={id} value={id.toString()}>
+            <SelectItem
+              key={id}
+              value={id.toString()}
+              className="text-base md:text-sm"
+            >
               <CategoryIcon categoryId={id} />
               {name}
             </SelectItem>

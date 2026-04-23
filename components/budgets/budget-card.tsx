@@ -7,14 +7,14 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "../ui/card"
-import { Progress } from "../ui/progress"
+} from "@/components/ui/card"
+import { Progress } from "@/components/ui/progress"
 import { useCategory } from "@/hooks/use-category"
 import { getDateRangeForPreset } from "@/lib/utils"
 import { useTotal } from "@/hooks/use-total"
 import { useMemo } from "react"
 import { DateRange } from "react-day-picker"
-import { Field, FieldLabel } from "../ui/field"
+import { Field, FieldLabel } from "@/components/ui/field"
 import { useCurrency } from "@/hooks/use-currency"
 
 function calculateTimeRemaining(period: "weekly" | "monthly" | "yearly") {

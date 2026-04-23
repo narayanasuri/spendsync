@@ -26,8 +26,19 @@ export type User = Tables<"Users">
 
 export type Budget = Tables<"Budgets">
 
+export type DecrementType = {
+  decrement: number
+  payment_method_id: number
+}
+
 export type TotalItem = {
   transaction_type: "expense" | "income"
+  sum: number
+}
+
+export type GroupedItem<K extends string> = {
+  [P in K]: number
+} & {
   sum: number
 }
 

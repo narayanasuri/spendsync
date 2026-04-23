@@ -1,8 +1,8 @@
 import { z } from "zod"
 
-export const expenseSchema = z.object({
+export const logSchema = z.object({
   transaction_type: z.literal(["expense", "income"]),
-  name: z.string().min(1, "Expense title is required."),
+  name: z.string().min(1, "Log title is required."),
   amount: z
     .string()
     .min(1, "Amount is required.")
@@ -17,6 +17,6 @@ export const expenseSchema = z.object({
   spent_at: z.date({ message: "Please select a date." }),
 })
 
-export type ExpenseFormInput = z.input<typeof expenseSchema>
+export type LogFormInput = z.input<typeof logSchema>
 
-export type ExpenseFormValues = z.output<typeof expenseSchema>
+export type LogFormValues = z.output<typeof logSchema>

@@ -1,5 +1,5 @@
 import { Expense } from "@/lib/types"
-import { formatDateToString } from "@/lib/utils"
+import { formatDate } from "@/lib/utils"
 import { useEffect, useState } from "react"
 
 const DATE_NOW = new Date()
@@ -9,7 +9,7 @@ const DATE_MONTH_START = new Date(
   1
 )
 
-export function useExpenses({
+export function useLogs({
   from = DATE_NOW,
   to = DATE_MONTH_START,
   categoryId,
@@ -22,7 +22,7 @@ export function useExpenses({
   paymentMethodId?: string
   limit?: number
 }) {
-  const [expenses, setExpenses] = useState<Expense[]>([])
+  const [logs, setLogs] = useState<Expense[]>([])
   const [loading, setLoading] = useState<boolean>(false)
   const [error, setError] = useState<string | undefined>(undefined)
 
@@ -37,11 +37,11 @@ export function useExpenses({
   }
 
   if (from) {
-    params.set("from", formatDateToString(from))
+    params.set("from", formatDate(from))
   }
 
   if (to) {
-    params.set("to", formatDateToString(to))
+    params.set("to", formatDate(to))
   }
 
   useEffect(() => {
@@ -59,7 +59,7 @@ export function useExpenses({
         )
       )
       .then((data) => {
-        setExpenses(data)
+        setLogs(data)
       })
       .finally(() => {
         setLoading(false)
@@ -67,7 +67,7 @@ export function useExpenses({
   }, [from, to, categoryId, paymentMethodId, limit])
 
   return {
-    expenses,
+    logs,
     loading,
     error,
   }

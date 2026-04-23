@@ -4,14 +4,30 @@ import { PaymentMethod } from "@/lib/types"
 import {
   Card,
   CardAction,
+  CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "../ui/card"
+} from "@/components/ui/card"
 import { useCurrency } from "@/hooks/use-currency"
-import { Button } from "../ui/button"
+import { Button } from "@/components/ui/button"
 import { useState } from "react"
 import { EyeClosedIcon, EyeIcon } from "lucide-react"
+import { Skeleton } from "@/components/ui/skeleton"
+
+export function BalanceCardSkeleton() {
+  return (
+    <Card size="sm" className="w-full md:basis-1/2">
+      <CardHeader>
+        <Skeleton className="h-4 w-2/3" />
+        <Skeleton className="h-4 w-1/2" />
+      </CardHeader>
+      <CardContent>
+        <Skeleton className="h-11 w-full" />
+      </CardContent>
+    </Card>
+  )
+}
 
 export function BalanceCard({
   paymentMethod,
@@ -25,24 +41,23 @@ export function BalanceCard({
   return (
     <Card size="sm" className="w-full md:basis-1/2">
       <CardHeader>
-        <CardTitle>
-          <span className="text-sm text-muted-foreground">{name}</span>
-        </CardTitle>
-        <CardDescription>
-          <span className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            {currency.symbol} {hidden ? "*****" : (balance ?? 0)}
-          </span>
-        </CardDescription>
+        <CardTitle>{name} (Savings)</CardTitle>
+        <CardDescription>Balance</CardDescription>
         <CardAction>
           <Button
             variant="ghost"
-            size="icon-sm"
+            size="icon-xs"
             onClick={() => setHidden((prev) => !prev)}
           >
             {hidden ? <EyeIcon /> : <EyeClosedIcon />}
           </Button>
         </CardAction>
       </CardHeader>
+      <CardContent>
+        <p className="text-2xl font-semibold tabular-nums">
+          {currency.symbol} {hidden ? "*****" : (balance ?? 0)}
+        </p>
+      </CardContent>
     </Card>
   )
 }

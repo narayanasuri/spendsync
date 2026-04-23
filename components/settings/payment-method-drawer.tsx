@@ -38,6 +38,13 @@ import {
 } from "@/components/ui/select"
 import { useAppStore } from "@/lib/store"
 import { PaymentMethod } from "@/lib/types"
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+  InputGroupText,
+} from "@/components/ui/input-group"
+import { useCurrency } from "@/hooks/use-currency"
 
 type Props = {
   open: boolean
@@ -51,7 +58,7 @@ export function PaymentMethodDrawer({
   paymentMethod,
 }: Props) {
   const isDesktop = useMediaQuery("(min-width: 768px)")
-  const { refresh } = useAppStore()
+  const { refreshPaymentMethods } = useAppStore()
   const isEditing = !!paymentMethod
 
   const title = isEditing ? "Update Payment Method" : "Add Payment Method"
@@ -64,7 +71,7 @@ export function PaymentMethodDrawer({
     await fetch(`/api/payment-methods/${paymentMethod.id}`, {
       method: "DELETE",
     })
-    await refresh()
+    await refreshPaymentMethods()
     onOpenChange(false)
   }
 
@@ -138,7 +145,7 @@ function PaymentMethodForm({
   onSuccess: () => void
   className?: string
 }) {
-  const { refresh } = useAppStore()
+  const { refreshPaymentMethods } = useAppStore()
   const isEditing = !!paymentMethod
 
   const [name, setName] = useState(paymentMethod?.name ?? "")
@@ -146,13 +153,15 @@ function PaymentMethodForm({
     (paymentMethod?.type as "savings" | "credit") ?? "savings"
   )
   const [balance, setBalance] = useState<number>(paymentMethod?.balance ?? 0)
+  const [due, setDue] = useState<number>(1)
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
+  const { currency } = useCurrency()
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!name.trim()) {
-      setError("Payment method is required.")
+      setError("Name is required.")
       return
     }
 
@@ -168,7 +177,7 @@ function PaymentMethodForm({
       const res = await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: name.trim(), type, balance }),
+        body: JSON.stringify({ name: name.trim(), type, balance, due }),
       })
 
       const json = await res.json()
@@ -177,7 +186,7 @@ function PaymentMethodForm({
         return
       }
 
-      await refresh()
+      await refreshPaymentMethods()
       onSuccess()
     } catch {
       setError("Something went wrong.")
@@ -227,24 +236,49 @@ function PaymentMethodForm({
             <FieldLabel htmlFor="name">
               {type === "savings" ? "Balance" : "Limit"}
             </FieldLabel>
-            <Input
-              id={type === "savings" ? "balance" : "limit"}
-              type="number"
-              autoComplete="off"
-              placeholder={
-                type === "savings"
-                  ? "Enter your starting balance"
-                  : "Enter your monthly balance"
-              }
-              value={balance}
-              onChange={(e) => setBalance(parseFloat(e.target.value) || 0)}
-            />
+            <InputGroup>
+              <InputGroupAddon>
+                <InputGroupText>{currency.symbol}</InputGroupText>
+              </InputGroupAddon>
+              <InputGroupInput
+                id={type === "savings" ? "balance" : "limit"}
+                type="number"
+                autoComplete="off"
+                placeholder={
+                  type === "savings"
+                    ? "Enter your starting balance"
+                    : "Enter your monthly balance"
+                }
+                value={balance}
+                onChange={(e) => setBalance(parseFloat(e.target.value) || 0)}
+              />
+              <InputGroupAddon align="inline-end">
+                <InputGroupText>{currency.shortLabel}</InputGroupText>
+              </InputGroupAddon>
+            </InputGroup>
             {error && <FieldError>{error}</FieldError>}
           </Field>
+
+          {type === "credit" && (
+            <Field>
+              <FieldLabel htmlFor="due">Due Date</FieldLabel>
+              <Input
+                id="due"
+                type="number"
+                autoComplete="off"
+                placeholder="e.g. 8 as in 8th of every month"
+                value={due}
+                onChange={(e) => setDue(parseInt(e.target.value))}
+              />
+              {(due < 1 || due > 31) && (
+                <FieldError>Due date should be within 1 and 31</FieldError>
+              )}
+            </Field>
+          )}
         </FieldGroup>
       </FieldSet>
 
-      <Button type="submit" disabled={loading}>
+      <Button type="submit" disabled={loading || due < 1 || due > 31}>
         {loading ? "Saving..." : isEditing ? "Save" : "Create"}
       </Button>
     </form>

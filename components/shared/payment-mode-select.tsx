@@ -25,14 +25,22 @@ export function PaymentModeSelect({
 
   return (
     <Select key={resetKey} value={value} onValueChange={onChange}>
-      <SelectTrigger id="paymentMode">
+      <SelectTrigger id="paymentMode" className="text-base md:text-sm">
         <SelectValue placeholder="Select a payment mode" />
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>
-          {allowSelectAll && <SelectItem value="all">All</SelectItem>}
+          {allowSelectAll && (
+            <SelectItem value="all" className="text-base md:text-sm">
+              All
+            </SelectItem>
+          )}
           {paymentMethods.map(({ id, name }) => (
-            <SelectItem key={id} value={id.toString()}>
+            <SelectItem
+              key={id}
+              value={id.toString()}
+              className="text-base md:text-sm"
+            >
               {name}
             </SelectItem>
           ))}

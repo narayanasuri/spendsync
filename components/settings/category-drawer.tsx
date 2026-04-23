@@ -37,7 +37,11 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { SmilePlusIcon } from "lucide-react"
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
 import {
   EmojiPicker,
   EmojiPickerContent,
@@ -55,6 +59,7 @@ type Props = {
 
 export function CategoryDrawer({ open, onOpenChange, category }: Props) {
   const isDesktop = useMediaQuery("(min-width: 768px)")
+  const { refreshCategories } = useAppStore()
   const isEditing = !!category
 
   const title = isEditing ? "Edit Category" : "Add Category"
@@ -62,9 +67,14 @@ export function CategoryDrawer({ open, onOpenChange, category }: Props) {
     ? "Update the category details."
     : "Create a new category for your expenses or income."
 
-  const form = (
-    <CategoryForm category={category} onSuccess={() => onOpenChange(false)} />
-  )
+  async function handleDelete() {
+    if (!category) return
+    await fetch(`/api/categories/${category.id}`, {
+      method: "DELETE",
+    })
+    await refreshCategories()
+    onOpenChange(false)
+  }
 
   if (isDesktop) {
     return (
@@ -74,7 +84,19 @@ export function CategoryDrawer({ open, onOpenChange, category }: Props) {
             <DialogTitle>{title}</DialogTitle>
             <DialogDescription>{description}</DialogDescription>
           </DialogHeader>
-          {form}
+          <CategoryForm
+            category={category}
+            onSuccess={() => onOpenChange(false)}
+          />
+          {isEditing && (
+            <Button
+              variant="destructive"
+              className="w-full"
+              onClick={handleDelete}
+            >
+              Delete
+            </Button>
+          )}
         </DialogContent>
       </Dialog>
     )
@@ -95,6 +117,15 @@ export function CategoryDrawer({ open, onOpenChange, category }: Props) {
           />
         </div>
         <DrawerFooter className="pt-2">
+          {isEditing && (
+            <Button
+              variant="destructive"
+              className="block w-full"
+              onClick={handleDelete}
+            >
+              Delete
+            </Button>
+          )}
           <DrawerClose asChild>
             <Button variant="outline">Cancel</Button>
           </DrawerClose>

@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { useForm, Controller, FormProvider, useWatch } from "react-hook-form"
+import { useForm, Controller, FormProvider } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { format } from "date-fns"
 import { CalendarIcon, Clock4Icon } from "lucide-react"
@@ -23,13 +23,6 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 import {
-  logSchema,
-  type LogFormInput,
-  type LogFormValues,
-} from "@/lib/schemas/expense.schema"
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { CheckCircle2Icon, CircleXIcon } from "lucide-react"
-import {
   InputGroup,
   InputGroupAddon,
   InputGroupInput,
@@ -37,36 +30,62 @@ import {
 } from "@/components/ui/input-group"
 import { CategorySelect } from "@/components/shared/category-select"
 import { PaymentModeSelect } from "@/components/shared/payment-mode-select"
+import {
+  logSchema,
+  type LogFormInput,
+  type LogFormValues,
+} from "@/lib/schemas/expense.schema"
 import { cn } from "@/lib/utils"
-import { LogTypeSelect } from "@/components/shared/log-type-select"
-import { UserSelect } from "@/components/shared/user-select"
-import { useCurrency } from "@/hooks/use-currency"
+import type { Tables } from "@/lib/database.types"
+import { UserSelect } from "../shared/user-select"
 import { useAppStore } from "@/lib/store"
 
-// Formats a Date as a local ISO string (no UTC conversion)
+type Expense = Tables<"Expenses">
+
 function formatLocalISO(date: Date): string {
   const pad = (n: number) => String(n).padStart(2, "0")
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`
 }
 
-export function LogForm() {
+// Parse a UTC ISO string into a local Date whose wall-clock values match
+// the stored UTC time, so the form fields show the correct hours/minutes.
+function utcToLocalDate(iso: string): Date {
+  const d = new Date(iso)
+  return new Date(
+    d.getUTCFullYear(),
+    d.getUTCMonth(),
+    d.getUTCDate(),
+    d.getUTCHours(),
+    d.getUTCMinutes(),
+    d.getUTCSeconds()
+  )
+}
+
+interface EditLogFormProps {
+  expense: Expense
+  onSave: (updated: Expense) => void
+  onCancel: () => void
+}
+
+export function EditLogForm({ expense, onSave, onCancel }: EditLogFormProps) {
   const [serverError, setServerError] = useState<string | null>(null)
-  const [success, setSuccess] = useState(false)
   const [resetKey, setResetKey] = useState(0)
-  const { currency } = useCurrency()
   const { refreshPaymentMethods } = useAppStore()
+
+  const spentAt = utcToLocalDate(expense.spent_at)
 
   const methods = useForm<LogFormInput, unknown, LogFormValues>({
     resolver: zodResolver(logSchema),
     defaultValues: {
       transaction_type: "expense",
-      name: "",
-      amount: "",
-      description: "",
-      category: undefined,
-      payment_mode: undefined,
-      spent_at: new Date(),
-      paid_by: "1",
+      name: expense.name,
+      amount: String(expense.amount),
+      description: expense.description ?? "",
+      category: expense.category.toString() as LogFormInput["category"],
+      payment_mode:
+        expense.payment_mode.toString() as LogFormInput["payment_mode"],
+      spent_at: spentAt,
+      paid_by: expense.paid_by.toString() as LogFormInput["paid_by"],
     },
   })
 
@@ -75,43 +94,39 @@ export function LogForm() {
     control,
     handleSubmit,
     reset,
-    formState: { errors, isSubmitting, isDirty },
+    formState: { errors, isSubmitting },
   } = methods
-
-  const transactionType = useWatch({ control, name: "transaction_type" })
 
   async function onSubmit(data: LogFormValues) {
     setServerError(null)
-    setSuccess(false)
-    console.log("[ExpenseForm] Submitting:", data)
-
     try {
-      const res = await fetch("/api/logs", {
-        method: "POST",
+      const res = await fetch(`/api/logs/${expense.id}`, {
+        method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...data,
           spent_at: formatLocalISO(data.spent_at),
+          old_amount: expense.amount,
+          old_payment_method_id: expense.payment_mode,
         }),
       })
 
       const json = await res.json()
-      console.log("[ExpenseForm] Response:", res.status, json)
 
       if (!res.ok) {
-        setServerError(json.error ?? "Failed to save expense.")
+        setServerError(json.error ?? "Failed to update expense.")
         return
       }
 
       await refreshPaymentMethods()
 
-      setSuccess(true)
+      onSave(json)
       reset()
       setResetKey((k) => k + 1)
     } catch (err) {
       console.error("[ExpenseForm] Fetch error:", err)
       setServerError(
-        err instanceof Error ? err.message : "Failed to save expense."
+        err instanceof Error ? err.message : "Failed to update expense."
       )
     }
   }
@@ -119,69 +134,26 @@ export function LogForm() {
   return (
     <FormProvider {...methods}>
       <form className="w-full" onSubmit={handleSubmit(onSubmit)}>
-        {success && (
-          <Alert className="mb-3 border-blue-200 bg-blue-50 text-blue-900 dark:border-blue-900 dark:bg-blue-950 dark:text-blue-50">
-            <CheckCircle2Icon />
-            <AlertTitle>Transaction added</AlertTitle>
-            <AlertDescription>
-              Your transaction was addded successfully
-            </AlertDescription>
-          </Alert>
-        )}
-        {serverError && (
-          <Alert className="mb-3 border-red-200 bg-red-50 text-red-900 dark:border-red-900 dark:bg-red-950 dark:text-red-50">
-            <CircleXIcon />
-            <AlertTitle>Error while submitting your form</AlertTitle>
-            <AlertDescription>{serverError}</AlertDescription>
-          </Alert>
-        )}
         <FieldSet>
           <FieldGroup>
             <Field>
-              <FieldLabel htmlFor="transaction_type">
-                Transaction Type
-              </FieldLabel>
-              <Controller
-                control={control}
-                name="transaction_type"
-                render={({ field }) => (
-                  <LogTypeSelect
-                    value={field.value}
-                    onChange={field.onChange}
-                  />
-                )}
-              />
-              {errors.transaction_type && (
-                <FieldError>{errors.transaction_type.message}</FieldError>
-              )}
-            </Field>
-
-            <Field>
-              <FieldLabel htmlFor="title">Title</FieldLabel>
-              <Input
-                id="title"
-                placeholder="e.g. Dinner"
-                {...register("name")}
-              />
+              <FieldLabel>Expense Title</FieldLabel>
+              <Input placeholder="e.g. Dinner" {...register("name")} />
               {errors.name && <FieldError>{errors.name.message}</FieldError>}
             </Field>
 
             <Field>
-              <FieldLabel htmlFor="amount">Amount</FieldLabel>
+              <FieldLabel>Amount</FieldLabel>
               <InputGroup>
-                <InputGroupAddon>
-                  <InputGroupText>{currency.symbol}</InputGroupText>
-                </InputGroupAddon>
                 <InputGroupInput
-                  id="amount"
                   type="number"
                   min="0.01"
                   step="0.01"
                   placeholder="200.00"
                   {...register("amount")}
                 />
-                <InputGroupAddon align="inline-end">
-                  <InputGroupText>{currency.shortLabel}</InputGroupText>
+                <InputGroupAddon>
+                  <InputGroupText>₹</InputGroupText>
                 </InputGroupAddon>
               </InputGroup>
               {errors.amount && (
@@ -190,17 +162,16 @@ export function LogForm() {
             </Field>
 
             <Field>
-              <FieldLabel htmlFor="description">Description</FieldLabel>
+              <FieldLabel>Description</FieldLabel>
               <Textarea
-                id="description"
-                placeholder="e.g. Pizzas split with Ron and Gwen"
+                placeholder="e.g. Dinner with friends"
                 className="resize-none"
                 {...register("description")}
               />
             </Field>
 
             <Field>
-              <FieldLabel htmlFor="category">Category</FieldLabel>
+              <FieldLabel>Category</FieldLabel>
               <Controller
                 control={control}
                 name="category"
@@ -209,9 +180,6 @@ export function LogForm() {
                     resetKey={resetKey}
                     value={field.value}
                     onChange={field.onChange}
-                    transactionType={
-                      transactionType as "expense" | "income" | undefined
-                    }
                   />
                 )}
               />
@@ -221,7 +189,7 @@ export function LogForm() {
             </Field>
 
             <Field>
-              <FieldLabel htmlFor="paymentMode">Payment Mode</FieldLabel>
+              <FieldLabel>Payment Mode</FieldLabel>
               <Controller
                 control={control}
                 name="payment_mode"
@@ -238,24 +206,19 @@ export function LogForm() {
               )}
             </Field>
 
-            {transactionType === "expense" && (
-              <Field>
-                <FieldLabel htmlFor="paid_by">Paid by</FieldLabel>
-                <Controller
-                  control={control}
-                  name="paid_by"
-                  render={({ field }) => (
-                    <UserSelect
-                      value={field.value || "1"}
-                      onChange={field.onChange}
-                    />
-                  )}
-                />
-                {errors.payment_mode && (
-                  <FieldError>{errors.payment_mode.message}</FieldError>
+            <Field>
+              <FieldLabel>Paid By</FieldLabel>
+              <Controller
+                control={control}
+                name="paid_by"
+                render={({ field }) => (
+                  <UserSelect
+                    value={field.value as string}
+                    onChange={field.onChange}
+                  />
                 )}
-              </Field>
-            )}
+              />
+            </Field>
 
             <Field>
               <FieldLabel>Date & Time</FieldLabel>
@@ -272,12 +235,11 @@ export function LogForm() {
                   function handleDateSelect(date: Date | undefined) {
                     if (!date) return
                     const updated = new Date(date)
-                    if (field.value) {
+                    if (field.value)
                       updated.setHours(
                         field.value.getHours(),
                         field.value.getMinutes()
                       )
-                    }
                     field.onChange(updated)
                   }
 
@@ -299,7 +261,7 @@ export function LogForm() {
                         <Button
                           variant="outline"
                           className={cn(
-                            "w-full justify-start gap-2 text-base font-normal md:text-sm",
+                            "w-full justify-start gap-2 font-normal",
                             !field.value && "text-muted-foreground"
                           )}
                         >
@@ -320,16 +282,14 @@ export function LogForm() {
                         />
                         <div className="border-t p-3">
                           <Field>
-                            <FieldLabel htmlFor="spent-at-time">
-                              Time
-                            </FieldLabel>
+                            <FieldLabel htmlFor="edit-time">Time</FieldLabel>
                             <InputGroup>
                               <InputGroupInput
-                                id="spent-at-time"
+                                id="edit-time"
                                 type="time"
                                 value={timeInput}
                                 onChange={handleTimeChange}
-                                className="appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
+                                className="appearance-none [&::-webkit-calendar-picker-indicator]:hidden"
                               />
                               <InputGroupAddon>
                                 <Clock4Icon className="text-muted-foreground" />
@@ -347,6 +307,10 @@ export function LogForm() {
               )}
             </Field>
 
+            {serverError && (
+              <p className="text-sm text-destructive">{serverError}</p>
+            )}
+
             <Field orientation="responsive">
               <Button
                 type="submit"
@@ -354,21 +318,16 @@ export function LogForm() {
                 className="md:text:sm w-full text-base md:w-[80px]"
               >
                 {isSubmitting && <Spinner data-icon="inline-start" />}
-                {isSubmitting ? "Submitting" : "Submit"}
+                {isSubmitting ? "Saving..." : "Save changes"}
               </Button>
               <Button
                 variant="outline"
                 type="button"
                 className="w-full text-base md:w-[100px] md:text-sm"
-                onClick={() => {
-                  reset()
-                  setResetKey((k) => k + 1)
-                  setServerError(null)
-                  setSuccess(false)
-                }}
-                disabled={isSubmitting || !isDirty}
+                onClick={onCancel}
+                disabled={isSubmitting}
               >
-                Clear
+                Cancel
               </Button>
             </Field>
           </FieldGroup>

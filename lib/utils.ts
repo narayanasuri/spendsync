@@ -1,12 +1,26 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
-import type { DateRange as DayPickerDateRange } from "react-day-picker"
+import type { DateRange } from "react-day-picker"
+import {
+  addMonths,
+  format,
+  isBefore,
+  parse,
+  set,
+  startOfMonth,
+  startOfWeek,
+  startOfYear,
+  subMonths,
+  subWeeks,
+  subYears,
+} from "date-fns"
+import { DATE_FORMAT } from "./constants"
 
-export function cn(...inputs: ClassValue[]) {
+export const cn = (...inputs: ClassValue[]) => {
   return twMerge(clsx(inputs))
 }
 
-export function abbreviate(value: number) {
+export const abbreviate = (value: number) => {
   const negative = value < 0
   const absolute = negative ? value * -1 : value
   const sign = negative ? "-" : ""
@@ -19,40 +33,76 @@ export function abbreviate(value: number) {
   return `${sign}${(absolute / 1_000_000).toFixed(1)}m`
 }
 
-import { startOfMonth, startOfWeek, startOfYear } from "date-fns"
+export const formatDate = (d: Date): string => format(d, DATE_FORMAT)
 
-export type DateRange = { from: string; to: string }
+export const parseDate = (str: string): Date =>
+  parse(str, "yyyy-MM-dd", new Date())
 
-export function formatDateToString(d: Date) {
-  const pad = (n: number) => String(n).padStart(2, "0")
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
-}
-
-// Parse YYYY-MM-DD as local date (not UTC) for the calendar display
-export function parseLocalDate(str: string): Date {
-  const [y, m, d] = str.split("-").map(Number)
-  return new Date(y, m - 1, d)
-}
-
-export function getDateRangeForPreset(
-  preset: "weekly" | "monthly" | "yearly"
-): DayPickerDateRange {
-  const DATE_NOW = new Date()
-
-  if (preset === "weekly") {
+export const getDateRange = ({
+  period,
+  endDate = new Date(),
+  excludePastPeriod = true,
+}: {
+  period: "weekly" | "monthly" | "yearly"
+  endDate?: Date
+  excludePastPeriod?: boolean
+}): DateRange => {
+  if (period === "weekly") {
     return {
-      from: startOfWeek(DATE_NOW),
-      to: DATE_NOW,
+      from: excludePastPeriod ? startOfWeek(endDate) : subWeeks(endDate, 1),
+      to: endDate,
     }
-  } else if (preset === "monthly") {
+  } else if (period === "monthly") {
     return {
-      from: startOfMonth(DATE_NOW),
-      to: DATE_NOW,
+      from: excludePastPeriod ? startOfWeek(endDate) : subMonths(endDate, 1),
+      to: endDate,
     }
   }
 
   return {
-    from: startOfYear(DATE_NOW),
-    to: DATE_NOW,
+    from: excludePastPeriod ? startOfWeek(endDate) : subYears(endDate, 1),
+    to: endDate,
   }
+}
+
+export const getDateRangeForPreset = (
+  preset: "weekly" | "monthly" | "yearly",
+  endDate?: Date
+): DateRange => {
+  const END_DATE = endDate || new Date()
+
+  if (preset === "weekly") {
+    return {
+      from: startOfWeek(END_DATE),
+      to: END_DATE,
+    }
+  } else if (preset === "monthly") {
+    return {
+      from: startOfMonth(END_DATE),
+      to: END_DATE,
+    }
+  }
+
+  return {
+    from: startOfYear(END_DATE),
+    to: END_DATE,
+  }
+}
+
+export const getUpcomingDateByDay = (targetDay: number): Date => {
+  const now = new Date()
+
+  let targetDate = set(now, {
+    date: targetDay,
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+    milliseconds: 0,
+  })
+
+  if (isBefore(targetDate, now)) {
+    targetDate = addMonths(targetDate, 1)
+  }
+
+  return targetDate
 }

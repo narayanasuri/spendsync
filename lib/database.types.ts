@@ -146,18 +146,21 @@ export type Database = {
       PaymentMethods: {
         Row: {
           balance: number | null
+          due: number
           id: number
           name: string
           type: string
         }
         Insert: {
           balance?: number | null
+          due?: number
           id?: number
           name: string
           type: string
         }
         Update: {
           balance?: number | null
+          due?: number
           id?: number
           name?: string
           type?: string

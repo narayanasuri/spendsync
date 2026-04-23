@@ -7,24 +7,25 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 
-interface TransactionTypeSelectProps {
+interface LogTypeSelectProps {
   value: string
   onChange: (value: string) => void
 }
 
-export function TransactionTypeSelect({
-  value,
-  onChange,
-}: TransactionTypeSelectProps) {
+export function LogTypeSelect({ value, onChange }: LogTypeSelectProps) {
   return (
     <Select defaultValue="expense" value={value} onValueChange={onChange}>
-      <SelectTrigger id="transactionType">
+      <SelectTrigger id="transactionType" className="text-base md:text-sm">
         <SelectValue placeholder="Select a transaction type" />
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>
-          <SelectItem value="expense">Expense</SelectItem>
-          <SelectItem value="income">Income</SelectItem>
+          <SelectItem value="expense" className="text-base md:text-sm">
+            Expense
+          </SelectItem>
+          <SelectItem value="income" className="text-base md:text-sm">
+            Income
+          </SelectItem>
         </SelectGroup>
       </SelectContent>
     </Select>

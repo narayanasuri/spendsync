@@ -6,18 +6,17 @@ import {
   ChartSplineIcon,
   CirclePlusIcon,
   ReceiptTextIcon,
-  Rows3Icon,
   SettingsIcon,
   WalletCardsIcon,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { APP_NAME } from "@/lib/constants"
 
 const navItems = [
-  { label: "Logs", href: "/", icon: ReceiptTextIcon },
-  { label: "Insights", href: "/insights", icon: ChartSplineIcon },
-  { label: "New Expense", href: "/add", icon: CirclePlusIcon },
+  { label: "Overview", href: "/", icon: ChartSplineIcon },
+  { label: "Logs", href: "/logs", icon: ReceiptTextIcon },
+  { label: "New", href: "/add", icon: CirclePlusIcon },
   { label: "Budgets", href: "/budgets", icon: WalletCardsIcon },
   { label: "Settings", href: "/settings", icon: SettingsIcon },
 ]
@@ -81,6 +80,7 @@ export function Navbar() {
               )}
             >
               <Icon className={cn("size-5", active && "stroke-[2.5]")} />
+              <span>{label}</span>
             </Link>
           )
         })}

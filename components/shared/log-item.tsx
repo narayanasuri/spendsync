@@ -9,11 +9,11 @@ import { useAppStore } from "@/lib/store"
 import { useCurrency } from "@/hooks/use-currency"
 import { LOCALE, TIMEZONE } from "@/lib/constants"
 
-export function TransactionItem({ expense }: { expense: Expense }) {
+export function LogItem({ log }: { log: Expense }) {
   const router = useRouter()
   const { paymentMethods } = useAppStore()
   const { amount, category, name, payment_mode, spent_at, transaction_type } =
-    expense
+    log
   const { currency } = useCurrency()
 
   const date = new Date(spent_at).toLocaleDateString(LOCALE, {
@@ -25,7 +25,7 @@ export function TransactionItem({ expense }: { expense: Expense }) {
   return (
     <TableRow
       className="cursor-pointer"
-      onClick={() => router.push(`/logs/${expense.id}`)}
+      onClick={() => router.push(`/logs/${log.id}`)}
     >
       <TableCell className="w-10">
         <CategoryIcon categoryId={category} onlyIcon={false} />

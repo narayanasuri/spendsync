@@ -33,6 +33,7 @@ export async function POST(req: NextRequest) {
       name: body.name.trim(),
       type: body.type.trim(),
       balance: body.balance ?? null,
+      due: body.due ?? 1,
     })
     .select()
     .single()
