@@ -5,6 +5,7 @@ import { Item, ItemActions, ItemContent, ItemTitle } from "@/components/ui/item"
 import { Switch } from "@/components/ui/switch"
 import { useCurrency } from "@/hooks/use-currency"
 import { useAppStore } from "@/lib/store"
+import { haptic } from "ios-haptics"
 import { ChevronRightIcon } from "lucide-react"
 import { useTheme } from "next-themes"
 import Link from "next/link"
@@ -14,6 +15,11 @@ export default function SettingsPage() {
   const { categories, paymentMethods, users } = useAppStore()
   const { currency } = useCurrency()
 
+  const toggleTheme = () => {
+    haptic()
+    setTheme(resolvedTheme === "dark" ? "light" : "dark")
+  }
+
   return (
     <div className="flex min-h-screen flex-col">
       <main className="mx-auto w-full max-w-4xl flex-1 p-6">
@@ -22,25 +28,19 @@ export default function SettingsPage() {
         </div>
 
         <div className="flex w-full flex-col rounded-md bg-muted">
-          <Item
-            className="h-[50px]"
-            onClick={() =>
-              setTheme(resolvedTheme === "dark" ? "light" : "dark")
-            }
-          >
+          <Item className="h-[50px]" onClick={toggleTheme}>
             <ItemContent>
               <ItemTitle>Dark Mode</ItemTitle>
             </ItemContent>
             <ItemActions>
               <Switch
                 checked={resolvedTheme === "dark"}
-                onClick={() =>
-                  setTheme(resolvedTheme === "dark" ? "light" : "dark")
-                }
+                onClick={toggleTheme}
               />
             </ItemActions>
           </Item>
-          <Item className="h-[50px]" asChild>
+
+          <Item className="h-[50px]" asChild onClick={haptic}>
             <Link href="/settings/currency">
               <ItemContent>
                 <ItemTitle>Currency</ItemTitle>
@@ -53,7 +53,8 @@ export default function SettingsPage() {
               </ItemActions>
             </Link>
           </Item>
-          <Item className="h-[50px]" asChild>
+
+          <Item className="h-[50px]" asChild onClick={haptic}>
             <Link href="/settings/categories">
               <ItemContent>
                 <ItemTitle>Categories</ItemTitle>
@@ -66,7 +67,8 @@ export default function SettingsPage() {
               </ItemActions>
             </Link>
           </Item>
-          <Item className="h-[50px]" asChild>
+
+          <Item className="h-[50px]" asChild onClick={haptic}>
             <Link href="/settings/payments">
               <ItemContent>
                 <ItemTitle>Payment Methods</ItemTitle>
@@ -79,7 +81,8 @@ export default function SettingsPage() {
               </ItemActions>
             </Link>
           </Item>
-          <Item className="h-[50px]" asChild>
+
+          <Item className="h-[50px]" asChild onClick={haptic}>
             <Link href="/settings/users">
               <ItemContent>
                 <ItemTitle>Users</ItemTitle>

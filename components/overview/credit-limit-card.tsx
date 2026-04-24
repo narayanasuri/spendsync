@@ -27,7 +27,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 
 export function CreditCardLimitCardSkeleton() {
   return (
-    <Card size="sm" className="w-full">
+    <Card className="w-full">
       <CardHeader>
         <Skeleton className="h-4 w-2/3" />
         <Skeleton className="h-4 w-1/2" />
@@ -85,7 +85,7 @@ export function CreditLimitCard({
 
   if (error) {
     return (
-      <Card size="sm" className="w-full">
+      <Card className="w-full">
         <CardContent>
           <Empty className="h-full">
             <EmptyHeader>
@@ -105,10 +105,12 @@ export function CreditLimitCard({
   return loading ? (
     <CreditCardLimitCardSkeleton />
   ) : (
-    <Card size="sm" className="w-full">
+    <Card className="w-full">
       <CardHeader>
-        <CardTitle>{name}</CardTitle>
-        <CardDescription>{daysLeftUntilDue} days left</CardDescription>
+        <CardTitle className="font-semibold">{name}</CardTitle>
+        <CardDescription className="font-medium">
+          {daysLeftUntilDue} days left
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <Field className="w-full max-w-sm">

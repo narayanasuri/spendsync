@@ -1,15 +1,14 @@
 "use client"
 
-import { Table, TableBody } from "@/components/ui/table"
-import { LogItem } from "@/components/shared/log-item"
 import { Skeleton } from "@/components/ui/skeleton"
 import { FilterBar } from "@/components/logs/filter-bar"
-import { LogsEmptyState } from "@/components/shared/logs-empty-state"
+import { LogsEmptyState } from "@/components/logs/logs-empty-state"
 import { useLogs } from "@/hooks/use-logs"
 import { Suspense, useCallback, useEffect, useMemo } from "react"
 import { DateRange } from "react-day-picker"
 import { useRouter, useSearchParams } from "next/navigation"
-import { formatDate, parseDate } from "@/lib/utils"
+import { formatToLocalDate, parseLocalDate } from "@/lib/utils"
+import { DatedLogs } from "@/components/logs/dated-logs"
 
 const ALL = "all"
 const PARAM_CATEGORY = "categoryId"
@@ -34,12 +33,12 @@ function LogsContent() {
   const paymentMethodParam = searchParams.get(PARAM_PAYMENT_METHOD) ?? ALL
 
   const dateFrom = useMemo<Date>(
-    () => (fromParam ? parseDate(fromParam) : DATE_MONTH_START),
+    () => (fromParam ? parseLocalDate(fromParam) : DATE_MONTH_START),
     [fromParam]
   )
 
   const dateTo = useMemo<Date>(
-    () => (toParam ? parseDate(toParam) : DATE_NOW),
+    () => (toParam ? parseLocalDate(toParam) : DATE_NOW),
     [toParam]
   )
 
@@ -69,8 +68,8 @@ function LogsContent() {
     (range: DateRange) => {
       if (range.from && range.to) {
         updateParams({
-          [PARAM_FROM]: formatDate(range.from),
-          [PARAM_TO]: formatDate(range.to),
+          [PARAM_FROM]: formatToLocalDate(range.from),
+          [PARAM_TO]: formatToLocalDate(range.to),
         })
       }
     },
@@ -98,16 +97,16 @@ function LogsContent() {
   const handleClearFilters = useCallback(() => {
     const params = new URLSearchParams()
     // Keep date range, clear category and payment_mode
-    params.set(PARAM_FROM, formatDate(dateFrom))
-    params.set(PARAM_TO, formatDate(dateTo))
+    params.set(PARAM_FROM, formatToLocalDate(dateFrom))
+    params.set(PARAM_TO, formatToLocalDate(dateTo))
     router.replace(`/logs?${params.toString()}`, { scroll: false })
   }, [])
 
   useEffect(() => {
     if (!fromParam && !toParam) {
       const params = new URLSearchParams(searchParams.toString())
-      params.set(PARAM_FROM, formatDate(DATE_MONTH_START))
-      params.set(PARAM_TO, formatDate(DATE_NOW))
+      params.set(PARAM_FROM, formatToLocalDate(DATE_MONTH_START))
+      params.set(PARAM_TO, formatToLocalDate(DATE_NOW))
       router.replace(`/logs?${params.toString()}`, { scroll: false })
     }
   }, [fromParam, toParam])
@@ -150,13 +149,7 @@ function LogsContent() {
         ) : logs.length === 0 ? (
           <LogsEmptyState />
         ) : (
-          <Table>
-            <TableBody>
-              {logs.map((log) => (
-                <LogItem key={log.id} log={log} />
-              ))}
-            </TableBody>
-          </Table>
+          <DatedLogs logs={logs} />
         )}
       </main>
     </div>

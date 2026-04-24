@@ -12,6 +12,7 @@ import {
 import { cn } from "@/lib/utils"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { APP_NAME } from "@/lib/constants"
+import { haptic } from "ios-haptics"
 
 const navItems = [
   { label: "Overview", href: "/", icon: ChartSplineIcon },
@@ -78,6 +79,7 @@ export function Navbar() {
                 "flex flex-1 flex-col items-center gap-1 py-3 text-xs transition-colors",
                 active ? "text-foreground" : "text-muted-foreground"
               )}
+              onClick={haptic}
             >
               <Icon className={cn("size-5", active && "stroke-[2.5]")} />
               <span>{label}</span>

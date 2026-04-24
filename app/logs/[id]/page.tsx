@@ -7,15 +7,16 @@ import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { CategoryIcon } from "@/components/shared/category-icon"
 import { EditLogForm } from "@/components/logs/edit-log-form"
-import { abbreviate } from "@/lib/utils"
-import type { Tables } from "@/lib/database.types"
 import { ExpenseActionMenu } from "@/components/logs/details/action-menu"
 import { LogNotFound } from "@/components/logs/details/log-not-found"
 import { useAppStore } from "@/lib/store"
 import { useCurrency } from "@/hooks/use-currency"
-import { LOCALE, TIMEZONE } from "@/lib/constants"
+import { format } from "date-fns"
+import type { Expense } from "@/lib/types"
+import { parseTimestamp } from "@/lib/utils"
 
-type Expense = Tables<"Expenses">
+const DETAIL_DATE_FORMAT = "EEEE, d MMMM yyyy"
+const DETAIL_TIME_FORMAT = "h:mm a"
 
 export default function ExpenseDetailPage() {
   const { id } = useParams<{ id: string }>()
@@ -101,20 +102,7 @@ function ExpenseDetail({ expense }: { expense: Expense }) {
   const { categories, paymentMethods, users } = useAppStore()
   const { currency } = useCurrency()
 
-  const date = new Date(expense.spent_at).toLocaleDateString(LOCALE, {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-    timeZone: TIMEZONE,
-  })
-
-  const time = new Date(expense.spent_at).toLocaleTimeString(LOCALE, {
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: true,
-    timeZone: TIMEZONE,
-  })
+  const date = parseTimestamp(expense.spent_at)
 
   return (
     <div className="flex flex-col gap-6">
@@ -133,7 +121,7 @@ function ExpenseDetail({ expense }: { expense: Expense }) {
         </div>
         <p className="text-2xl font-bold tabular-nums">
           {currency.symbol}
-          {abbreviate(Number(expense.amount))}
+          {Number(expense.amount)}
         </p>
       </div>
 
@@ -154,8 +142,8 @@ function ExpenseDetail({ expense }: { expense: Expense }) {
           label="Paid By"
           value={users.find((u) => u.id === paidBy)?.name || "Unknown"}
         />
-        <DetailRow label="Date" value={date} />
-        <DetailRow label="Time" value={time} />
+        <DetailRow label="Date" value={format(date, DETAIL_DATE_FORMAT)} />
+        <DetailRow label="Time" value={format(date, DETAIL_TIME_FORMAT)} />
       </div>
     </div>
   )

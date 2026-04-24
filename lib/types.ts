@@ -55,3 +55,8 @@ export type LastSelectedType = {
   paymentMethodId: number | null
   userId: number | null
 }
+
+export type GroupedLogsType = {
+  group: string
+  logs: Expense[]
+}

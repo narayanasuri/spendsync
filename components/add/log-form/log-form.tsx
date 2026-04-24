@@ -42,6 +42,7 @@ import { LogTypeSelect } from "@/components/shared/log-type-select"
 import { UserSelect } from "@/components/shared/user-select"
 import { useCurrency } from "@/hooks/use-currency"
 import { useAppStore } from "@/lib/store"
+import { haptic } from "ios-haptics"
 
 // Formats a Date as a local ISO string (no UTC conversion)
 function formatLocalISO(date: Date): string {
@@ -352,6 +353,7 @@ export function LogForm() {
                 type="submit"
                 disabled={isSubmitting}
                 className="md:text:sm w-full text-base md:w-[80px]"
+                onClick={haptic.confirm}
               >
                 {isSubmitting && <Spinner data-icon="inline-start" />}
                 {isSubmitting ? "Submitting" : "Submit"}
@@ -361,6 +363,7 @@ export function LogForm() {
                 type="button"
                 className="w-full text-base md:w-[100px] md:text-sm"
                 onClick={() => {
+                  haptic.error()
                   reset()
                   setResetKey((k) => k + 1)
                   setServerError(null)

@@ -1,6 +1,9 @@
 "use client"
 
-import { BudgetCard } from "@/components/budgets/budget-card"
+import {
+  BudgetCard,
+  BudgetCardSkeleton,
+} from "@/components/budgets/budget-card"
 import { BudgetDrawer } from "@/components/budgets/budget-drawer"
 import { Button } from "@/components/ui/button"
 import {
@@ -17,12 +20,30 @@ import { useState } from "react"
 
 export default function BudgetsPage() {
   const [open, setOpen] = useState<boolean>(false)
-  const { budgets } = useAppStore()
+  const { budgets, hydrated, loading } = useAppStore()
   const [editingBudget, setEditingBudget] = useState<Budget | undefined>()
 
   const handleOpenChange = (open: boolean) => {
     setOpen(open)
     if (!open) setEditingBudget(undefined)
+  }
+
+  if (!hydrated || loading) {
+    return (
+      <main className="mx-auto w-full max-w-4xl flex-1 p-6">
+        <div className="mb-6 flex items-center gap-3">
+          <h2 className="text-xl font-semibold tracking-tight">Budgets</h2>
+        </div>
+
+        <div className="flex flex-wrap">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="basis-1/2 px-1.5 md:basis-1/4">
+              <BudgetCardSkeleton />
+            </div>
+          ))}
+        </div>
+      </main>
+    )
   }
 
   return (

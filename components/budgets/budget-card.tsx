@@ -10,12 +10,13 @@ import {
 } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import { useCategory } from "@/hooks/use-category"
-import { getDateRangeForPreset } from "@/lib/utils"
+import { getDateRange } from "@/lib/utils"
 import { useTotal } from "@/hooks/use-total"
 import { useMemo } from "react"
 import { DateRange } from "react-day-picker"
 import { Field, FieldLabel } from "@/components/ui/field"
 import { useCurrency } from "@/hooks/use-currency"
+import { Skeleton } from "@/components/ui/skeleton"
 
 function calculateTimeRemaining(period: "weekly" | "monthly" | "yearly") {
   const now = new Date()
@@ -40,14 +41,29 @@ function calculateTimeRemaining(period: "weekly" | "monthly" | "yearly") {
   return daysLeft
 }
 
+export function BudgetCardSkeleton() {
+  return (
+    <Card className="w-full md:basis-1/2">
+      <CardHeader>
+        <Skeleton className="h-4 w-2/3" />
+        <Skeleton className="h-4 w-1/2" />
+      </CardHeader>
+      <CardContent>
+        <Skeleton className="h-11 w-full" />
+      </CardContent>
+    </Card>
+  )
+}
+
 export function BudgetCard({ budget }: { budget: Budget }) {
   const { budget_amount, category_id, period } = budget
   const { found, emoji, label } = useCategory(category_id)
   const { currency } = useCurrency()
 
-  const { from, to } = useMemo<DateRange>(() => {
-    return getDateRangeForPreset(period)
-  }, [period])
+  const { from, to } = useMemo<DateRange>(
+    () => getDateRange({ period }),
+    [period]
+  )
 
   const { totals, loading, error } = useTotal({
     from,
@@ -71,13 +87,15 @@ export function BudgetCard({ budget }: { budget: Budget }) {
 
   if (!found) return null
 
-  return (
-    <Card size="sm" className="mb-3 w-full">
+  return loading ? (
+    <BudgetCardSkeleton />
+  ) : (
+    <Card className="mb-3 w-full">
       <CardHeader>
-        <CardTitle>
+        <CardTitle className="font-semibold">
           {emoji} {label}
         </CardTitle>
-        <CardDescription>
+        <CardDescription className="font-medium">
           {calculateTimeRemaining(period)} days left
         </CardDescription>
       </CardHeader>

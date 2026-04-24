@@ -14,14 +14,40 @@ import {
   HoverCardTrigger,
 } from "@/components/ui/hover-card"
 import { ReactNode, useEffect, useMemo, useState } from "react"
-import { abbreviate, formatDate } from "@/lib/utils"
+import { abbreviate, formatToLocalDate } from "@/lib/utils"
 import { useCurrency } from "@/hooks/use-currency"
 import { useMediaQuery } from "@/hooks/use-media-query"
 import { startOfMonth } from "date-fns"
 import { GroupedItem } from "@/lib/types"
 import { useAppStore } from "@/lib/store"
+import { Skeleton } from "@/components/ui/skeleton"
 
-export function HoverLegend({
+const DATE_NOW = new Date()
+const DATE_FROM = startOfMonth(DATE_NOW)
+
+const COLOR_CLASSES = [
+  "bg-blue-400",
+  "bg-rose-400",
+  "bg-teal-400",
+  "bg-fuchsia-300",
+  "bg-amber-300",
+]
+
+export function CategoryChartCardSkeleton() {
+  return (
+    <Card className="w-full">
+      <CardHeader>
+        <Skeleton className="h-4 w-2/3" />
+        <Skeleton className="h-4 w-1/2" />
+      </CardHeader>
+      <CardContent>
+        <Skeleton className="h-14 w-full" />
+      </CardContent>
+    </Card>
+  )
+}
+
+function HoverLegend({
   label,
   amount,
   colorString,
@@ -56,28 +82,17 @@ export function HoverLegend({
   )
 }
 
-const DATE_NOW = new Date()
-const DATE_FROM = startOfMonth(DATE_NOW)
-
-const COLOR_CLASSES = [
-  "bg-blue-400",
-  "bg-rose-400",
-  "bg-teal-400",
-  "bg-fuchsia-300",
-  "bg-amber-300",
-]
-
 export function CategoryChartCard() {
   const isDesktop = useMediaQuery("(min-width: 768px)")
   const {
     currency: { symbol },
   } = useCurrency()
-  const { categories } = useAppStore()
+  const { categories, hydrated, loading } = useAppStore()
   const [groups, setGroups] = useState<GroupedItem<"category">[]>([])
 
   useEffect(() => {
     fetch(
-      `/api/logs/group?group=category&from=${formatDate(DATE_FROM)}&to=${formatDate(DATE_NOW)}`
+      `/api/logs/group?group=category&from=${formatToLocalDate(DATE_FROM)}&to=${formatToLocalDate(DATE_NOW)}`
     )
       .then((res) => res.json())
       .then((data) => {
@@ -103,11 +118,15 @@ export function CategoryChartCard() {
     })
   }, [categories, groups])
 
-  return (
-    <Card size="sm" className="w-full">
+  return !hydrated || loading ? (
+    <CategoryChartCardSkeleton />
+  ) : (
+    <Card className="w-full">
       <CardHeader>
-        <CardTitle>Top 5 Categories</CardTitle>
-        <CardDescription>Categories most spent on this month</CardDescription>
+        <CardTitle className="font-semibold">Top 5 Categories</CardTitle>
+        <CardDescription className="font-medium">
+          Categories most spent on this month
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <div className="flex h-[26px] w-full rounded-md bg-muted">

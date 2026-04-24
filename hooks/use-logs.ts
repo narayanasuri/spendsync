@@ -1,5 +1,5 @@
 import { Expense } from "@/lib/types"
-import { formatDate } from "@/lib/utils"
+import { formatToLocalDate } from "@/lib/utils"
 import { useEffect, useState } from "react"
 
 const DATE_NOW = new Date()
@@ -23,7 +23,7 @@ export function useLogs({
   limit?: number
 }) {
   const [logs, setLogs] = useState<Expense[]>([])
-  const [loading, setLoading] = useState<boolean>(false)
+  const [loading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | undefined>(undefined)
 
   const params = new URLSearchParams({ limit: limit.toString() })
@@ -37,11 +37,11 @@ export function useLogs({
   }
 
   if (from) {
-    params.set("from", formatDate(from))
+    params.set("from", formatToLocalDate(from))
   }
 
   if (to) {
-    params.set("to", formatDate(to))
+    params.set("to", formatToLocalDate(to))
   }
 
   useEffect(() => {

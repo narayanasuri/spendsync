@@ -4,10 +4,12 @@ export function CategoryIcon({
   categoryId,
   onlyIcon = true,
   size = 40,
+  iconSize = 20,
 }: {
   categoryId: number
   onlyIcon?: boolean
   size?: number
+  iconSize?: number
 }) {
   const { categories } = useAppStore()
 
@@ -15,14 +17,14 @@ export function CategoryIcon({
 
   if (onlyIcon) return <span className={`text-[${size}px]`}>{emoji}</span>
 
-  const iconSize = Math.round(size * 0.5)
+  const iconSizeClassName = `text-[${iconSize}px]`
 
   return (
     <div
-      className="flex shrink-0 items-center justify-center rounded-sm bg-muted"
+      className="flex shrink-0 items-center justify-center rounded-xl bg-muted"
       style={{ width: size, height: size }}
     >
-      <span className={`text-[${iconSize}px]`}>{emoji}</span>
+      <span className={iconSizeClassName}>{emoji}</span>
     </div>
   )
 }

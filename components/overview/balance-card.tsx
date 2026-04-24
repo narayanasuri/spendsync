@@ -14,10 +14,11 @@ import { Button } from "@/components/ui/button"
 import { useState } from "react"
 import { EyeClosedIcon, EyeIcon } from "lucide-react"
 import { Skeleton } from "@/components/ui/skeleton"
+import { haptic } from "ios-haptics"
 
 export function BalanceCardSkeleton() {
   return (
-    <Card size="sm" className="w-full md:basis-1/2">
+    <Card className="w-full md:basis-1/2">
       <CardHeader>
         <Skeleton className="h-4 w-2/3" />
         <Skeleton className="h-4 w-1/2" />
@@ -38,17 +39,18 @@ export function BalanceCard({
   const { currency } = useCurrency()
   const [hidden, setHidden] = useState<boolean>(true)
 
+  const onToggleHide = () => {
+    haptic()
+    setHidden((prev) => !prev)
+  }
+
   return (
-    <Card size="sm" className="w-full md:basis-1/2">
+    <Card className="w-full md:basis-1/2">
       <CardHeader>
-        <CardTitle>{name} (Savings)</CardTitle>
-        <CardDescription>Balance</CardDescription>
+        <CardTitle className="font-semibold">{name} (Savings)</CardTitle>
+        <CardDescription className="font-medium">Balance</CardDescription>
         <CardAction>
-          <Button
-            variant="ghost"
-            size="icon-xs"
-            onClick={() => setHidden((prev) => !prev)}
-          >
+          <Button variant="ghost" size="icon-sm" onClick={onToggleHide}>
             {hidden ? <EyeIcon /> : <EyeClosedIcon />}
           </Button>
         </CardAction>

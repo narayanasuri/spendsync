@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { type DateRange } from "react-day-picker"
-import { addMonths, isAfter } from "date-fns"
+import { addMonths, format, isAfter } from "date-fns"
 import { CalendarIcon } from "lucide-react"
 import { Calendar } from "@/components/ui/calendar"
 import { Button } from "@/components/ui/button"
@@ -11,18 +11,21 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
-import { LOCALE } from "@/lib/constants"
 
 interface DateRangeInputProps {
   value: DateRange
   onChange: (range: DateRange) => void
 }
 
+const DATE_RANGE_LABEL_FORMAT = "d MMM"
+
 function formatRange(range: DateRange): string {
-  const opts: Intl.DateTimeFormatOptions = { day: "numeric", month: "short" }
-  const from = range.from?.toLocaleDateString(LOCALE, opts) ?? "—"
-  const to = range.to?.toLocaleDateString(LOCALE, opts) ?? "—"
-  return `${from} – ${to}`
+  const from = range.from
+    ? format(range.from, DATE_RANGE_LABEL_FORMAT)
+    : "Unknown"
+  const to = range.to ? format(range.to, DATE_RANGE_LABEL_FORMAT) : "Unknown"
+
+  return from + " - " + to
 }
 
 export function DateRangeInput({ value, onChange }: DateRangeInputProps) {
@@ -30,16 +33,33 @@ export function DateRangeInput({ value, onChange }: DateRangeInputProps) {
   const [open, setOpen] = useState(false)
 
   function handleSelect(range: DateRange | undefined) {
-    if (!range) return
+    // 1. If the user clicks the current 'from' date again,
+    // they might want to clear the selection or restart.
+    if (!range || (!range.from && !range.to)) {
+      setDraft({ from: undefined, to: undefined })
+      return
+    }
 
-    if (range.from && range.to) {
-      const maxTo = addMonths(range.from, 2)
-      if (isAfter(range.to, maxTo)) {
-        range = { from: range.from, to: maxTo }
+    let newRange = range
+
+    // 2. Logic to allow re-selecting a range within the current range:
+    // If we already had a full range (from AND to), and the user clicks again,
+    // we force the click to become the new 'from' date.
+    if (draft.from && draft.to && range.from && range.to) {
+      // If the newly selected 'to' is the same as the old 'to',
+      // it means the user just clicked a single date.
+      newRange = { from: range.to, to: undefined }
+    }
+
+    // 3. Your existing 2-month constraint logic
+    if (newRange.from && newRange.to) {
+      const maxTo = addMonths(newRange.from, 2)
+      if (isAfter(newRange.to, maxTo)) {
+        newRange = { from: newRange.from, to: maxTo }
       }
     }
 
-    setDraft(range)
+    setDraft(newRange)
   }
 
   function handleApply() {

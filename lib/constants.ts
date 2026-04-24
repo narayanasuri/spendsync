@@ -75,8 +75,6 @@ export const CURRENCIES: CurrencyType[] = [
   },
 ]
 
-export const DATE_FORMAT = "yyyy-MM-dd"
+export const LOCAL_DATE_FORMAT = "yyyy-MM-dd"
 
-export const LOCALE = "en-IN" as const
-
-export const TIMEZONE = "UTC" as const
+export const TIMESTAMP_FORMAT = "yyyy-MM-dd HH:mm:ssXX"

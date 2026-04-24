@@ -4,7 +4,10 @@ import {
   BalanceCard,
   BalanceCardSkeleton,
 } from "@/components/overview/balance-card"
-import { CategoryChartCard } from "@/components/overview/category-chart-card"
+import {
+  CategoryChartCard,
+  CategoryChartCardSkeleton,
+} from "@/components/overview/category-chart-card"
 import {
   CreditCardLimitCardSkeleton,
   CreditLimitCard,
@@ -19,16 +22,27 @@ function Skeleton() {
       </div>
 
       <div className="-mx-1.5 flex flex-wrap gap-y-3">
-        <CreditCardLimitCardSkeleton />
-        <CreditCardLimitCardSkeleton />
-        <CreditCardLimitCardSkeleton />
+        <div className="basis-1/2 px-1.5 md:basis-1/4">
+          <CreditCardLimitCardSkeleton />
+        </div>
+        <div className="basis-1/2 px-1.5 md:basis-1/4">
+          <CreditCardLimitCardSkeleton />
+        </div>
+        <div className="basis-1/2 px-1.5 md:basis-1/4">
+          <CreditCardLimitCardSkeleton />
+        </div>
+        <div className="basis-1/2 px-1.5 md:basis-1/4">
+          <CreditCardLimitCardSkeleton />
+        </div>
       </div>
+
+      <CategoryChartCardSkeleton />
     </div>
   )
 }
 
 export default function OverviewPage() {
-  const { paymentMethods, loading } = useAppStore()
+  const { paymentMethods, hydrated, loading } = useAppStore()
 
   return (
     <main className="mx-auto w-full max-w-4xl flex-1 p-6">
@@ -36,7 +50,7 @@ export default function OverviewPage() {
         <h2 className="text-xl font-semibold tracking-tight">Overview</h2>
       </div>
 
-      {loading ? (
+      {!hydrated || loading ? (
         <Skeleton />
       ) : (
         <>

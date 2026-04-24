@@ -6,6 +6,7 @@ import {
   format,
   isBefore,
   parse,
+  parseISO,
   set,
   startOfMonth,
   startOfWeek,
@@ -14,12 +15,17 @@ import {
   subWeeks,
   subYears,
 } from "date-fns"
-import { DATE_FORMAT } from "./constants"
+import { LOCAL_DATE_FORMAT } from "./constants"
 
 export const cn = (...inputs: ClassValue[]) => {
   return twMerge(clsx(inputs))
 }
 
+/**
+ * Abbreviates amounts like 15,000 to 15k
+ * @param value the number to be abbreviated
+ * @returns the shortened abbreviated notation
+ */
 export const abbreviate = (value: number) => {
   const negative = value < 0
   const absolute = negative ? value * -1 : value
@@ -33,11 +39,37 @@ export const abbreviate = (value: number) => {
   return `${sign}${(absolute / 1_000_000).toFixed(1)}m`
 }
 
-export const formatDate = (d: Date): string => format(d, DATE_FORMAT)
+/**
+ * Formats date object to local string format
+ * @param d date object
+ * @returns date string in LOCAL_DATE_FORMAT (yyyy-MM-dd)
+ */
+export const formatToLocalDate = (d: Date): string =>
+  format(d, LOCAL_DATE_FORMAT)
 
-export const parseDate = (str: string): Date =>
-  parse(str, "yyyy-MM-dd", new Date())
+/**
+ * Parses local date string to Date object
+ * @param dateString date string in the LOCAL_DATE_FORMAT (yyyy-MM-dd)
+ * @returns date object
+ */
+export const parseLocalDate = (dateString: string): Date =>
+  parse(dateString, LOCAL_DATE_FORMAT, new Date())
 
+/**
+ * Parses local date string to Date object
+ * @param dateString timestamp - 2026-03-30 23:30:10+00
+ * @returns date object
+ */
+export const parseTimestamp = (timestamp: string): Date =>
+  parseISO(timestamp.split("+")[0])
+
+/**
+ * Gets the period and returns start and end dates
+ * @param period period of time - "weekly" | "monthly" | "yearly"
+ * @param endDate the date from which the period should be calculated backwards
+ * @param excludePastPeriod whether to start from the beginning of the month or 30 days behind endDate
+ * @returns date range containing `from` and `to` dates
+ */
 export const getDateRange = ({
   period,
   endDate = new Date(),
@@ -54,41 +86,22 @@ export const getDateRange = ({
     }
   } else if (period === "monthly") {
     return {
-      from: excludePastPeriod ? startOfWeek(endDate) : subMonths(endDate, 1),
+      from: excludePastPeriod ? startOfMonth(endDate) : subMonths(endDate, 1),
       to: endDate,
     }
   }
 
   return {
-    from: excludePastPeriod ? startOfWeek(endDate) : subYears(endDate, 1),
+    from: excludePastPeriod ? startOfYear(endDate) : subYears(endDate, 1),
     to: endDate,
   }
 }
 
-export const getDateRangeForPreset = (
-  preset: "weekly" | "monthly" | "yearly",
-  endDate?: Date
-): DateRange => {
-  const END_DATE = endDate || new Date()
-
-  if (preset === "weekly") {
-    return {
-      from: startOfWeek(END_DATE),
-      to: END_DATE,
-    }
-  } else if (preset === "monthly") {
-    return {
-      from: startOfMonth(END_DATE),
-      to: END_DATE,
-    }
-  }
-
-  return {
-    from: startOfYear(END_DATE),
-    to: END_DATE,
-  }
-}
-
+/**
+ * Gets the upcoming date for the target day of the month
+ * @param targetDay target day of the month (e.g. 23)
+ * @returns a Date object which is the upcoming date with day of month equal to targetDay
+ */
 export const getUpcomingDateByDay = (targetDay: number): Date => {
   const now = new Date()
 
