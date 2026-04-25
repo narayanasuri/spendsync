@@ -88,21 +88,16 @@ export function BudgetDrawer({ open, onOpenChange, budget }: Props) {
             className="px-0"
           />
         </div>
-        <DrawerFooter className="pt-2">
+        <DrawerFooter className="mt-1 mb-3">
           {isEditing && (
             <Button
               variant="destructive"
-              className="w-full"
+              className="mb-4 w-full"
               onClick={handleDelete}
             >
               Delete
             </Button>
           )}
-          <DrawerClose asChild>
-            <Button variant="outline" className="w-full">
-              Cancel
-            </Button>
-          </DrawerClose>
         </DrawerFooter>
       </DrawerContent>
     </Drawer>
@@ -212,7 +207,6 @@ function BudgetForm({
               id="budget"
               type="number"
               autoComplete="off"
-              autoFocus
               placeholder="Enter the budget amount"
               value={limit}
               onChange={(e) => setLimit(parseInt(e.target.value))}

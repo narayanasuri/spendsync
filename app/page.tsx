@@ -54,7 +54,7 @@ export default function OverviewPage() {
         <Skeleton />
       ) : (
         <>
-          <div className="mt-3 flex flex-col gap-3">
+          <div className="mt-3 mb-6 flex flex-col gap-3">
             <div className="-mx-1.5 flex flex-wrap gap-y-3">
               {paymentMethods
                 .filter((method) => method.type === "savings")

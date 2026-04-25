@@ -21,7 +21,6 @@
 # misc
 .DS_Store
 *.pem
-/.vscode/
 
 # debug
 npm-debug.log*
@@ -35,3 +34,4 @@ pnpm-debug.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+.vscode/settings.json

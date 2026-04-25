@@ -41,8 +41,8 @@ export function Navbar() {
 
   return (
     <>
-      <nav className="border-default fixed bottom-4 left-1/2 z-50 h-16 w-[360px] -translate-x-1/2 rounded-2xl border bg-background shadow-lg md:w-md">
-        <div className="mx-auto grid h-full max-w-lg grid-cols-5">
+      <nav className="border-default fixed bottom-0 left-1/2 z-50 w-full -translate-x-1/2 border bg-background pt-1 pb-6 md:w-md">
+        <div className="mx-auto grid h-16 max-w-lg grid-cols-5">
           {navItems.map(({ label, href, icon: Icon, isCenter }) => {
             const active = pathname === href
 

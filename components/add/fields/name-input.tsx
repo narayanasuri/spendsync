@@ -14,12 +14,7 @@ export function NameInput() {
   return (
     <Field>
       <FieldLabel htmlFor="title">Title</FieldLabel>
-      <Input
-        id="title"
-        placeholder="e.g. Dinner"
-        {...register("name")}
-        autoFocus
-      />
+      <Input id="title" placeholder="e.g. Dinner" {...register("name")} />
       {errors.name && <FieldError>{errors.name.message}</FieldError>}
     </Field>
   )

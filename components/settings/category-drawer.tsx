@@ -254,7 +254,6 @@ function CategoryForm({
               id="name"
               autoComplete="off"
               placeholder="e.g. Shopping"
-              autoFocus
               value={name}
               onChange={(e) => setName(e.target.value)}
             />
