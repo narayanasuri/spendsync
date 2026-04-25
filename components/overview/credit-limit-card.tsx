@@ -161,7 +161,7 @@ export function CreditLimitCard({
             asChild
             onClick={(e) => e.stopPropagation()}
           >
-            <Link href={link}>
+            <Link href={link} replace>
               <ArrowRightIcon />
             </Link>
           </Button>

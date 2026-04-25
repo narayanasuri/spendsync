@@ -178,7 +178,7 @@ export function CategoryChartCard() {
                 </p>
               </div>
               <Button variant="link" asChild className="p-0">
-                <Link href={`/logs?categoryId=${item.categoryId}`}>
+                <Link href={`/logs?categoryId=${item.categoryId}`} replace>
                   {symbol}
                   {abbreviate(item.sum)}
                   <ArrowUpRightIcon />

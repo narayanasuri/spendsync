@@ -25,7 +25,9 @@ export default function NotFound() {
         </EmptyHeader>
         <EmptyContent>
           <Button variant="outline" size="sm" asChild>
-            <Link href="/">Go back home</Link>
+            <Link href="/" replace>
+              Go back home
+            </Link>
           </Button>
         </EmptyContent>
       </Empty>

@@ -24,7 +24,9 @@ export function LogsEmptyState() {
       </EmptyHeader>
       <EmptyContent>
         <Button variant="outline" size="sm" asChild>
-          <Link href="/add">Add New</Link>
+          <Link href="/add" replace>
+            Add New
+          </Link>
         </Button>
       </EmptyContent>
     </Empty>

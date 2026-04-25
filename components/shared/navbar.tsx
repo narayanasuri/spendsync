@@ -41,7 +41,7 @@ export function Navbar() {
 
   return (
     <>
-      <nav className="border-default fixed bottom-0 left-1/2 z-50 w-full -translate-x-1/2 border bg-background pt-1 pb-6 md:w-md">
+      <nav className="md:border-default fixed bottom-0 left-1/2 z-50 w-full -translate-x-1/2 border bg-background pt-1 pb-6 md:mb-3 md:w-md md:rounded-2xl md:pb-1 md:shadow-lg">
         <div className="mx-auto grid h-16 max-w-lg grid-cols-5">
           {navItems.map(({ label, href, icon: Icon, isCenter }) => {
             const active = pathname === href
@@ -66,6 +66,7 @@ export function Navbar() {
               <Link
                 key={href}
                 href={href}
+                replace
                 onClick={haptic}
                 data-active={active ? "" : undefined}
                 className={cn(

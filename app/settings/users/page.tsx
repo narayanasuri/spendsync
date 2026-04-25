@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button"
 import { Item, ItemActions, ItemContent, ItemTitle } from "@/components/ui/item"
 import { Separator } from "@/components/ui/separator"
 import { ArrowLeftIcon, PencilIcon, PlusIcon, UserIcon } from "lucide-react"
-import Link from "next/link"
 import { User } from "@/lib/types"
 import { UserDrawer } from "@/components/settings/user-drawer"
 import {
@@ -16,6 +15,7 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty"
+import { useBackButton } from "@/hooks/use-back-button"
 
 function EmptyUsersState({ onOpen }: { onOpen: () => void }) {
   return (
@@ -39,6 +39,7 @@ export default function UsersSettingsPage() {
   const { users } = useAppStore()
   const [open, setOpen] = useState<boolean>(false)
   const [editingUser, setEditingUser] = useState<User | undefined>()
+  const back = useBackButton("/settings")
 
   const handleOpenChange = (open: boolean) => {
     setOpen(open)
@@ -49,11 +50,9 @@ export default function UsersSettingsPage() {
     <div className="flex min-h-screen flex-col">
       <main className="mx-auto w-full max-w-4xl flex-1 p-6">
         <div className="mb-6 flex items-center gap-3">
-          <Link href="/settings">
-            <Button variant="ghost" size="icon-xs" asChild>
-              <ArrowLeftIcon />
-            </Button>
-          </Link>
+          <Button variant="ghost" size="icon-xs" onClick={back}>
+            <ArrowLeftIcon />
+          </Button>
           <h2 className="text-xl font-semibold tracking-tight">Users</h2>
           <Button
             variant="ghost"

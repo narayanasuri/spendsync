@@ -17,7 +17,6 @@ import {
   PencilIcon,
   PlusIcon,
 } from "lucide-react"
-import Link from "next/link"
 import { PaymentMethodDrawer } from "@/components/settings/payment-method-drawer"
 import {
   Empty,
@@ -26,6 +25,7 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty"
+import { useBackButton } from "@/hooks/use-back-button"
 
 function EmptyPaymentMethodsState({ onOpen }: { onOpen: () => void }) {
   return (
@@ -51,6 +51,7 @@ export default function PaymentsSettingsPage() {
   const [editingMethod, setEditingMethod] = useState<
     (typeof paymentMethods)[0] | undefined
   >()
+  const back = useBackButton("/settings")
 
   const handleOpenChange = (open: boolean) => {
     setOpen(open)
@@ -61,11 +62,9 @@ export default function PaymentsSettingsPage() {
     <div className="flex min-h-screen flex-col">
       <main className="mx-auto w-full max-w-4xl flex-1 p-6">
         <div className="mb-6 flex items-center gap-3">
-          <Link href="/settings">
-            <Button variant="ghost" size="icon-xs" asChild>
-              <ArrowLeftIcon />
-            </Button>
-          </Link>
+          <Button variant="ghost" size="icon-xs" onClick={back}>
+            <ArrowLeftIcon />
+          </Button>
           <h2 className="text-xl font-semibold tracking-tight">Payments</h2>
           <Button
             variant="ghost"

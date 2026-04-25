@@ -7,10 +7,12 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty"
+import { useBackButton } from "@/hooks/use-back-button"
 import { BrushCleaningIcon } from "lucide-react"
-import Link from "next/link"
 
 export function LogNotFound() {
+  const back = useBackButton("logs")
+
   return (
     <Empty>
       <EmptyHeader>
@@ -21,8 +23,8 @@ export function LogNotFound() {
         <EmptyDescription>We could not find that expense</EmptyDescription>
       </EmptyHeader>
       <EmptyContent>
-        <Button variant="outline" size="sm" asChild>
-          <Link href="/logs">View all expenses</Link>
+        <Button variant="outline" size="sm" onClick={back}>
+          View all expenses
         </Button>
       </EmptyContent>
     </Empty>

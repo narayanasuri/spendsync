@@ -150,7 +150,7 @@ export function BudgetCard({
         </CardDescription>
         <CardAction>
           <BudgetActionMenu
-            onViewLogs={() => router.push(link)}
+            onViewLogs={() => router.replace(link)}
             onEdit={onEdit}
           />
         </CardAction>

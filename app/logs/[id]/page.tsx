@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { useParams, useRouter } from "next/navigation"
+import { useParams } from "next/navigation"
 import { ArrowLeftIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -13,21 +13,22 @@ import { useCurrency } from "@/hooks/use-currency"
 import { format } from "date-fns"
 import type { Expense } from "@/lib/types"
 import { parseTimestamp } from "@/lib/utils"
+import { useBackButton } from "@/hooks/use-back-button"
 
 const DETAIL_DATE_FORMAT = "EEEE, d MMMM yyyy"
 const DETAIL_TIME_FORMAT = "h:mm a"
 
 export default function ExpenseDetailPage() {
   const { id } = useParams<{ id: string }>()
-  const router = useRouter()
   const [expense, setExpense] = useState<Expense | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const { setEditingLog } = useAppStore()
+  const back = useBackButton("/logs")
 
   async function handleDelete() {
     const res = await fetch(`/api/logs/${id}`, { method: "DELETE" })
-    if (res.ok) router.push("/logs")
+    if (res.ok) back()
   }
 
   useEffect(() => {
@@ -57,7 +58,7 @@ export default function ExpenseDetailPage() {
             variant="ghost"
             size="sm"
             className="-ml-2 gap-1.5"
-            onClick={() => router.push("/logs")}
+            onClick={() => back()}
           >
             <ArrowLeftIcon className="size-4" />
             Back
