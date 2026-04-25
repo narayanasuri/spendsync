@@ -7,16 +7,15 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { useAppStore } from "@/lib/store"
+import { CreditCardIcon, LandmarkIcon } from "lucide-react"
 
 interface PaymentModeSelectProps {
-  resetKey?: number
   value: string
   onChange: (value: string) => void
   allowSelectAll?: boolean
 }
 
 export function PaymentModeSelect({
-  resetKey,
   value,
   onChange,
   allowSelectAll = false,
@@ -24,7 +23,7 @@ export function PaymentModeSelect({
   const { paymentMethods } = useAppStore()
 
   return (
-    <Select key={resetKey} value={value} onValueChange={onChange}>
+    <Select value={value} onValueChange={onChange}>
       <SelectTrigger id="paymentMode" className="text-base md:text-sm">
         <SelectValue placeholder="Select a payment mode" />
       </SelectTrigger>
@@ -35,12 +34,13 @@ export function PaymentModeSelect({
               All
             </SelectItem>
           )}
-          {paymentMethods.map(({ id, name }) => (
+          {paymentMethods.map(({ id, name, type }) => (
             <SelectItem
               key={id}
               value={id.toString()}
               className="text-base md:text-sm"
             >
+              {type === "savings" ? <LandmarkIcon /> : <CreditCardIcon />}
               {name}
             </SelectItem>
           ))}

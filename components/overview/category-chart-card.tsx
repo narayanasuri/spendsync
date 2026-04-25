@@ -16,11 +16,14 @@ import {
 import { ReactNode, useEffect, useMemo, useState } from "react"
 import { abbreviate, formatToLocalDate } from "@/lib/utils"
 import { useCurrency } from "@/hooks/use-currency"
-import { useMediaQuery } from "@/hooks/use-media-query"
 import { startOfMonth } from "date-fns"
 import { GroupedItem } from "@/lib/types"
 import { useAppStore } from "@/lib/store"
 import { Skeleton } from "@/components/ui/skeleton"
+import { Button } from "../ui/button"
+import Link from "next/link"
+import { ArrowUpRightIcon } from "lucide-react"
+import { COLORS } from "@/lib/constants"
 
 const DATE_NOW = new Date()
 const DATE_FROM = startOfMonth(DATE_NOW)
@@ -66,7 +69,10 @@ function HoverLegend({
     <HoverCard openDelay={10} closeDelay={100}>
       <HoverCardTrigger asChild>{children}</HoverCardTrigger>
       <HoverCardContent className="flex w-auto min-w-[128px] gap-1.5">
-        <span className={`${colorString} h-[34px] w-[4px] rounded-md`} />
+        <span
+          className="h-[34px] w-[4px] rounded-md"
+          style={{ backgroundColor: colorString }}
+        />
         <div className="flex w-full flex-col gap-0.5">
           <p className="text-xs font-medium">{label}</p>
           <div className="flex w-full justify-between">
@@ -83,7 +89,6 @@ function HoverLegend({
 }
 
 export function CategoryChartCard() {
-  const isDesktop = useMediaQuery("(min-width: 768px)")
   const {
     currency: { symbol },
   } = useCurrency()
@@ -112,7 +117,7 @@ export function CategoryChartCard() {
         categoryName: category?.name || "Unknown",
         categoryEmoji: category?.icon || "❓",
         sum: item.sum,
-        color: COLOR_CLASSES[i],
+        color: category?.color || COLOR_CLASSES[i],
         percentage: Math.round((item.sum / total) * 100),
       }
     })
@@ -139,45 +144,50 @@ export function CategoryChartCard() {
                 colorString={item.color}
               >
                 <span
-                  className={`h-full ${item.color} ${
+                  className={`h-full ${
                     index === 0
                       ? "rounded-s-md"
                       : index === items.length - 1
                         ? "rounded-e-md"
                         : "rounded-none"
                   }`}
-                  style={{ width: `${item.percentage}%` }}
+                  style={{
+                    width: `${item.percentage}%`,
+                    backgroundColor: item.color,
+                  }}
                 />
               </HoverLegend>
             )
           })}
         </div>
       </CardContent>
-      {!isDesktop && (
-        <CardFooter className="flex-col items-start gap-2 text-sm">
-          <div className="flex w-full flex-col gap-2">
-            {items.map((item) => (
-              <div
-                key={item.categoryId}
-                className="flex w-full items-center justify-between"
-              >
-                <div className="flex items-center gap-2">
-                  <span
-                    className={`h-[12px] w-[12px] rounded-xs ${item.color}`}
-                  />
-                  <p className="text-xs font-medium">
-                    {item.categoryEmoji} {item.categoryName}
-                  </p>
-                </div>
-                <p className="text-xs font-medium">
-                  {symbol}
-                  {abbreviate(item.sum)}
+      <CardFooter className="flex-col items-start gap-2 text-sm">
+        <div className="flex w-full flex-col gap-2">
+          {items.map((item) => (
+            <div
+              key={item.categoryId}
+              className="flex w-full items-center justify-between"
+            >
+              <div className="flex items-center gap-2">
+                <span
+                  className="h-[12px] w-[12px] rounded-xs"
+                  style={{ backgroundColor: item.color }}
+                />
+                <p className="text-sm font-medium">
+                  {item.categoryEmoji} {item.categoryName}
                 </p>
               </div>
-            ))}
-          </div>
-        </CardFooter>
-      )}
+              <Button variant="link" asChild className="p-0">
+                <Link href={`/logs?categoryId=${item.categoryId}`}>
+                  {symbol}
+                  {abbreviate(item.sum)}
+                  <ArrowUpRightIcon />
+                </Link>
+              </Button>
+            </div>
+          ))}
+        </div>
+      </CardFooter>
     </Card>
   )
 }

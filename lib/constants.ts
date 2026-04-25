@@ -78,3 +78,73 @@ export const CURRENCIES: CurrencyType[] = [
 export const LOCAL_DATE_FORMAT = "yyyy-MM-dd"
 
 export const TIMESTAMP_FORMAT = "yyyy-MM-dd HH:mm:ssXX"
+
+export const COLORS = [
+  {
+    label: "Icy Blue",
+    value: "#B8D6FB",
+  },
+  {
+    label: "Pale Oak",
+    value: "#D9C5A0",
+  },
+  {
+    label: "Blue Bell",
+    value: "#279BF4",
+  },
+  {
+    label: "Soft Blush",
+    value: "#FBE4DD",
+  },
+  {
+    label: "Lavender Blush",
+    value: "#EDE0E7",
+  },
+  {
+    label: "True Lilac",
+    value: "#C8A2C8",
+  },
+  {
+    label: "Sweet Salmon",
+    value: "#FF9A86",
+  },
+  {
+    label: "Medium Slate Blue",
+    value: "#6D7BF1",
+  },
+  {
+    label: "Light Gold",
+    value: "#E5D38A",
+  },
+  {
+    label: "Sandy Clay",
+    value: "#F1AF8A",
+  },
+  {
+    label: "Toasted Almond",
+    value: "#C38C5C",
+  },
+  {
+    label: "Dusk Blue",
+    value: "#2E4B7B",
+  },
+  {
+    label: "Palm Leaf",
+    value: "#87987B",
+  },
+  {
+    label: "Baby Blue Ice",
+    value: "#84B4EB",
+  },
+  {
+    label: "Apricot Cream",
+    value: "#F9C976",
+  },
+]
+
+export const SIGNAL_COLORS = {
+  OPTIMAL: "#4ade80",
+  NORMAL: "#93c5fd",
+  WARNING: "#fcd34d",
+  CRITICAL: "#f87171",
+}

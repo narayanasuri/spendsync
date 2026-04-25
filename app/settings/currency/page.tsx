@@ -30,13 +30,13 @@ export default function CurrencySettingsPage() {
               onClick={() => setCurrency(c.id.toString())}
             >
               <ItemContent>
-                <ItemTitle>
+                <ItemTitle className="text-[16px]">
                   {c.flag} {c.fullLabel} ({c.shortLabel})
                 </ItemTitle>
               </ItemContent>
               {parseInt(currency) === c.id && (
-                <ItemActions>
-                  <CheckIcon fontSize="12" />
+                <ItemActions className="text-[16px]">
+                  <CheckIcon />
                 </ItemActions>
               )}
             </Item>

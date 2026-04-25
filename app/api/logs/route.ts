@@ -85,7 +85,7 @@ export async function POST(req: NextRequest) {
     .single()
 
   const { error: expenseError } = await supabase.rpc("decrement_balance", {
-    row_id: body.payment_mode,
+    payment_mode: body.payment_mode,
     amount: body.amount,
   })
 

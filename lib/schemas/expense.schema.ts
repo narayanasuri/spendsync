@@ -2,7 +2,7 @@ import { z } from "zod"
 
 export const logSchema = z.object({
   transaction_type: z.literal(["expense", "income"]),
-  name: z.string().min(1, "Log title is required."),
+  name: z.string().min(1, "Title is required."),
   amount: z
     .string()
     .min(1, "Amount is required.")
@@ -11,9 +11,9 @@ export const logSchema = z.object({
     })
     .transform((v) => parseFloat(v)),
   description: z.string().optional(),
-  category: z.string().min(1, "Please select a category"),
-  payment_mode: z.string().min(1, "Please select a payment mode"),
-  paid_by: z.string().nullable(),
+  category: z.string({ error: "Category is required" }),
+  payment_mode: z.string({ error: "Payment mode is required" }),
+  paid_by: z.string({ error: "Paid by is required" }),
   spent_at: z.date({ message: "Please select a date." }),
 })
 

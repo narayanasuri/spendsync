@@ -62,9 +62,6 @@ export function PaymentMethodDrawer({
   const isEditing = !!paymentMethod
 
   const title = isEditing ? "Update Payment Method" : "Add Payment Method"
-  const description = isEditing
-    ? "Update the payment method details."
-    : "Create a new payment method"
 
   async function handleDelete() {
     if (!paymentMethod) return
@@ -81,7 +78,7 @@ export function PaymentMethodDrawer({
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>{title}</DialogTitle>
-            <DialogDescription>{description}</DialogDescription>
+            <DialogDescription></DialogDescription>
           </DialogHeader>
           <PaymentMethodForm
             paymentMethod={paymentMethod}
@@ -106,7 +103,7 @@ export function PaymentMethodDrawer({
       <DrawerContent>
         <DrawerHeader className="text-left">
           <DrawerTitle>{title}</DrawerTitle>
-          <DrawerDescription>{description}</DrawerDescription>
+          <DrawerDescription></DrawerDescription>
         </DrawerHeader>
         <div className="px-4">
           <PaymentMethodForm
@@ -119,14 +116,14 @@ export function PaymentMethodDrawer({
           {isEditing && (
             <Button
               variant="destructive"
-              className="block w-full"
+              className="w-full"
               onClick={handleDelete}
             >
               Delete
             </Button>
           )}
           <DrawerClose asChild>
-            <Button variant="outline" className="block w-full">
+            <Button variant="outline" className="w-full">
               Cancel
             </Button>
           </DrawerClose>
@@ -208,6 +205,7 @@ function PaymentMethodForm({
               id="name"
               autoComplete="off"
               placeholder="e.g. Forex"
+              autoFocus
               value={name}
               onChange={(e) => setName(e.target.value)}
             />
@@ -220,13 +218,17 @@ function PaymentMethodForm({
               value={type}
               onValueChange={(v) => setType(v as "savings" | "credit")}
             >
-              <SelectTrigger className="w-full">
+              <SelectTrigger className="w-full text-base md:text-sm">
                 <SelectValue placeholder="Savings or Credit" />
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                  <SelectItem value="savings">Savings</SelectItem>
-                  <SelectItem value="credit">Credit</SelectItem>
+                  <SelectItem value="savings" className="text-base md:text-sm">
+                    Savings
+                  </SelectItem>
+                  <SelectItem value="credit" className="text-base md:text-sm">
+                    Credit
+                  </SelectItem>
                 </SelectGroup>
               </SelectContent>
             </Select>
@@ -244,6 +246,7 @@ function PaymentMethodForm({
                 id={type === "savings" ? "balance" : "limit"}
                 type="number"
                 autoComplete="off"
+                className="text-base"
                 placeholder={
                   type === "savings"
                     ? "Enter your starting balance"

@@ -3,6 +3,7 @@
 import { Budget } from "@/lib/types"
 import {
   Card,
+  CardAction,
   CardContent,
   CardDescription,
   CardHeader,
@@ -10,13 +11,21 @@ import {
 } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import { useCategory } from "@/hooks/use-category"
-import { getDateRange } from "@/lib/utils"
+import {
+  abbreviate,
+  formatToLocalDate,
+  getDateRange,
+  getStatusColor,
+} from "@/lib/utils"
 import { useTotal } from "@/hooks/use-total"
-import { useMemo } from "react"
+import { useCallback, useMemo, useState } from "react"
 import { DateRange } from "react-day-picker"
 import { Field, FieldLabel } from "@/components/ui/field"
 import { useCurrency } from "@/hooks/use-currency"
 import { Skeleton } from "@/components/ui/skeleton"
+import { useMediaQuery } from "@/hooks/use-media-query"
+import { BudgetActionMenu } from "./budget-action-menu"
+import { useRouter } from "next/navigation"
 
 function calculateTimeRemaining(period: "weekly" | "monthly" | "yearly") {
   const now = new Date()
@@ -49,16 +58,25 @@ export function BudgetCardSkeleton() {
         <Skeleton className="h-4 w-1/2" />
       </CardHeader>
       <CardContent>
-        <Skeleton className="h-11 w-full" />
+        <Skeleton className="h-[57.25px] w-full" />
       </CardContent>
     </Card>
   )
 }
 
-export function BudgetCard({ budget }: { budget: Budget }) {
+export function BudgetCard({
+  budget,
+  onEdit,
+}: {
+  budget: Budget
+  onEdit: () => void
+}) {
   const { budget_amount, category_id, period } = budget
   const { found, emoji, label } = useCategory(category_id)
   const { currency } = useCurrency()
+  const [showBudget, setShowBudget] = useState<boolean>(false)
+  const isDesktop = useMediaQuery("(min-width: 768px)")
+  const router = useRouter()
 
   const { from, to } = useMemo<DateRange>(
     () => getDateRange({ period }),
@@ -77,39 +95,91 @@ export function BudgetCard({ budget }: { budget: Budget }) {
     return totals.find((t) => t.transaction_type === "expense")?.sum || 0
   }, [totals])
 
-  const percentage = useMemo<number>(() => {
-    const calculated = Math.floor((spentDuringPeriod / budget_amount) * 100)
+  const percentage = useMemo<number>(
+    () => Math.floor((spentDuringPeriod / budget_amount) * 100),
+    [budget_amount, spentDuringPeriod]
+  )
 
-    if (calculated > 100) return 100
+  const onToggleLimit = useCallback(() => {
+    if (isDesktop) return
 
-    return calculated
-  }, [budget_amount, spentDuringPeriod])
+    setShowBudget((shown) => !shown)
+  }, [isDesktop, setShowBudget])
+
+  const cellValue = useMemo<string>(() => {
+    let res = currency.symbol
+
+    if (isDesktop) {
+      res += abbreviate(spentDuringPeriod)
+    } else {
+      if (showBudget) {
+        res += abbreviate(budget_amount)
+      } else {
+        res += abbreviate(spentDuringPeriod)
+      }
+    }
+
+    return res
+  }, [budget_amount, currency, isDesktop, showBudget, spentDuringPeriod])
+
+  const link = useMemo<string>(() => {
+    const params = new URLSearchParams({
+      categoryId: category_id.toString(),
+    })
+
+    if (from && to) {
+      params.set("from", formatToLocalDate(from))
+      params.set("to", formatToLocalDate(to))
+    }
+
+    return `/logs?${params.toString()}`
+  }, [category_id, from, to])
 
   if (!found) return null
 
   return loading ? (
     <BudgetCardSkeleton />
   ) : (
-    <Card className="mb-3 w-full">
+    <Card className="w-full" onClick={onToggleLimit}>
       <CardHeader>
-        <CardTitle className="font-semibold">
+        <CardTitle className="overflow-hidden font-semibold text-ellipsis">
           {emoji} {label}
         </CardTitle>
         <CardDescription className="font-medium">
           {calculateTimeRemaining(period)} days left
         </CardDescription>
+        <CardAction>
+          <BudgetActionMenu
+            onViewLogs={() => router.push(link)}
+            onEdit={onEdit}
+          />
+        </CardAction>
       </CardHeader>
       <CardContent>
         <Field className="w-full max-w-sm">
           <FieldLabel>
-            <span>
-              {currency.symbol}
-              {spentDuringPeriod} / {currency.symbol}
-              {budget_amount}
-            </span>
-            {/* <span className="ml-auto">{percentage}% spent</span> */}
+            <div className="flex w-full items-end gap-1">
+              <span className="text-2xl font-semibold tabular-nums">
+                {cellValue}
+              </span>
+              {!isDesktop && !showBudget && (
+                <span className="text-md mb-0.5 text-muted-foreground tabular-nums">
+                  ({percentage}%)
+                </span>
+              )}
+              {isDesktop && (
+                <span className="mb-0.5">
+                  of {currency.symbol}
+                  {abbreviate(budget_amount)}
+                </span>
+              )}
+            </div>
           </FieldLabel>
-          <Progress value={percentage} className="my-1.5 h-2 w-full" />
+          <Progress
+            value={percentage}
+            className="my-1.5 h-2 w-full"
+            style={{ color: getStatusColor(percentage) }}
+          />
         </Field>
       </CardContent>
     </Card>

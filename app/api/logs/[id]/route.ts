@@ -78,26 +78,21 @@ export async function PATCH(
 
   const { old_amount, old_payment_method_id, ...body } = bodyWithOldData
 
-  console.log(`[PATCH /api/logs/${id}] Updating:`, body)
-
   // 1. REVERT: Add the old amount back to the old payment method
   const { error: revertError } = await supabase.rpc("decrement_balance", {
-    row_id: old_payment_method_id,
+    payment_mode: old_payment_method_id,
     amount: -old_amount, // Negative decrement = Increment
   })
 
   if (revertError) {
-    return NextResponse.json(
-      { error: "Failed to revert old balance" },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: revertError.message }, { status: 500 })
   }
 
   // 2. APPLY: Subtract the new amount from the (possibly new) payment method
   // We use body.payment_mode (new ID) and body.amount (new amount)
   if (body.payment_mode && body.amount) {
     const { error: applyError } = await supabase.rpc("decrement_balance", {
-      row_id: body.payment_mode,
+      payment_mode: body.payment_mode,
       amount: body.amount,
     })
 
@@ -121,7 +116,6 @@ export async function PATCH(
     return NextResponse.json({ error: error.message }, { status })
   }
 
-  console.log(`[PATCH /api/logs/${id}] Updated successfully`)
   return NextResponse.json(data)
 }
 
@@ -138,8 +132,6 @@ export async function DELETE(
   if (!numericId)
     return NextResponse.json({ error: "Invalid expense ID." }, { status: 400 })
 
-  console.log(`[DELETE /api/logs/${id}] Deleting`)
-
   const { error } = await supabase.from("Expenses").delete().eq("id", numericId)
 
   if (error) {
@@ -147,6 +139,5 @@ export async function DELETE(
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
 
-  console.log(`[DELETE /api/logs/${id}] Deleted successfully`)
   return new NextResponse(null, { status: 204 })
 }

@@ -10,7 +10,6 @@ import { CategoryIcon } from "./category-icon"
 import { useAppStore } from "@/lib/store"
 
 interface CategorySelectProps {
-  resetKey?: number
   value: string
   onChange: (value: string) => void
   allowSelectAll?: boolean
@@ -18,7 +17,6 @@ interface CategorySelectProps {
 }
 
 export function CategorySelect({
-  resetKey,
   value,
   onChange,
   allowSelectAll = false,
@@ -31,7 +29,11 @@ export function CategorySelect({
     : categories
 
   return (
-    <Select key={resetKey} value={value} onValueChange={onChange}>
+    <Select
+      key={value === "" ? "reset" : "active"}
+      value={value}
+      onValueChange={onChange}
+    >
       <SelectTrigger id="category" className="text-base md:text-sm">
         <SelectValue placeholder="Select a category" />
       </SelectTrigger>

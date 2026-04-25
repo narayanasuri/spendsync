@@ -2,91 +2,97 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import {
-  ChartSplineIcon,
-  CirclePlusIcon,
-  ReceiptTextIcon,
-  SettingsIcon,
-  WalletCardsIcon,
-} from "lucide-react"
 import { cn } from "@/lib/utils"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { APP_NAME } from "@/lib/constants"
 import { haptic } from "ios-haptics"
+import { ReceiptIcon } from "./icons/receipt-icon"
+import { CogIcon } from "./icons/cog-icon"
+import { ChartIcon } from "./icons/chart-icon"
+import { GridIcon } from "./icons/grid-icon"
+import { Button } from "@/components/ui/button"
+import { PlusIcon } from "./icons/plus-icon"
+import { LogDrawer } from "../add/log-drawer"
+import { useEffect, useState } from "react"
+import { useAppStore } from "@/lib/store"
 
 const navItems = [
-  { label: "Overview", href: "/", icon: ChartSplineIcon },
-  { label: "Logs", href: "/logs", icon: ReceiptTextIcon },
-  { label: "New", href: "/add", icon: CirclePlusIcon },
-  { label: "Budgets", href: "/budgets", icon: WalletCardsIcon },
-  { label: "Settings", href: "/settings", icon: SettingsIcon },
+  { label: "Overview", href: "/", icon: ChartIcon },
+  { label: "Logs", href: "/logs", icon: ReceiptIcon },
+  { label: "New", href: "/add", icon: PlusIcon, isCenter: true },
+  { label: "Budgets", href: "/budgets", icon: GridIcon },
+  { label: "Settings", href: "/settings", icon: CogIcon },
 ]
 
 export function Navbar() {
   const pathname = usePathname()
+  const [open, setOpen] = useState<boolean>(false)
+  const { editingLog } = useAppStore()
+
+  useEffect(() => {
+    if (editingLog) {
+      setOpen(true)
+    }
+  }, [editingLog])
+
+  const handleOpenChange = (open: boolean) => {
+    setOpen(open)
+  }
 
   if (pathname === "/login") return null
 
   return (
     <>
-      {/* Desktop: sticky top bar */}
-      <header className="sticky top-0 z-50 hidden w-full border-b border-border bg-background/80 backdrop-blur-sm sm:block">
-        <div className="mx-auto flex h-12 max-w-4xl items-center justify-between px-6">
-          <div className="flex items-center gap-1.5">
-            <Avatar>
-              <AvatarImage src="/icon.png" alt={APP_NAME} />
-              <AvatarFallback>
-                {APP_NAME.slice(0, 2).toUpperCase()}
-              </AvatarFallback>
-            </Avatar>
-            <span className="text-sm font-semibold tracking-tight">
-              {APP_NAME}
-            </span>
-          </div>
+      <nav className="border-default fixed bottom-4 left-1/2 z-50 h-16 w-[360px] -translate-x-1/2 rounded-2xl border bg-background shadow-lg md:w-md">
+        <div className="mx-auto grid h-full max-w-lg grid-cols-5">
+          {navItems.map(({ label, href, icon: Icon, isCenter }) => {
+            const active = pathname === href
 
-          <nav className="flex items-center gap-1">
-            {navItems.map(({ label, href, icon: Icon }) => {
-              const active = pathname === href
+            // Special styling for the center "Plus" button
+            if (isCenter) {
               return (
-                <Link
-                  key={href}
-                  href={href}
-                  className={cn(
-                    "flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm transition-colors",
-                    active
-                      ? "bg-muted font-medium text-foreground"
-                      : "text-muted-foreground hover:bg-muted/60 hover:text-foreground"
-                  )}
-                >
-                  <Icon className="size-4" />
-                  <span>{label}</span>
-                </Link>
+                <div key={href} className="flex items-center justify-center">
+                  <Button
+                    size="icon"
+                    aria-label="Submit"
+                    onClick={() => handleOpenChange(true)}
+                    className="w-[56px] bg-foreground"
+                  >
+                    <Icon className="size-5" />
+                  </Button>
+                </div>
               )
-            })}
-          </nav>
-        </div>
-      </header>
+            }
 
-      {/* Mobile: fixed bottom bar */}
-      <nav className="fixed right-0 bottom-0 left-0 z-50 flex items-center border-t border-border bg-background/90 backdrop-blur-sm sm:hidden">
-        {navItems.map(({ label, href, icon: Icon }) => {
-          const active = pathname === href
-          return (
-            <Link
-              key={href}
-              href={href}
-              className={cn(
-                "flex flex-1 flex-col items-center gap-1 py-3 text-xs transition-colors",
-                active ? "text-foreground" : "text-muted-foreground"
-              )}
-              onClick={haptic}
-            >
-              <Icon className={cn("size-5", active && "stroke-[2.5]")} />
-              <span>{label}</span>
-            </Link>
-          )
-        })}
+            return (
+              <Link
+                key={href}
+                href={href}
+                onClick={haptic}
+                data-active={active ? "" : undefined}
+                className={cn(
+                  "group inline-flex flex-col items-center justify-center px-5 transition-colors",
+                  "text-muted-foreground/40 hover:text-foreground/60",
+                  "data-active:font-medium data-active:text-foreground"
+                )}
+              >
+                <Icon
+                  className={cn(
+                    "text-body group-hover:text-fg-brand mb-1 h-6 w-6 transition-colors",
+                    "data-active:text-fg-brand"
+                  )}
+                  data-active={active ? "true" : undefined}
+                />
+                <span className="sr-only">{label}</span>
+              </Link>
+            )
+          })}
+        </div>
       </nav>
+
+      <LogDrawer
+        open={open}
+        onOpenChange={handleOpenChange}
+        log={editingLog ?? undefined}
+      />
     </>
   )
 }

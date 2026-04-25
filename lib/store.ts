@@ -1,13 +1,18 @@
 import { create } from "zustand"
-import { Budget, Category, PaymentMethod, User } from "./types"
+import { Budget, Category, Expense, PaymentMethod, User } from "./types"
 
 type AppStore = {
+  editingLog: Expense | null
+
+  loading: boolean
+  hydrated: boolean
+
   categories: Category[]
   paymentMethods: PaymentMethod[]
   users: User[]
   budgets: Budget[]
-  loading: boolean
-  hydrated: boolean
+
+  setEditingLog: (expense: Expense | null) => void
 
   refreshCategories: () => Promise<void>
   refreshPaymentMethods: () => Promise<void>
@@ -18,13 +23,13 @@ type AppStore = {
 }
 
 export const useAppStore = create<AppStore>((set, get) => ({
-  categories: [],
-  paymentMethods: [],
-  users: [],
-  budgets: [],
   loading: false,
   hydrated: false,
 
+  editingLog: null,
+  setEditingLog: (expense: Expense | null) => set({ editingLog: expense }),
+
+  categories: [],
   refreshCategories: async () => {
     // Skip if already loading
     if (get().loading) return
@@ -41,6 +46,8 @@ export const useAppStore = create<AppStore>((set, get) => ({
       set({ loading: false })
     }
   },
+
+  paymentMethods: [],
   refreshPaymentMethods: async () => {
     // Skip if already loading
     if (get().loading) return
@@ -57,6 +64,8 @@ export const useAppStore = create<AppStore>((set, get) => ({
       set({ loading: false })
     }
   },
+
+  users: [],
   refreshUsers: async () => {
     // Skip if already loading
     if (get().loading) return
@@ -73,6 +82,8 @@ export const useAppStore = create<AppStore>((set, get) => ({
       set({ loading: false })
     }
   },
+
+  budgets: [],
   refreshBudgets: async () => {
     // Skip if already loading
     if (get().loading) return
@@ -89,6 +100,7 @@ export const useAppStore = create<AppStore>((set, get) => ({
       set({ loading: false })
     }
   },
+
   refresh: async () => {
     // Skip if already loading
     if (get().loading) return

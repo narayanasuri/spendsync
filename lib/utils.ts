@@ -15,7 +15,7 @@ import {
   subWeeks,
   subYears,
 } from "date-fns"
-import { LOCAL_DATE_FORMAT } from "./constants"
+import { LOCAL_DATE_FORMAT, SIGNAL_COLORS } from "./constants"
 
 export const cn = (...inputs: ClassValue[]) => {
   return twMerge(clsx(inputs))
@@ -118,4 +118,16 @@ export const getUpcomingDateByDay = (targetDay: number): Date => {
   }
 
   return targetDate
+}
+
+export const getStatusColor = (percentage: number) => {
+  if (percentage < 40) {
+    return SIGNAL_COLORS.OPTIMAL
+  } else if (percentage >= 40 && percentage < 70) {
+    return SIGNAL_COLORS.NORMAL
+  } else if (percentage >= 70 && percentage < 90) {
+    return SIGNAL_COLORS.WARNING
+  } else {
+    return SIGNAL_COLORS.CRITICAL
+  }
 }

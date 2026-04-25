@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
@@ -13,6 +14,7 @@ import {
   Drawer,
   DrawerClose,
   DrawerContent,
+  DrawerDescription,
   DrawerFooter,
   DrawerHeader,
   DrawerTitle,
@@ -57,6 +59,7 @@ export function UserDrawer({ open, onOpenChange, user }: Props) {
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>{title}</DialogTitle>
+            <DialogDescription></DialogDescription>
           </DialogHeader>
           <UserForm user={user} onSuccess={() => onOpenChange(false)} />
           {isEditing && (
@@ -78,6 +81,7 @@ export function UserDrawer({ open, onOpenChange, user }: Props) {
       <DrawerContent>
         <DrawerHeader className="text-left">
           <DrawerTitle>{title}</DrawerTitle>
+          <DrawerDescription></DrawerDescription>
         </DrawerHeader>
         <div className="px-4">
           <UserForm
@@ -90,7 +94,7 @@ export function UserDrawer({ open, onOpenChange, user }: Props) {
           {isEditing && (
             <Button
               variant="destructive"
-              className="block w-full"
+              className="w-full"
               onClick={handleDelete}
               disabled={!!user.default}
             >
@@ -98,7 +102,7 @@ export function UserDrawer({ open, onOpenChange, user }: Props) {
             </Button>
           )}
           <DrawerClose asChild>
-            <Button variant="outline" className="block w-full">
+            <Button variant="outline" className="w-full">
               Cancel
             </Button>
           </DrawerClose>
@@ -172,6 +176,7 @@ function UserForm({
               id="name"
               autoComplete="off"
               placeholder="Bob"
+              autoFocus
               value={name}
               onChange={(e) => setName(e.target.value)}
             />

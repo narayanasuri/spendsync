@@ -7,7 +7,6 @@ import { Expense } from "@/lib/types"
 import { useAppStore } from "@/lib/store"
 import { useCurrency } from "@/hooks/use-currency"
 import { format } from "date-fns"
-import { haptic } from "ios-haptics"
 
 const LOG_TIME_FORMAT = "h:mm a"
 
@@ -31,18 +30,18 @@ export function LogItem({ log }: { log: Expense }) {
     paymentMethods.find((mode) => mode.id === payment_mode)?.name ||
     "Unknown payment mode"
 
-  const onClick = () => {
-    haptic()
-    router.push(`/logs/${id}`)
-  }
-
   return (
     <div
       className="flex cursor-pointer items-center justify-between"
-      onClick={onClick}
+      onClick={() => router.push(`/logs/${id}`)}
     >
       <div className="flex items-center gap-3">
-        <CategoryIcon categoryId={category} onlyIcon={false} size={45} />
+        <CategoryIcon
+          categoryId={category}
+          onlyIcon={false}
+          size={45}
+          iconSize={25}
+        />
         <div className="flex flex-col">
           <p className="font-medium">{name}</p>
           <p className="text-sm font-medium text-muted-foreground">

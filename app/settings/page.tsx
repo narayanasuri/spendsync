@@ -27,12 +27,12 @@ export default function SettingsPage() {
           <h2 className="text-xl font-semibold tracking-tight">Settings</h2>
         </div>
 
-        <div className="flex w-full flex-col rounded-md bg-muted">
+        <div className="flex w-full flex-col rounded-xl bg-muted">
           <Item className="h-[50px]" onClick={toggleTheme}>
             <ItemContent>
-              <ItemTitle>Dark Mode</ItemTitle>
+              <ItemTitle className="text-[16px]">Dark Mode</ItemTitle>
             </ItemContent>
-            <ItemActions>
+            <ItemActions className="text-[16px]">
               <Switch
                 checked={resolvedTheme === "dark"}
                 onClick={toggleTheme}
@@ -40,12 +40,12 @@ export default function SettingsPage() {
             </ItemActions>
           </Item>
 
-          <Item className="h-[50px]" asChild onClick={haptic}>
+          <Item className="h-[50px]" asChild>
             <Link href="/settings/currency">
               <ItemContent>
-                <ItemTitle>Currency</ItemTitle>
+                <ItemTitle className="text-[16px]">Currency</ItemTitle>
               </ItemContent>
-              <ItemActions>
+              <ItemActions className="text-[16px]">
                 {currency.flag} {currency.shortLabel}
                 <Button variant="ghost" size="icon-xs" asChild>
                   <ChevronRightIcon />
@@ -54,12 +54,12 @@ export default function SettingsPage() {
             </Link>
           </Item>
 
-          <Item className="h-[50px]" asChild onClick={haptic}>
+          <Item className="h-[50px]" asChild>
             <Link href="/settings/categories">
               <ItemContent>
-                <ItemTitle>Categories</ItemTitle>
+                <ItemTitle className="text-[16px]">Categories</ItemTitle>
               </ItemContent>
-              <ItemActions>
+              <ItemActions className="text-[16px]">
                 {categories.length}
                 <Button variant="ghost" size="icon-xs" asChild>
                   <ChevronRightIcon />
@@ -68,12 +68,12 @@ export default function SettingsPage() {
             </Link>
           </Item>
 
-          <Item className="h-[50px]" asChild onClick={haptic}>
+          <Item className="h-[50px]" asChild>
             <Link href="/settings/payments">
               <ItemContent>
-                <ItemTitle>Payment Methods</ItemTitle>
+                <ItemTitle className="text-[16px]">Payment Methods</ItemTitle>
               </ItemContent>
-              <ItemActions>
+              <ItemActions className="text-[16px]">
                 {paymentMethods.length}
                 <Button variant="ghost" size="icon-xs" asChild>
                   <ChevronRightIcon />
@@ -82,12 +82,12 @@ export default function SettingsPage() {
             </Link>
           </Item>
 
-          <Item className="h-[50px]" asChild onClick={haptic}>
+          <Item className="h-[50px]" asChild>
             <Link href="/settings/users">
               <ItemContent>
-                <ItemTitle>Users</ItemTitle>
+                <ItemTitle className="text-[16px]">Users</ItemTitle>
               </ItemContent>
-              <ItemActions>
+              <ItemActions className="text-[16px]">
                 {users.length}
                 <Button variant="ghost" size="icon-xs" asChild>
                   <ChevronRightIcon />

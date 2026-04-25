@@ -31,11 +31,11 @@ export default function BudgetsPage() {
   if (!hydrated || loading) {
     return (
       <main className="mx-auto w-full max-w-4xl flex-1 p-6">
-        <div className="mb-6 flex items-center gap-3">
+        <div className="mb-6 flex h-[32px] items-center gap-3">
           <h2 className="text-xl font-semibold tracking-tight">Budgets</h2>
         </div>
 
-        <div className="flex flex-wrap">
+        <div className="-mx-1.5 flex flex-wrap gap-y-3">
           {Array.from({ length: 4 }).map((_, i) => (
             <div key={i} className="basis-1/2 px-1.5 md:basis-1/4">
               <BudgetCardSkeleton />
@@ -52,7 +52,7 @@ export default function BudgetsPage() {
         <h2 className="text-xl font-semibold tracking-tight">Budgets</h2>
         <Button
           variant="ghost"
-          size="icon"
+          size="icon-sm"
           aria-label="Add new budget"
           onClick={() => handleOpenChange(true)}
         >
@@ -80,12 +80,29 @@ export default function BudgetsPage() {
         </Empty>
       )}
 
-      <div className="flex flex-wrap">
-        {budgets.map((budget) => (
+      <div className="-mx-1.5 flex flex-wrap gap-y-3">
+        {budgets.map((budget, index) => (
           <div key={budget.id} className="basis-1/2 px-1.5 md:basis-1/4">
-            <BudgetCard budget={budget} />
+            <BudgetCard
+              budget={budget}
+              onEdit={() => {
+                setEditingBudget(budget)
+                handleOpenChange(true)
+              }}
+            />
           </div>
         ))}
+      </div>
+
+      <div className="mt-3 flex w-full items-center justify-center">
+        <Button
+          variant="outline"
+          className="w-full md:w-auto"
+          onClick={() => handleOpenChange(true)}
+        >
+          <PlusIcon />
+          Add New
+        </Button>
       </div>
 
       <BudgetDrawer

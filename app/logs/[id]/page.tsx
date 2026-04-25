@@ -6,7 +6,6 @@ import { ArrowLeftIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { CategoryIcon } from "@/components/shared/category-icon"
-import { EditLogForm } from "@/components/logs/edit-log-form"
 import { ExpenseActionMenu } from "@/components/logs/details/action-menu"
 import { LogNotFound } from "@/components/logs/details/log-not-found"
 import { useAppStore } from "@/lib/store"
@@ -24,7 +23,7 @@ export default function ExpenseDetailPage() {
   const [expense, setExpense] = useState<Expense | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [editing, setEditing] = useState(false)
+  const { setEditingLog } = useAppStore()
 
   async function handleDelete() {
     const res = await fetch(`/api/logs/${id}`, { method: "DELETE" })
@@ -63,9 +62,9 @@ export default function ExpenseDetailPage() {
             <ArrowLeftIcon className="size-4" />
             Back
           </Button>
-          {expense && !editing && (
+          {expense && (
             <ExpenseActionMenu
-              onEdit={() => setEditing(true)}
+              onEdit={() => setEditingLog(expense)}
               onDelete={handleDelete}
             />
           )}
@@ -77,18 +76,7 @@ export default function ExpenseDetailPage() {
           // <p className="py-12 text-center text-sm text-destructive">{error}</p>
           <LogNotFound />
         ) : expense ? (
-          editing ? (
-            <EditLogForm
-              expense={expense}
-              onSave={(updated) => {
-                setExpense(updated)
-                setEditing(false)
-              }}
-              onCancel={() => setEditing(false)}
-            />
-          ) : (
-            <ExpenseDetail expense={expense} />
-          )
+          <ExpenseDetail expense={expense} />
         ) : null}
       </main>
     </div>
@@ -110,11 +98,11 @@ function ExpenseDetail({ expense }: { expense: Expense }) {
       <div className="flex items-center gap-4">
         <CategoryIcon categoryId={categoryId} onlyIcon={false} size={48} />
         <div className="flex-1">
-          <h2 className="text-xl font-semibold tracking-tight">
+          <h2 className="overflow-hidden text-xl font-semibold tracking-tight text-ellipsis">
             {expense.name}
           </h2>
           {expense.description && (
-            <p className="mt-1 text-sm text-muted-foreground">
+            <p className="text-md mt-1 text-muted-foreground">
               {expense.description}
             </p>
           )}

@@ -1,3 +1,5 @@
+"use client"
+
 import {
   Select,
   SelectContent,
@@ -6,24 +8,32 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { BanknoteArrowDownIcon, BanknoteArrowUpIcon } from "lucide-react"
 
 interface LogTypeSelectProps {
-  value: string
-  onChange: (value: string) => void
+  value: "expense" | "income"
+  onChange: (value: "expense" | "income") => void
+  defaultValue?: "expense" | "income"
 }
 
-export function LogTypeSelect({ value, onChange }: LogTypeSelectProps) {
+export function LogTypeSelect({
+  value,
+  onChange,
+  defaultValue = "expense",
+}: LogTypeSelectProps) {
   return (
-    <Select defaultValue="expense" value={value} onValueChange={onChange}>
+    <Select defaultValue={defaultValue} value={value} onValueChange={onChange}>
       <SelectTrigger id="transactionType" className="text-base md:text-sm">
         <SelectValue placeholder="Select a transaction type" />
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>
           <SelectItem value="expense" className="text-base md:text-sm">
+            <BanknoteArrowUpIcon />
             Expense
           </SelectItem>
           <SelectItem value="income" className="text-base md:text-sm">
+            <BanknoteArrowDownIcon />
             Income
           </SelectItem>
         </SelectGroup>

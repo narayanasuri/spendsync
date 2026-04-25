@@ -3,15 +3,22 @@
 import { PaymentMethod } from "@/lib/types"
 import {
   Card,
+  CardAction,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
 import { useCurrency } from "@/hooks/use-currency"
-import { useMemo } from "react"
+import { useCallback, useMemo, useState } from "react"
 import { DateRange } from "react-day-picker"
-import { getDateRange, getUpcomingDateByDay } from "@/lib/utils"
+import {
+  abbreviate,
+  getDateRange,
+  getUpcomingDateByDay,
+  formatToLocalDate,
+  getStatusColor,
+} from "@/lib/utils"
 import { useTotal } from "@/hooks/use-total"
 import { Field, FieldLabel } from "@/components/ui/field"
 import { Progress } from "@/components/ui/progress"
@@ -22,8 +29,11 @@ import {
   EmptyHeader,
   EmptyMedia,
 } from "@/components/ui/empty"
-import { CircleAlertIcon } from "lucide-react"
+import { ArrowRightIcon, CircleAlertIcon } from "lucide-react"
 import { Skeleton } from "@/components/ui/skeleton"
+import { useMediaQuery } from "@/hooks/use-media-query"
+import { Button } from "../ui/button"
+import Link from "next/link"
 
 export function CreditCardLimitCardSkeleton() {
   return (
@@ -46,11 +56,14 @@ export function CreditLimitCard({
 }) {
   const { id, balance, name, due } = paymentMethod
   const { currency } = useCurrency()
+  const [showLimit, setShowLimit] = useState<boolean>(false)
+  const isDesktop = useMediaQuery("(min-width: 768px)")
 
   const { from, to } = useMemo<DateRange>(() => {
     return getDateRange({
       period: "monthly",
       endDate: getUpcomingDateByDay(due),
+      excludePastPeriod: false,
     })
   }, [due])
 
@@ -73,15 +86,45 @@ export function CreditLimitCard({
     return totals.find((t) => t.transaction_type === "expense")?.sum || 0
   }, [totals])
 
-  const percentage = useMemo<number>(() => {
-    if (!balance) return 0
+  const percentage = useMemo<number>(
+    () => (balance ? Math.floor((spentDuringPeriod / balance) * 100) : 0),
+    [balance, spentDuringPeriod]
+  )
 
-    const calculated = Math.floor((spentDuringPeriod / balance) * 100)
+  const onToggleLimit = useCallback(() => {
+    if (isDesktop) return
 
-    if (calculated > 100) return 100
+    setShowLimit((shown) => !shown)
+  }, [isDesktop, setShowLimit])
 
-    return calculated
-  }, [balance, spentDuringPeriod])
+  const cellValue = useMemo<string>(() => {
+    let res = currency.symbol
+
+    if (isDesktop) {
+      res += abbreviate(spentDuringPeriod)
+    } else {
+      if (showLimit && balance !== null) {
+        res += abbreviate(balance)
+      } else {
+        res += abbreviate(spentDuringPeriod)
+      }
+    }
+
+    return res
+  }, [balance, currency, isDesktop, showLimit, spentDuringPeriod])
+
+  const link = useMemo<string>(() => {
+    const params = new URLSearchParams({
+      paymentMethodId: paymentMethod.id.toString(),
+    })
+
+    if (from && to) {
+      params.set("from", formatToLocalDate(from))
+      params.set("to", formatToLocalDate(to))
+    }
+
+    return `/logs?${params.toString()}`
+  }, [paymentMethod.id, from, to])
 
   if (error) {
     return (
@@ -105,23 +148,50 @@ export function CreditLimitCard({
   return loading ? (
     <CreditCardLimitCardSkeleton />
   ) : (
-    <Card className="w-full">
+    <Card className="w-full" onClick={onToggleLimit}>
       <CardHeader>
         <CardTitle className="font-semibold">{name}</CardTitle>
         <CardDescription className="font-medium">
           {daysLeftUntilDue} days left
         </CardDescription>
+        <CardAction>
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            asChild
+            onClick={(e) => e.stopPropagation()}
+          >
+            <Link href={link}>
+              <ArrowRightIcon />
+            </Link>
+          </Button>
+        </CardAction>
       </CardHeader>
       <CardContent>
         <Field className="w-full max-w-sm">
           <FieldLabel>
-            <span>
-              {currency.symbol}
-              {spentDuringPeriod} / {currency.symbol}
-              {balance}
-            </span>
+            <div className="flex w-full items-end gap-1">
+              <span className="text-2xl font-semibold tabular-nums">
+                {cellValue}
+              </span>
+              {!isDesktop && !showLimit && (
+                <span className="text-md mb-0.5 text-muted-foreground tabular-nums">
+                  ({percentage}%)
+                </span>
+              )}
+              {isDesktop && (
+                <span className="mb-0.5">
+                  of {currency.symbol}
+                  {balance === null ? "-" : abbreviate(balance)}
+                </span>
+              )}
+            </div>
           </FieldLabel>
-          <Progress value={percentage} className="my-1.5 h-2 w-full" />
+          <Progress
+            value={percentage}
+            className="my-1.5 h-2 w-full"
+            style={{ color: getStatusColor(percentage) }}
+          />
         </Field>
       </CardContent>
     </Card>

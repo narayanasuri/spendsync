@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import {
@@ -39,6 +39,7 @@ type Props = {
 
 export function BudgetDrawer({ open, onOpenChange, budget }: Props) {
   const isDesktop = useMediaQuery("(min-width: 768px)")
+  const { refreshBudgets } = useAppStore()
   const isEditing = !!budget
 
   const title = isEditing ? "Modify Budget" : "New Budget"
@@ -48,6 +49,7 @@ export function BudgetDrawer({ open, onOpenChange, budget }: Props) {
     await fetch(`/api/budgets/${budget.id}`, {
       method: "DELETE",
     })
+    await refreshBudgets()
     onOpenChange(false)
   }
 
@@ -90,14 +92,14 @@ export function BudgetDrawer({ open, onOpenChange, budget }: Props) {
           {isEditing && (
             <Button
               variant="destructive"
-              className="block w-full"
+              className="w-full"
               onClick={handleDelete}
             >
               Delete
             </Button>
           )}
           <DrawerClose asChild>
-            <Button variant="outline" className="block w-full">
+            <Button variant="outline" className="w-full">
               Cancel
             </Button>
           </DrawerClose>
@@ -116,7 +118,7 @@ function BudgetForm({
   onSuccess: () => void
   className?: string
 }) {
-  const { categories, refreshBudgets } = useAppStore()
+  const { refreshBudgets } = useAppStore()
   const isEditing = !!budget
 
   const [limit, setLimit] = useState(budget?.budget_amount ?? 1000)
@@ -128,14 +130,6 @@ function BudgetForm({
   const [limitError, setLimitError] = useState<string | null>(null)
   const [categoryError, setCategoryError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
-
-  useEffect(() => {
-    const defaultCategory = categories.find((c) => c.type === "expense")
-
-    if (defaultCategory) {
-      setCategory(defaultCategory.id.toString())
-    }
-  }, [categories])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -154,7 +148,7 @@ function BudgetForm({
     setLoading(true)
 
     try {
-      const url = isEditing ? `/api/users/${budget.id}` : "/api/budgets"
+      const url = isEditing ? `/api/budgets/${budget.id}` : "/api/budgets"
       const method = isEditing ? "PATCH" : "POST"
 
       const res = await fetch(url, {
@@ -218,6 +212,7 @@ function BudgetForm({
               id="budget"
               type="number"
               autoComplete="off"
+              autoFocus
               placeholder="Enter the budget amount"
               value={limit}
               onChange={(e) => setLimit(parseInt(e.target.value))}

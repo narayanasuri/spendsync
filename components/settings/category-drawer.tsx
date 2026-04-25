@@ -28,14 +28,6 @@ import {
   FieldLabel,
   FieldSet,
 } from "@/components/ui/field"
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
 import { SmilePlusIcon } from "lucide-react"
 import {
   Popover,
@@ -50,22 +42,35 @@ import {
 } from "@/components/ui/emoji-picker"
 import { useAppStore } from "@/lib/store"
 import { Category } from "@/lib/types"
+import { LogTypeSelect } from "@/components/shared/log-type-select"
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select"
+import { COLORS } from "@/lib/constants"
 
 type Props = {
   open: boolean
   onOpenChange: (open: boolean) => void
+  defaultType?: "expense" | "income"
   category?: Category // present → edit mode
 }
 
-export function CategoryDrawer({ open, onOpenChange, category }: Props) {
+export function CategoryDrawer({
+  open,
+  onOpenChange,
+  category,
+  defaultType = "expense",
+}: Props) {
   const isDesktop = useMediaQuery("(min-width: 768px)")
   const { refreshCategories } = useAppStore()
   const isEditing = !!category
 
-  const title = isEditing ? "Edit Category" : "Add Category"
-  const description = isEditing
-    ? "Update the category details."
-    : "Create a new category for your expenses or income."
+  const title = isEditing ? "Update Category" : "Add Category"
 
   async function handleDelete() {
     if (!category) return
@@ -82,7 +87,7 @@ export function CategoryDrawer({ open, onOpenChange, category }: Props) {
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>{title}</DialogTitle>
-            <DialogDescription>{description}</DialogDescription>
+            <DialogDescription></DialogDescription>
           </DialogHeader>
           <CategoryForm
             category={category}
@@ -107,12 +112,13 @@ export function CategoryDrawer({ open, onOpenChange, category }: Props) {
       <DrawerContent>
         <DrawerHeader className="text-left">
           <DrawerTitle>{title}</DrawerTitle>
-          <DrawerDescription>{description}</DrawerDescription>
+          <DrawerDescription></DrawerDescription>
         </DrawerHeader>
         <div className="px-4">
           <CategoryForm
             category={category}
             onSuccess={() => onOpenChange(false)}
+            defaultType={defaultType}
             className="px-0"
           />
         </div>
@@ -120,7 +126,7 @@ export function CategoryDrawer({ open, onOpenChange, category }: Props) {
           {isEditing && (
             <Button
               variant="destructive"
-              className="block w-full"
+              className="w-full"
               onClick={handleDelete}
             >
               Delete
@@ -138,20 +144,23 @@ export function CategoryDrawer({ open, onOpenChange, category }: Props) {
 function CategoryForm({
   category,
   onSuccess,
+  defaultType = "expense",
   className,
 }: {
   category?: Category
   onSuccess: () => void
+  defaultType?: "expense" | "income"
   className?: string
 }) {
   const { refreshCategories } = useAppStore()
   const isEditing = !!category
 
-  const [icon, setIcon] = useState(category?.icon ?? "")
+  const [icon, setIcon] = useState(category?.icon ?? "❓")
   const [name, setName] = useState(category?.name ?? "")
   const [type, setType] = useState<"expense" | "income">(
-    (category?.type as "expense" | "income") ?? "expense"
+    (category?.type as "expense" | "income") ?? defaultType
   )
+  const [color, setColor] = useState<string>(category?.color ?? COLORS[0].value)
   const [emojiOpen, setEmojiOpen] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
@@ -175,7 +184,12 @@ function CategoryForm({
       const res = await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: name.trim(), icon: icon || null, type }),
+        body: JSON.stringify({
+          name: name.trim(),
+          icon: icon || null,
+          type,
+          color,
+        }),
       })
 
       const json = await res.json()
@@ -201,20 +215,21 @@ function CategoryForm({
       <FieldSet>
         <FieldGroup>
           <Field>
-            <FieldLabel htmlFor="name">Name</FieldLabel>
-            <div className="flex gap-1">
+            <div className="flex items-center justify-center">
               <Popover open={emojiOpen} onOpenChange={setEmojiOpen}>
                 <PopoverTrigger asChild>
                   <Button
                     type="button"
                     variant="outline"
-                    size="icon"
+                    size="icon-xl"
                     aria-label="Select an emoji"
+                    className="text-base"
+                    style={{ backgroundColor: color }}
                   >
                     {icon ? (
-                      <span className="text-lg">{icon}</span>
+                      <span className="text-[32px]">{icon}</span>
                     ) : (
-                      <SmilePlusIcon />
+                      <SmilePlusIcon className="text-lg" />
                     )}
                   </Button>
                 </PopoverTrigger>
@@ -232,33 +247,59 @@ function CategoryForm({
                   </EmojiPicker>
                 </PopoverContent>
               </Popover>
-              <Input
-                id="name"
-                autoComplete="off"
-                placeholder="e.g. Shopping"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-              />
             </div>
             {error && <FieldError>{error}</FieldError>}
           </Field>
 
           <Field>
-            <FieldLabel>Type</FieldLabel>
+            <FieldLabel htmlFor="name">Name</FieldLabel>
+            <Input
+              id="name"
+              autoComplete="off"
+              placeholder="e.g. Shopping"
+              autoFocus
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+            {error && <FieldError>{error}</FieldError>}
+          </Field>
+
+          <Field>
+            <FieldLabel>Color</FieldLabel>
             <Select
-              value={type}
-              onValueChange={(v) => setType(v as "expense" | "income")}
+              defaultValue={COLORS[0].value}
+              value={color}
+              onValueChange={(value) => setColor(value)}
             >
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Expense or Income" />
+              <SelectTrigger
+                id="transactionType"
+                className="text-base md:text-sm"
+              >
+                <SelectValue placeholder="Select a transaction type" />
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                  <SelectItem value="expense">Expense</SelectItem>
-                  <SelectItem value="income">Income</SelectItem>
+                  {COLORS.map(({ label, value }) => (
+                    <SelectItem
+                      key={value}
+                      value={value}
+                      className="text-base md:text-sm"
+                    >
+                      <span
+                        className="size-4 rounded-sm"
+                        style={{ backgroundColor: value }}
+                      ></span>
+                      {label}
+                    </SelectItem>
+                  ))}
                 </SelectGroup>
               </SelectContent>
             </Select>
+          </Field>
+
+          <Field>
+            <FieldLabel>Type</FieldLabel>
+            <LogTypeSelect value={type} onChange={(v) => setType(v)} />
           </Field>
         </FieldGroup>
       </FieldSet>

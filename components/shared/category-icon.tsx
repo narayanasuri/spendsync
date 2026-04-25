@@ -1,3 +1,4 @@
+import { COLORS } from "@/lib/constants"
 import { useAppStore } from "@/lib/store"
 
 export function CategoryIcon({
@@ -13,18 +14,22 @@ export function CategoryIcon({
 }) {
   const { categories } = useAppStore()
 
-  const emoji = categories.find((c) => c.id === categoryId)?.icon || "❓"
+  const category = categories.find((c) => c.id === categoryId)
+
+  const emoji = category?.icon || "❓"
 
   if (onlyIcon) return <span className={`text-[${size}px]`}>{emoji}</span>
 
-  const iconSizeClassName = `text-[${iconSize}px]`
-
   return (
     <div
-      className="flex shrink-0 items-center justify-center rounded-xl bg-muted"
-      style={{ width: size, height: size }}
+      className="flex shrink-0 items-center justify-center rounded-xl"
+      style={{
+        width: size,
+        height: size,
+        backgroundColor: category?.color ?? COLORS[0].value,
+      }}
     >
-      <span className={iconSizeClassName}>{emoji}</span>
+      <span style={{ fontSize: iconSize }}>{emoji}</span>
     </div>
   )
 }

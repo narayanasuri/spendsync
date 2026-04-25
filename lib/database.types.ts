@@ -80,22 +80,25 @@ export type Database = {
       }
       Categories: {
         Row: {
-          icon: string | null
+          icon: string
           id: number
           name: string
           type: string
+          color: string
         }
         Insert: {
-          icon?: string | null
+          icon: string
           id?: number
           name: string
-          type?: string
+          type: string
+          color?: string
         }
         Update: {
-          icon?: string | null
+          icon?: string
           id?: number
           name?: string
           type?: string
+          color?: string
         }
         Relationships: []
       }
@@ -135,10 +138,24 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "Expenses_category_fkey"
+            columns: ["category"]
+            isOneToOne: false
+            referencedRelation: "Categories"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "Expenses_paid_by_fkey"
             columns: ["paid_by"]
             isOneToOne: false
             referencedRelation: "Users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "Expenses_payment_mode_fkey"
+            columns: ["payment_mode"]
+            isOneToOne: false
+            referencedRelation: "PaymentMethods"
             referencedColumns: ["id"]
           },
         ]
@@ -191,7 +208,7 @@ export type Database = {
     }
     Functions: {
       decrement_balance: {
-        Args: { amount: number; row_id: number }
+        Args: { amount: number; payment_mode: number }
         Returns: undefined
       }
     }

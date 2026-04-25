@@ -57,27 +57,24 @@ export async function GET(req: NextRequest) {
     )
   }
 
+  let query = supabase.from("Expenses").select("transaction_type,amount.sum()")
+
   if (categoryId) {
-    const { data, error } = await supabase
-      .from("Expenses")
-      .select("transaction_type,amount.sum()")
-      .eq("category", parseInt(categoryId))
-
-    if (error)
-      return NextResponse.json({ error: error.message }, { status: 500 })
-
-    return NextResponse.json(data)
+    query = query.eq("category", parseInt(categoryId))
   } else if (paymentId) {
-    const { data, error } = await supabase
-      .from("Expenses")
-      .select("transaction_type, amount.sum()")
-      .eq("payment_mode", parseInt(paymentId))
-
-    if (error)
-      return NextResponse.json({ error: error.message }, { status: 500 })
-
-    return NextResponse.json(data)
+    query = query.eq("category", parseInt(paymentId))
   }
 
-  return NextResponse.json({ error: "Unreachable" }, { status: 500 })
+  if (from)
+    query = query.gte(
+      "spent_at",
+      new Date(from + "T00:00:00.000Z").toISOString()
+    )
+  if (to)
+    query = query.lte("spent_at", new Date(to + "T23:59:59.999Z").toISOString())
+
+  const { data, error } = await query
+
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  return NextResponse.json(data)
 }
