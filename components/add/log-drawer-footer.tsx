@@ -76,9 +76,9 @@ export function LogDrawerFooter({
   }
 
   return (
-    <DrawerFooter className="pt-2">
+    <DrawerFooter className="mb-3">
       <Button
-        className="w-full"
+        className="mb-3 w-full"
         disabled={isSubmitting}
         onClick={() => handleSubmit(onSubmit)()}
       >
@@ -86,7 +86,7 @@ export function LogDrawerFooter({
         {isSubmitting ? "Submitting" : "Submit"}
       </Button>
       <DrawerClose asChild>
-        <Button variant="outline" className="w-full">
+        <Button variant="outline" className="mb-3 w-full">
           Cancel
         </Button>
       </DrawerClose>

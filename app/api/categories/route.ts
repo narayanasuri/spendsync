@@ -27,7 +27,12 @@ export async function POST(req: NextRequest) {
 
   const { data, error } = await supabase
     .from("Categories")
-    .insert({ name: body.name.trim(), icon: body.icon ?? null })
+    .insert({
+      name: body.name.trim(),
+      icon: body.icon,
+      color: body.color,
+      type: body.type,
+    })
     .select()
     .single()
 

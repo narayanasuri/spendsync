@@ -122,19 +122,16 @@ export function CategoryDrawer({
             className="px-0"
           />
         </div>
-        <DrawerFooter className="pt-2">
+        <DrawerFooter className="mt-1 mb-3">
           {isEditing && (
             <Button
               variant="destructive"
-              className="w-full"
+              className="mb-4 w-full"
               onClick={handleDelete}
             >
               Delete
             </Button>
           )}
-          <DrawerClose asChild>
-            <Button variant="outline">Cancel</Button>
-          </DrawerClose>
         </DrawerFooter>
       </DrawerContent>
     </Drawer>

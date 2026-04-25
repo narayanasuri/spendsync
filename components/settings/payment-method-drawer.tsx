@@ -87,7 +87,7 @@ export function PaymentMethodDrawer({
           {isEditing && (
             <Button
               variant="destructive"
-              className="w-full"
+              className="mt-1 w-full"
               onClick={handleDelete}
             >
               Delete
@@ -112,21 +112,16 @@ export function PaymentMethodDrawer({
             className="px-0"
           />
         </div>
-        <DrawerFooter className="pt-2">
+        <DrawerFooter className="mt-1 mb-3">
           {isEditing && (
             <Button
               variant="destructive"
-              className="w-full"
+              className="mb-4 w-full"
               onClick={handleDelete}
             >
               Delete
             </Button>
           )}
-          <DrawerClose asChild>
-            <Button variant="outline" className="w-full">
-              Cancel
-            </Button>
-          </DrawerClose>
         </DrawerFooter>
       </DrawerContent>
     </Drawer>
