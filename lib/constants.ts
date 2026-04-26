@@ -2,69 +2,71 @@ import type { CurrencyType } from "./types"
 
 export const APP_NAME = "spendsync"
 
+export const CURRENCY_LOCAL_STORAGE_KEY = "currency"
+
 export const CURRENCIES: CurrencyType[] = [
   {
     id: 1,
+    shortLabel: "INR",
+    fullLabel: "Indian Rupee",
+    symbol: "₹",
+    flag: "🇮🇳",
+  },
+  {
+    id: 2,
     shortLabel: "USD",
     fullLabel: "United States Dollar",
     symbol: "$",
     flag: "🇺🇸",
   },
   {
-    id: 2,
+    id: 3,
     shortLabel: "EUR",
     fullLabel: "Euro",
     symbol: "€",
     flag: "🇪🇺",
   },
   {
-    id: 3,
+    id: 4,
     shortLabel: "GBP",
     fullLabel: "British Pound Sterling",
     symbol: "£",
     flag: "🇬🇧",
   },
   {
-    id: 4,
+    id: 5,
     shortLabel: "JPY",
     fullLabel: "Japanese Yen",
     symbol: "¥",
     flag: "🇯🇵",
   },
   {
-    id: 5,
+    id: 6,
     shortLabel: "AUD",
     fullLabel: "Australian Dollar",
     symbol: "A$",
     flag: "🇦🇺",
   },
   {
-    id: 6,
+    id: 7,
     shortLabel: "CAD",
     fullLabel: "Canadian Dollar",
     symbol: "C$",
     flag: "🇨🇦",
   },
   {
-    id: 7,
+    id: 8,
     shortLabel: "CHF",
     fullLabel: "Swiss Franc",
     symbol: "Fr.",
     flag: "🇨🇭",
   },
   {
-    id: 8,
+    id: 9,
     shortLabel: "CNY",
     fullLabel: "Chinese Yuan",
     symbol: "¥",
     flag: "🇨🇳",
-  },
-  {
-    id: 9,
-    shortLabel: "INR",
-    fullLabel: "Indian Rupee",
-    symbol: "₹",
-    flag: "🇮🇳",
   },
   {
     id: 10,

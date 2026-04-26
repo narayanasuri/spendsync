@@ -1,7 +1,14 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { Item, ItemActions, ItemContent, ItemTitle } from "@/components/ui/item"
+import {
+  Item,
+  ItemActions,
+  ItemContent,
+  ItemGroup,
+  ItemSeparator,
+  ItemTitle,
+} from "@/components/ui/item"
 import { Switch } from "@/components/ui/switch"
 import { useCurrency } from "@/hooks/use-currency"
 import { useAppStore } from "@/lib/store"
@@ -27,7 +34,7 @@ export default function SettingsPage() {
           <h2 className="text-xl font-semibold tracking-tight">Settings</h2>
         </div>
 
-        <div className="flex w-full flex-col rounded-xl bg-muted">
+        <ItemGroup className="gap-1">
           <Item className="h-[50px]" onClick={toggleTheme}>
             <ItemContent>
               <ItemTitle className="text-[16px]">Dark Mode</ItemTitle>
@@ -39,6 +46,8 @@ export default function SettingsPage() {
               />
             </ItemActions>
           </Item>
+
+          <ItemSeparator className="m-0 w-full" />
 
           <Item className="h-[50px]" asChild>
             <Link href="/settings/currency">
@@ -54,6 +63,8 @@ export default function SettingsPage() {
             </Link>
           </Item>
 
+          <ItemSeparator className="m-0 w-full" />
+
           <Item className="h-[50px]" asChild>
             <Link href="/settings/categories">
               <ItemContent>
@@ -67,6 +78,8 @@ export default function SettingsPage() {
               </ItemActions>
             </Link>
           </Item>
+
+          <ItemSeparator className="m-0 w-full" />
 
           <Item className="h-[50px]" asChild>
             <Link href="/settings/payments">
@@ -82,6 +95,8 @@ export default function SettingsPage() {
             </Link>
           </Item>
 
+          <ItemSeparator className="m-0 w-full" />
+
           <Item className="h-[50px]" asChild>
             <Link href="/settings/users">
               <ItemContent>
@@ -95,7 +110,7 @@ export default function SettingsPage() {
               </ItemActions>
             </Link>
           </Item>
-        </div>
+        </ItemGroup>
       </main>
     </div>
   )

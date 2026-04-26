@@ -12,14 +12,8 @@ import {
 import { useCurrency } from "@/hooks/use-currency"
 import { Button } from "@/components/ui/button"
 import { useMemo, useState } from "react"
-import {
-  ArrowRightIcon,
-  EyeClosedIcon,
-  EyeIcon,
-  ScanSearchIcon,
-} from "lucide-react"
+import { ArrowRightIcon } from "lucide-react"
 import { Skeleton } from "@/components/ui/skeleton"
-import { haptic } from "ios-haptics"
 import { abbreviate, cn } from "@/lib/utils"
 import Link from "next/link"
 
@@ -44,37 +38,29 @@ export function BalanceCard({
 }) {
   const { balance, name } = paymentMethod
   const { currency } = useCurrency()
-  const [hidden, setHidden] = useState<boolean>(true)
-  const [expanded, setExpanded] = useState<boolean>(false)
+  const [visibilityStatus, setVisibilityStatus] = useState<
+    "HIDE" | "SHORT" | "LONG"
+  >("HIDE")
 
-  const onToggleHide = () => {
-    haptic()
-    setHidden((prev) => !prev)
-  }
+  console.log({ currency })
 
-  const onToggleExpansion = () => {
-    if (!hidden) {
-      setExpanded((expanded) => !expanded)
-    }
-  }
+  const onToggleVisibilityStatus = () =>
+    setVisibilityStatus((prev) =>
+      prev === "HIDE" ? "SHORT" : prev === "SHORT" ? "LONG" : "HIDE"
+    )
 
   const amount = useMemo<string>(() => {
     if (!balance) return "-"
 
-    let res = currency.symbol
-
-    if (hidden) {
-      res += "*****"
-    } else {
-      if (expanded) {
-        res += balance.toString()
-      } else {
-        res += abbreviate(balance)
-      }
+    switch (visibilityStatus) {
+      case "SHORT":
+        return currency.symbol + abbreviate(balance)
+      case "LONG":
+        return currency.symbol + balance.toString()
+      default:
+        return currency.symbol + "*****"
     }
-
-    return res
-  }, [balance, currency, expanded, hidden])
+  }, [balance, currency, visibilityStatus])
 
   const link = useMemo<string>(() => {
     const params = new URLSearchParams({
@@ -87,7 +73,7 @@ export function BalanceCard({
   if (!balance) return null
 
   return (
-    <Card className="w-full md:basis-1/2" onClick={onToggleHide}>
+    <Card className="w-full md:basis-1/2" onClick={onToggleVisibilityStatus}>
       <CardHeader>
         <CardTitle className="font-semibold">{name} (Savings)</CardTitle>
         <CardDescription className="font-medium">Balance</CardDescription>
@@ -107,11 +93,10 @@ export function BalanceCard({
       <CardContent>
         <p
           className={cn(
-            expanded
+            visibilityStatus === "LONG"
               ? "text-lg font-semibold tabular-nums"
               : "text-2xl font-semibold tabular-nums"
           )}
-          onClick={onToggleExpansion}
         >
           {amount}
         </p>

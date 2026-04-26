@@ -23,7 +23,6 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Button } from "../ui/button"
 import Link from "next/link"
 import { ArrowUpRightIcon } from "lucide-react"
-import { COLORS } from "@/lib/constants"
 
 const DATE_NOW = new Date()
 const DATE_FROM = startOfMonth(DATE_NOW)

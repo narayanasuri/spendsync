@@ -1,52 +1,37 @@
 "use client"
 
-import { Fragment, useState } from "react"
+import { useState } from "react"
 import { useAppStore } from "@/lib/store"
 import { Button } from "@/components/ui/button"
-import { Item, ItemActions, ItemContent, ItemTitle } from "@/components/ui/item"
-import { Separator } from "@/components/ui/separator"
-import { ArrowLeftIcon, PlusIcon, ShoppingBasketIcon } from "lucide-react"
+import {
+  ArrowLeftIcon,
+  BanknoteArrowDownIcon,
+  BanknoteArrowUpIcon,
+  PlusIcon,
+} from "lucide-react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { CategoryDrawer } from "@/components/settings/category-drawer"
-import {
-  Empty,
-  EmptyContent,
-  EmptyHeader,
-  EmptyMedia,
-  EmptyTitle,
-} from "@/components/ui/empty"
 import { useBackButton } from "@/hooks/use-back-button"
-
-function EmptyCategoriesState({ onOpen }: { onOpen: () => void }) {
-  return (
-    <Empty>
-      <EmptyHeader>
-        <EmptyMedia variant="icon">
-          <ShoppingBasketIcon />
-        </EmptyMedia>
-        <EmptyTitle>No categories added</EmptyTitle>
-      </EmptyHeader>
-      <EmptyContent>
-        <Button variant="outline" size="sm" onClick={onOpen}>
-          Add New
-        </Button>
-      </EmptyContent>
-    </Empty>
-  )
-}
+import { CategoriesList } from "@/components/settings/categories-list"
+import type { Category } from "@/lib/types"
 
 export default function CategoriesSettingsPage() {
   const { categories } = useAppStore()
   const [activeTab, setActiveTab] = useState<"expense" | "income">("expense")
   const [open, setOpen] = useState<boolean>(false)
-  const [editingCategory, setEditingCategory] = useState<
-    (typeof categories)[0] | undefined
-  >()
+  const [editingCategory, setEditingCategory] = useState<Category | undefined>()
   const back = useBackButton("/settings")
 
   const handleOpenChange = (open: boolean) => {
     setOpen(open)
     if (!open) setEditingCategory(undefined)
+  }
+
+  const onAddCategory = () => handleOpenChange(true)
+
+  const onEditCategory = (category: Category) => {
+    setEditingCategory(category)
+    setOpen(true)
   }
 
   return (
@@ -68,12 +53,13 @@ export default function CategoriesSettingsPage() {
         </div>
 
         <Tabs value={activeTab} className="w-full">
-          <TabsList className="mb-2">
+          <TabsList className="mb-2 w-full">
             <TabsTrigger
               value="expense"
               className="text-base"
               onClick={() => setActiveTab("expense")}
             >
+              <BanknoteArrowUpIcon />
               Expense
             </TabsTrigger>
             <TabsTrigger
@@ -81,93 +67,25 @@ export default function CategoriesSettingsPage() {
               className="text-base"
               onClick={() => setActiveTab("income")}
             >
+              <BanknoteArrowDownIcon />
               Income
             </TabsTrigger>
           </TabsList>
           <TabsContent value="expense">
-            <div className="flex w-full flex-col rounded-md bg-muted">
-              {categories.filter((category) => category.type === "expense")
-                .length === 0 && (
-                <EmptyCategoriesState onOpen={() => handleOpenChange(true)} />
-              )}
-              {categories
-                .filter((category) => category.type === "expense")
-                .map((category, index) => (
-                  <Fragment key={category.id}>
-                    {index > 0 && <Separator key={`sep-${category.id}`} />}
-                    <Item
-                      key={`item-${category.id}`}
-                      className="h-[50px]"
-                      onClick={() => {
-                        setEditingCategory(category)
-                        setOpen(true)
-                      }}
-                    >
-                      <ItemContent>
-                        <ItemTitle className="text-base">
-                          <span className="mr-1">{category.icon}</span>{" "}
-                          {category.name}
-                        </ItemTitle>
-                      </ItemContent>
-                      <ItemActions>
-                        <span
-                          className="size-5 rounded-md"
-                          style={{ backgroundColor: category.color }}
-                        />
-                      </ItemActions>
-                    </Item>
-                  </Fragment>
-                ))}
-            </div>
+            <CategoriesList
+              categories={categories.filter(({ type }) => type === "expense")}
+              onAdd={onAddCategory}
+              onEdit={onEditCategory}
+            />
           </TabsContent>
           <TabsContent value="income">
-            <div className="flex w-full flex-col rounded-md bg-muted">
-              {categories.filter((category) => category.type === "income")
-                .length === 0 && (
-                <EmptyCategoriesState onOpen={() => handleOpenChange(true)} />
-              )}
-              {categories
-                .filter((category) => category.type === "income")
-                .map((category, index) => (
-                  <Fragment key={category.id}>
-                    {index > 0 && <Separator key={`sep-${category.id}`} />}
-                    <Item
-                      key={`item-${category.id}`}
-                      className="h-[50px]"
-                      onClick={() => {
-                        setEditingCategory(category)
-                        setOpen(true)
-                      }}
-                    >
-                      <ItemContent>
-                        <ItemTitle className="text-base">
-                          <span className="mr-1">{category.icon}</span>{" "}
-                          {category.name}
-                        </ItemTitle>
-                      </ItemContent>
-                      <ItemActions>
-                        <span
-                          className="size-5 rounded-md"
-                          style={{ backgroundColor: category.color }}
-                        />
-                      </ItemActions>
-                    </Item>
-                  </Fragment>
-                ))}
-            </div>
+            <CategoriesList
+              categories={categories.filter(({ type }) => type === "income")}
+              onAdd={onAddCategory}
+              onEdit={onEditCategory}
+            />
           </TabsContent>
         </Tabs>
-
-        <div className="mt-3 flex w-full items-center justify-center">
-          <Button
-            variant="outline"
-            className="w-full md:w-auto"
-            onClick={() => handleOpenChange(true)}
-          >
-            <PlusIcon />
-            Add New
-          </Button>
-        </div>
 
         <CategoryDrawer
           open={open}

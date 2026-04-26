@@ -1,61 +1,32 @@
 "use client"
 
-import { Fragment, useState } from "react"
+import { useState } from "react"
 import { useAppStore } from "@/lib/store"
 import { Button } from "@/components/ui/button"
-import {
-  Item,
-  ItemActions,
-  ItemContent,
-  ItemDescription,
-  ItemTitle,
-} from "@/components/ui/item"
-import { Separator } from "@/components/ui/separator"
-import {
-  ArrowLeftIcon,
-  CreditCardIcon,
-  PencilIcon,
-  PlusIcon,
-} from "lucide-react"
+import { ArrowLeftIcon, PlusIcon } from "lucide-react"
 import { PaymentMethodDrawer } from "@/components/settings/payment-method-drawer"
-import {
-  Empty,
-  EmptyContent,
-  EmptyHeader,
-  EmptyMedia,
-  EmptyTitle,
-} from "@/components/ui/empty"
 import { useBackButton } from "@/hooks/use-back-button"
-
-function EmptyPaymentMethodsState({ onOpen }: { onOpen: () => void }) {
-  return (
-    <Empty>
-      <EmptyHeader>
-        <EmptyMedia variant="icon">
-          <CreditCardIcon />
-        </EmptyMedia>
-        <EmptyTitle>No payment methods added</EmptyTitle>
-      </EmptyHeader>
-      <EmptyContent>
-        <Button variant="outline" size="sm" onClick={onOpen}>
-          Add New
-        </Button>
-      </EmptyContent>
-    </Empty>
-  )
-}
+import { PaymentMethodsList } from "@/components/settings/payment-methods-list"
+import { PaymentMethod } from "@/lib/types"
 
 export default function PaymentsSettingsPage() {
   const { paymentMethods } = useAppStore()
   const [open, setOpen] = useState<boolean>(false)
   const [editingMethod, setEditingMethod] = useState<
-    (typeof paymentMethods)[0] | undefined
+    PaymentMethod | undefined
   >()
   const back = useBackButton("/settings")
 
   const handleOpenChange = (open: boolean) => {
     setOpen(open)
     if (!open) setEditingMethod(undefined)
+  }
+
+  const onAddPaymentMethod = () => handleOpenChange(true)
+
+  const onEditPaymentMethod = (method: PaymentMethod) => {
+    setEditingMethod(method)
+    setOpen(true)
   }
 
   return (
@@ -76,48 +47,11 @@ export default function PaymentsSettingsPage() {
           </Button>
         </div>
 
-        <div className="flex w-full flex-col rounded-md bg-muted">
-          {paymentMethods.length === 0 && (
-            <EmptyPaymentMethodsState onOpen={() => handleOpenChange(true)} />
-          )}
-          {paymentMethods.map((method, index) => (
-            <Fragment key={method.id}>
-              {index > 0 && <Separator key={`sep-${method.id}`} />}
-              <Item key={`item-${method.id}`}>
-                <ItemContent>
-                  <ItemTitle className="text-[16px]">{method.name}</ItemTitle>
-                  <ItemDescription className="text-sm capitalize">
-                    {method.type}
-                  </ItemDescription>
-                </ItemContent>
-                <ItemActions>
-                  <Button
-                    size="icon-sm"
-                    aria-label="Edit Payment Method"
-                    variant="ghost"
-                    onClick={() => {
-                      setEditingMethod(method)
-                      setOpen(true)
-                    }}
-                  >
-                    <PencilIcon />
-                  </Button>
-                </ItemActions>
-              </Item>
-            </Fragment>
-          ))}
-        </div>
-
-        <div className="mt-3 flex w-full items-center justify-center">
-          <Button
-            variant="outline"
-            className="w-full md:w-auto"
-            onClick={() => handleOpenChange(true)}
-          >
-            <PlusIcon />
-            Add New
-          </Button>
-        </div>
+        <PaymentMethodsList
+          paymentMethods={paymentMethods}
+          onAdd={onAddPaymentMethod}
+          onEdit={onEditPaymentMethod}
+        />
 
         <PaymentMethodDrawer
           open={open}

@@ -5,7 +5,6 @@ import {
   BudgetCardSkeleton,
 } from "@/components/budgets/budget-card"
 import { BudgetDrawer } from "@/components/budgets/budget-drawer"
-import { BudgetList } from "@/components/budgets/budget-list"
 import { Button } from "@/components/ui/button"
 import {
   Empty,
@@ -27,13 +26,6 @@ export default function BudgetsPage() {
   const handleOpenChange = (open: boolean) => {
     setOpen(open)
     if (!open) setEditingBudget(undefined)
-  }
-
-  const onAddBudget = () => handleOpenChange(true)
-
-  const onEditBudget = (budget: Budget) => {
-    setEditingBudget(budget)
-    setOpen(true)
   }
 
   if (!hydrated || loading) {
@@ -68,7 +60,50 @@ export default function BudgetsPage() {
         </Button>
       </div>
 
-      <BudgetList budgets={budgets} onAdd={onAddBudget} onEdit={onEditBudget} />
+      {budgets.length === 0 && (
+        <Empty>
+          <EmptyHeader>
+            <EmptyMedia variant="icon">
+              <WalletCardsIcon />
+            </EmptyMedia>
+            <EmptyTitle>No budgets found.</EmptyTitle>
+          </EmptyHeader>
+          <EmptyContent>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handleOpenChange(true)}
+            >
+              Add New
+            </Button>
+          </EmptyContent>
+        </Empty>
+      )}
+
+      <div className="-mx-1.5 flex flex-wrap gap-y-3">
+        {budgets.map((budget, index) => (
+          <div key={budget.id} className="basis-1/2 px-1.5 md:basis-1/4">
+            <BudgetCard
+              budget={budget}
+              onEdit={() => {
+                setEditingBudget(budget)
+                handleOpenChange(true)
+              }}
+            />
+          </div>
+        ))}
+      </div>
+
+      <div className="mt-3 flex w-full items-center justify-center">
+        <Button
+          variant="outline"
+          className="w-full md:w-auto"
+          onClick={() => handleOpenChange(true)}
+        >
+          <PlusIcon />
+          Add New
+        </Button>
+      </div>
 
       <BudgetDrawer
         open={open}

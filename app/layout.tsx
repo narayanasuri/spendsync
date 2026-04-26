@@ -9,6 +9,7 @@ import "./globals.css"
 import { Navbar } from "@/components/shared/navbar"
 import { AppStoreInitializer } from "@/components/app-store-initializer"
 import { APP_NAME } from "@/lib/constants"
+import { CurrencyInitializer } from "@/components/currency-initializer"
 
 const geist = Geist({ subsets: ["latin"], variable: "--font-sans" })
 
@@ -54,6 +55,7 @@ export default function RootLayout({
           <TooltipProvider>
             <Navbar />
             <AppStoreInitializer />
+            <CurrencyInitializer />
             {children}
             {/* Prevent content from being hidden behind the mobile bottom nav */}
             <div className="h-16 sm:hidden" />

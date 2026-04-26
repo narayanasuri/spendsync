@@ -1,14 +1,22 @@
 "use client"
 
+import { Fragment } from "react"
 import { Button } from "@/components/ui/button"
-import { Item, ItemActions, ItemContent, ItemTitle } from "@/components/ui/item"
+import {
+  Item,
+  ItemActions,
+  ItemContent,
+  ItemGroup,
+  ItemSeparator,
+  ItemTitle,
+} from "@/components/ui/item"
 import { useBackButton } from "@/hooks/use-back-button"
-import { useLocalStorage } from "@/hooks/use-local-storage"
 import { CURRENCIES } from "@/lib/constants"
 import { ArrowLeftIcon, CheckIcon } from "lucide-react"
+import { useCurrency } from "@/hooks/use-currency"
 
 export default function CurrencySettingsPage() {
-  const [currency, setCurrency] = useLocalStorage("currency", "1")
+  const { currency, updateCurrency } = useCurrency()
   const back = useBackButton("/settings")
 
   return (
@@ -21,26 +29,27 @@ export default function CurrencySettingsPage() {
           <h2 className="text-xl font-semibold tracking-tight">Currency</h2>
         </div>
 
-        <div className="flex w-full flex-col rounded-md bg-muted">
-          {CURRENCIES.map((c) => (
-            <Item
-              key={c.id}
-              className="h-[50px]"
-              onClick={() => setCurrency(c.id.toString())}
-            >
-              <ItemContent>
-                <ItemTitle className="text-[16px]">
-                  {c.flag} {c.fullLabel} ({c.shortLabel})
-                </ItemTitle>
-              </ItemContent>
-              {parseInt(currency) === c.id && (
-                <ItemActions className="text-[16px]">
-                  <CheckIcon />
-                </ItemActions>
+        <ItemGroup className="gap-1">
+          {CURRENCIES.map((c, index) => (
+            <Fragment key={c.id}>
+              <Item onClick={() => updateCurrency(c.id)}>
+                <ItemContent>
+                  <ItemTitle className="text-[16px]">
+                    {c.flag} {c.fullLabel} ({c.shortLabel})
+                  </ItemTitle>
+                </ItemContent>
+                {currency.id === c.id && (
+                  <ItemActions>
+                    <CheckIcon className="size-5" />
+                  </ItemActions>
+                )}
+              </Item>
+              {index !== CURRENCIES.length - 1 && (
+                <ItemSeparator className="m-0 w-full" />
               )}
-            </Item>
+            </Fragment>
           ))}
-        </div>
+        </ItemGroup>
       </main>
     </div>
   )
