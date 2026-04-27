@@ -47,17 +47,19 @@ export function useTotal({
     setLoading(true)
     fetch(`/api/logs/total?${params}`)
       .then((res) => {
-        if (!res.ok) {
-          throw "Failed to load total."
-        }
+        if (!res.ok) throw new Error("Error while trying to fetch total")
         return res.json()
+      })
+      .then((data) => {
+        if (Array.isArray(data)) {
+          setTotals(data)
+        } else {
+          console.error("Totals API failed. Expected array but found:", data)
+        }
       })
       .catch((err) =>
         setError(err instanceof Error ? err.message : "Failed to load total.")
       )
-      .then((data) => {
-        setTotals(data)
-      })
       .finally(() => {
         setLoading(false)
       })

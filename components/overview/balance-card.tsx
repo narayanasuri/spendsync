@@ -42,8 +42,6 @@ export function BalanceCard({
     "HIDE" | "SHORT" | "LONG"
   >("HIDE")
 
-  console.log({ currency })
-
   const onToggleVisibilityStatus = () =>
     setVisibilityStatus((prev) =>
       prev === "HIDE" ? "SHORT" : prev === "SHORT" ? "LONG" : "HIDE"

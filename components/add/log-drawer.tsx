@@ -18,12 +18,11 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod"
 import { parseTimestamp } from "@/lib/utils"
 import { LogDrawerFooter } from "./log-drawer-footer"
-import { NewLogForm } from "./new-log-form"
+import { LogForm } from "./log-form"
 import { useEffect, useState } from "react"
 import { SubmitFailure } from "./submit-failure"
 import { useAppStore } from "@/lib/store"
-import { format } from "date-fns"
-import { TIMESTAMP_FORMAT } from "@/lib/constants"
+import { useLastSelectedUser } from "@/hooks/use-last-selected-user"
 
 type Props = {
   open: boolean
@@ -58,11 +57,12 @@ const getDefaultsFromLog = (log: Expense): LogFormInput => {
 export function LogDrawer({ open, onOpenChange, log }: Props) {
   const { setEditingLog } = useAppStore()
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const { user } = useLastSelectedUser()
   const isEditing = !!log
 
   const methods = useForm<LogFormInput, unknown, LogFormValues>({
     resolver: zodResolver(logSchema),
-    defaultValues: DEFAULT_EXPENSE,
+    defaultValues: { ...DEFAULT_EXPENSE, paid_by: user.toString() },
   })
 
   const { reset } = methods
@@ -74,8 +74,12 @@ export function LogDrawer({ open, onOpenChange, log }: Props) {
   }
 
   useEffect(() => {
-    reset(log ? getDefaultsFromLog(log) : DEFAULT_EXPENSE)
-  }, [log, reset])
+    reset(
+      log
+        ? getDefaultsFromLog(log)
+        : { ...DEFAULT_EXPENSE, paid_by: user.toString() }
+    )
+  }, [log, reset, user])
 
   return (
     <Drawer
@@ -102,7 +106,7 @@ export function LogDrawer({ open, onOpenChange, log }: Props) {
                 }}
               />
             ) : (
-              <NewLogForm />
+              <LogForm />
             )}
           </div>
           {!errorMessage && (

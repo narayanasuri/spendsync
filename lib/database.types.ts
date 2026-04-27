@@ -44,21 +44,21 @@ export type Database = {
           budget_amount: number
           category_id: number
           id: number
-          period: Database["public"]["Enums"]["BudgetPeriod"]
+          period: Database["public"]["Enums"]["budgetperiod"]
           user: number | null
         }
         Insert: {
           budget_amount: number
           category_id: number
           id?: number
-          period?: Database["public"]["Enums"]["BudgetPeriod"]
+          period?: Database["public"]["Enums"]["budgetperiod"]
           user?: number | null
         }
         Update: {
           budget_amount?: number
           category_id?: number
           id?: number
-          period?: Database["public"]["Enums"]["BudgetPeriod"]
+          period?: Database["public"]["Enums"]["budgetperiod"]
           user?: number | null
         }
         Relationships: [
@@ -80,25 +80,25 @@ export type Database = {
       }
       Categories: {
         Row: {
+          color: string
           icon: string
           id: number
           name: string
           type: string
-          color: string
         }
         Insert: {
-          icon: string
+          color?: string
+          icon?: string
           id?: number
           name: string
-          type: string
-          color?: string
+          type?: string
         }
         Update: {
+          color?: string
           icon?: string
           id?: number
           name?: string
           type?: string
-          color?: string
         }
         Relationships: []
       }
@@ -213,7 +213,7 @@ export type Database = {
       }
     }
     Enums: {
-      BudgetPeriod: "weekly" | "monthly" | "yearly"
+      budgetperiod: "weekly" | "monthly" | "yearly"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -344,7 +344,7 @@ export const Constants = {
   },
   public: {
     Enums: {
-      BudgetPeriod: ["weekly", "monthly", "yearly"],
+      budgetperiod: ["weekly", "monthly", "yearly"],
     },
   },
 } as const

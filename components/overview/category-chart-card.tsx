@@ -20,9 +20,15 @@ import { startOfMonth } from "date-fns"
 import { GroupedItem } from "@/lib/types"
 import { useAppStore } from "@/lib/store"
 import { Skeleton } from "@/components/ui/skeleton"
-import { Button } from "../ui/button"
+import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import { ArrowUpRightIcon } from "lucide-react"
+import { ArrowUpRightIcon, CircleAlertIcon } from "lucide-react"
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+} from "@/components/ui/empty"
 
 const DATE_NOW = new Date()
 const DATE_FROM = startOfMonth(DATE_NOW)
@@ -93,15 +99,29 @@ export function CategoryChartCard() {
   } = useCurrency()
   const { categories, hydrated, loading } = useAppStore()
   const [groups, setGroups] = useState<GroupedItem<"category">[]>([])
+  const [error, setError] = useState<string | undefined>(undefined)
 
   useEffect(() => {
     fetch(
       `/api/logs/group?group=category&from=${formatToLocalDate(DATE_FROM)}&to=${formatToLocalDate(DATE_NOW)}`
     )
-      .then((res) => res.json())
-      .then((data) => {
-        setGroups(data)
+      .then((res) => {
+        if (!res.ok)
+          throw new Error(
+            "Error while trying to fetch grouped expenses. Group: 'category'"
+          )
+        return res.json()
       })
+      .then((data) => {
+        if (Array.isArray(data)) {
+          setGroups(data)
+        } else {
+          console.error("Group API failed. Expected array but found:", data)
+        }
+      })
+      .catch((err) =>
+        setError(err instanceof Error ? err.message : "Failed to load total.")
+      )
   }, [])
 
   const items = useMemo(() => {
@@ -121,6 +141,25 @@ export function CategoryChartCard() {
       }
     })
   }, [categories, groups])
+
+  if (error) {
+    return (
+      <Card className="w-full">
+        <CardContent>
+          <Empty className="flex h-auto w-full rounded-md">
+            <EmptyHeader>
+              <EmptyMedia variant="icon">
+                <CircleAlertIcon />
+              </EmptyMedia>
+              <EmptyDescription className="max-w-xs text-pretty">
+                Failed to fetch grouped expenses
+              </EmptyDescription>
+            </EmptyHeader>
+          </Empty>
+        </CardContent>
+      </Card>
+    )
+  }
 
   return !hydrated || loading ? (
     <CategoryChartCardSkeleton />

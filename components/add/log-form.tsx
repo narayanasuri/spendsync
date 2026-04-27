@@ -10,7 +10,7 @@ import { PaymentModeSelect } from "./fields/payment-mode-select"
 import { PaidBySelect } from "./fields/paid-by-select"
 import { TimestampSelect } from "./fields/timestamp-select"
 
-export function NewLogForm() {
+export function LogForm() {
   return (
     <FieldSet className="w-full">
       <FieldGroup className="pb-3">
