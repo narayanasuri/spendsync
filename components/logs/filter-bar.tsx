@@ -17,6 +17,8 @@ export interface FilterBarProps {
   setCategory: (v: string) => void
   paymentMode: string
   setPaymentMode: (v: string) => void
+  transactionType: string
+  setTransactionType: (v: string) => void
   onClear: () => void
 }
 
@@ -27,9 +29,12 @@ export function FilterBar({
   setCategory,
   paymentMode,
   setPaymentMode,
+  transactionType,
+  setTransactionType,
   onClear,
 }: FilterBarProps) {
-  const hasFilters = category !== "all" || paymentMode !== "all"
+  const hasFilters =
+    category !== "all" || paymentMode !== "all" || transactionType !== "all"
 
   return (
     <div className="mb-4">
@@ -52,6 +57,8 @@ export function FilterBar({
                   setCategory={setCategory}
                   paymentMode={paymentMode}
                   setPaymentMode={setPaymentMode}
+                  transactionType={transactionType}
+                  setTransactionType={setTransactionType}
                   onClear={onClear}
                 />
               </div>
@@ -69,6 +76,8 @@ export function FilterBar({
           setCategory={setCategory}
           paymentMode={paymentMode}
           setPaymentMode={setPaymentMode}
+          transactionType={transactionType}
+          setTransactionType={setTransactionType}
           onClear={onClear}
         />
       </div>

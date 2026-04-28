@@ -4,38 +4,53 @@ import type { TablesInsert } from "@/lib/database.types"
 
 type ExpenseInsert = TablesInsert<"Expenses">
 
-// GET /api/logs?from=2026-01-01&to=2026-04-30&category_id=3&payment_mode_id=1&limit=50
+// GET /api/logs?page=0&from=...
 export async function GET(req: NextRequest) {
   const supabase = getSupabase()
   if (!supabase) return missingCreds()
 
   const { searchParams } = req.nextUrl
+
+  // 1. Pagination Setup
+  const page = parseInt(searchParams.get("page") ?? "0")
+  const PAGE_SIZE = 20 // Match this with your frontend PAGE_SIZE
+  const rangeFrom = page * PAGE_SIZE
+  const rangeTo = rangeFrom + PAGE_SIZE - 1
+
   const from = searchParams.get("from")
   const to = searchParams.get("to")
   const categoryId = searchParams.get("category_id")
   const paymentModeId = searchParams.get("payment_mode_id")
-  const limit = Math.min(parseInt(searchParams.get("limit") ?? "50"), 200)
+  const transactionType = searchParams.get("transaction_type")
 
-  if (from && isNaN(Date.parse(from)))
-    return NextResponse.json({ error: "Invalid 'from' date." }, { status: 400 })
-  if (to && isNaN(Date.parse(to)))
-    return NextResponse.json({ error: "Invalid 'to' date." }, { status: 400 })
-
+  // 2. Base Query (Replace .limit with .range)
   let query = supabase
     .from("Expenses")
     .select("*")
     .order("spent_at", { ascending: false })
-    .limit(limit)
+    .range(rangeFrom, rangeTo) // 👈 This is the key change
 
-  if (from)
+  // 3. Filters
+  if (from && !isNaN(Date.parse(from))) {
     query = query.gte(
       "spent_at",
       new Date(from + "T00:00:00.000Z").toISOString()
     )
-  if (to)
+  }
+  if (to && !isNaN(Date.parse(to))) {
     query = query.lte("spent_at", new Date(to + "T23:59:59.999Z").toISOString())
-  if (categoryId) query = query.eq("category", parseInt(categoryId))
-  if (paymentModeId) query = query.eq("payment_mode", parseInt(paymentModeId))
+  }
+
+  // Use explicit null/undefined checks to avoid "0" being falsy
+  if (categoryId && categoryId !== "all") {
+    query = query.eq("category", parseInt(categoryId))
+  }
+  if (paymentModeId && paymentModeId !== "all") {
+    query = query.eq("payment_mode", parseInt(paymentModeId))
+  }
+  if (transactionType && transactionType !== "all") {
+    query = query.eq("transaction_type", transactionType)
+  }
 
   const { data, error } = await query
 

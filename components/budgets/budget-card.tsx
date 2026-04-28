@@ -87,6 +87,7 @@ export function BudgetCard({
     from,
     to,
     categoryId: category_id.toString(),
+    excludeIncome: true,
   })
 
   const spentDuringPeriod = useMemo<number>(() => {

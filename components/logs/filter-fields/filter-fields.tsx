@@ -6,6 +6,7 @@ import { Field, FieldLabel } from "@/components/ui/field"
 import { FilterBarProps } from "../filter-bar"
 import { PaymentModeSelect } from "@/components/shared/payment-mode-select"
 import { CategorySelect } from "@/components/shared/category-select"
+import { LogTypeSelect } from "@/components/shared/log-type-select"
 
 export function FilterFields({
   dateRange,
@@ -14,9 +15,12 @@ export function FilterFields({
   setCategory,
   paymentMode,
   setPaymentMode,
+  transactionType,
+  setTransactionType,
   onClear,
 }: FilterBarProps) {
-  const hasFilters = category !== "all" || paymentMode !== "all"
+  const hasFilters =
+    category !== "all" || paymentMode !== "all" || transactionType !== "all"
 
   return (
     <>
@@ -37,6 +41,18 @@ export function FilterFields({
         <PaymentModeSelect
           value={paymentMode}
           onChange={setPaymentMode}
+          allowSelectAll
+        />
+      </Field>
+      <Field>
+        <FieldLabel htmlFor="transactionType">Type</FieldLabel>
+        <LogTypeSelect
+          value={
+            ["all", "expense", "income"].includes(transactionType)
+              ? (transactionType as "all" | "expense" | "income")
+              : "all"
+          }
+          onChange={setTransactionType}
           allowSelectAll
         />
       </Field>

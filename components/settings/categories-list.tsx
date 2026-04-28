@@ -22,7 +22,7 @@ import {
 
 function EmptyCategoriesState({ onAdd }: { onAdd: () => void }) {
   return (
-    <Empty className="my-[50%] w-full md:my-[40%]">
+    <Empty className="my-[25%] w-full md:my-[40%]">
       <EmptyHeader>
         <EmptyMedia variant="icon" className="size-8">
           <ShoppingBasketIcon className="size-6" />

@@ -14,20 +14,20 @@ export function useTotal({
   to = DATE_NOW,
   categoryId,
   paymentId,
-  limit = 200,
+  excludeIncome = false,
 }: {
   from?: Date
   to?: Date
   categoryId?: string
   paymentId?: string
-  limit?: number
+  excludeIncome?: boolean
 }) {
   const [totals, setTotals] = useState<TotalItem[]>([])
   const [loading, setLoading] = useState<boolean>(false)
   const [error, setError] = useState<string | undefined>(undefined)
 
   const params = useMemo<URLSearchParams>(() => {
-    const p = new URLSearchParams({ limit: limit.toString() })
+    const p = new URLSearchParams()
     if (categoryId && categoryId !== "all") {
       p.set("categoryId", categoryId)
     }
@@ -40,8 +40,11 @@ export function useTotal({
     if (to) {
       p.set("to", formatToLocalDate(to))
     }
+    if (excludeIncome) {
+      p.set("excludeIncome", "true")
+    }
     return p
-  }, [categoryId, from, limit, to])
+  }, [categoryId, from, to])
 
   useEffect(() => {
     setLoading(true)

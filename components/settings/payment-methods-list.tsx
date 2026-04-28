@@ -27,7 +27,7 @@ import {
 
 function EmptyPaymentMethodsState({ onAdd }: { onAdd: () => void }) {
   return (
-    <Empty className="my-[50%] w-full">
+    <Empty className="my-[25%] w-full">
       <EmptyHeader>
         <EmptyMedia variant="icon" className="size-8">
           <CreditCardIcon className="size-6" />

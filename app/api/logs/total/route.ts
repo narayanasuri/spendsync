@@ -12,8 +12,9 @@ export async function GET(req: NextRequest) {
   const paymentId = searchParams.get("paymentId")
   const from = searchParams.get("from")
   const to = searchParams.get("to")
+  const excludeIncome = searchParams.get("excludeIncome")
 
-  // categoryId is required
+  // Either category ID or Payment ID is required to get the total for
   if (!categoryId && !paymentId)
     return NextResponse.json(
       { error: "Missing 'categoryId' or 'paymentId' in the params" },
@@ -59,10 +60,14 @@ export async function GET(req: NextRequest) {
 
   let query = supabase.from("Expenses").select("transaction_type,amount.sum()")
 
+  if (excludeIncome === "true") {
+    query = query.eq("transaction_type", "expense")
+  }
+
   if (categoryId) {
     query = query.eq("category", parseInt(categoryId))
   } else if (paymentId) {
-    query = query.eq("category", parseInt(paymentId))
+    query = query.eq("payment_mode", parseInt(paymentId))
   }
 
   if (from)

@@ -11,15 +11,17 @@ import {
 import { BanknoteArrowDownIcon, BanknoteArrowUpIcon } from "lucide-react"
 
 interface LogTypeSelectProps {
-  value: "expense" | "income"
+  value: "all" | "expense" | "income"
   onChange: (value: "expense" | "income") => void
   defaultValue?: "expense" | "income"
+  allowSelectAll?: boolean
 }
 
 export function LogTypeSelect({
   value,
   onChange,
   defaultValue = "expense",
+  allowSelectAll = false,
 }: LogTypeSelectProps) {
   return (
     <Select defaultValue={defaultValue} value={value} onValueChange={onChange}>
@@ -28,6 +30,11 @@ export function LogTypeSelect({
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>
+          {allowSelectAll && (
+            <SelectItem value="all" className="text-base md:text-sm">
+              All
+            </SelectItem>
+          )}
           <SelectItem value="expense" className="text-base md:text-sm">
             <BanknoteArrowUpIcon />
             Expense

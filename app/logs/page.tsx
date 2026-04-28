@@ -4,7 +4,14 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { FilterBar } from "@/components/logs/filter-bar"
 import { LogsEmptyState } from "@/components/logs/logs-empty-state"
 import { useLogs } from "@/hooks/use-logs"
-import { Suspense, useCallback, useEffect, useMemo } from "react"
+import {
+  Suspense,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  useRef,
+} from "react"
 import { DateRange } from "react-day-picker"
 import { useRouter, useSearchParams } from "next/navigation"
 import { formatToLocalDate, parseLocalDate } from "@/lib/utils"
@@ -15,49 +22,73 @@ const PARAM_CATEGORY = "categoryId"
 const PARAM_PAYMENT_METHOD = "paymentMethodId"
 const PARAM_FROM = "from"
 const PARAM_TO = "to"
+const PARAM_TRANSACTION_TYPE = "type"
 
 function LogsContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
 
-  const DATE_NOW = new Date()
-  const DATE_MONTH_START = new Date(
-    DATE_NOW.getFullYear(),
-    DATE_NOW.getMonth(),
-    1
-  )
+  // --- Infinite Scroll State ---
+  const [page, setPage] = useState(0)
+  const observerTarget = useRef<HTMLDivElement>(null)
 
   const fromParam = searchParams.get(PARAM_FROM)
   const toParam = searchParams.get(PARAM_TO)
   const categoryParam = searchParams.get(PARAM_CATEGORY) ?? ALL
   const paymentMethodParam = searchParams.get(PARAM_PAYMENT_METHOD) ?? ALL
+  const typeParam = searchParams.get(PARAM_TRANSACTION_TYPE) ?? ALL
 
-  const dateFrom = useMemo<Date>(
-    () => (fromParam ? parseLocalDate(fromParam) : DATE_MONTH_START),
+  const dateFrom = useMemo(
+    () =>
+      fromParam
+        ? parseLocalDate(fromParam)
+        : new Date(new Date().getFullYear(), new Date().getMonth(), 1),
     [fromParam]
   )
-
-  const dateTo = useMemo<Date>(
-    () => (toParam ? parseLocalDate(toParam) : DATE_NOW),
+  const dateTo = useMemo(
+    () => (toParam ? parseLocalDate(toParam) : new Date()),
     [toParam]
   )
 
-  const { logs, loading, error } = useLogs({
+  const { logs, loading, error, hasMore } = useLogs({
     from: dateFrom,
     to: dateTo,
     categoryId: categoryParam,
     paymentMethodId: paymentMethodParam,
+    transactionType: typeParam,
+    page: page,
   })
 
+  // Reset page when filters change
+  useEffect(() => {
+    setPage(0)
+  }, [fromParam, toParam, categoryParam, paymentMethodParam, typeParam])
+
+  // --- Intersection Observer Logic ---
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore && !loading) {
+          setPage((prev) => prev + 1)
+        }
+      },
+      { rootMargin: "200px", threshold: 0.1 }
+    )
+
+    if (observerTarget.current) {
+      observer.observe(observerTarget.current)
+    }
+
+    return () => observer.disconnect()
+  }, [hasMore, loading, logs.length])
+
+  // --- Navigation Handlers ---
   const updateParams = useCallback(
     (updates: Record<string, string>) => {
       const params = new URLSearchParams(searchParams.toString())
       Object.entries(updates).forEach(([key, value]) => {
-        if (value === ALL || value === "") {
-          params.delete(key)
-        } else {
-          params.set(key, value)
-        }
+        if (value === ALL || value === "") params.delete(key)
+        else params.set(key, value)
       })
       router.replace(`/logs?${params.toString()}`, { scroll: false })
     },
@@ -76,40 +107,12 @@ function LogsContent() {
     [updateParams]
   )
 
-  const updateCategory = useCallback(
-    (categoryId: string) => {
-      updateParams({
-        [PARAM_CATEGORY]: categoryId,
-      })
-    },
-    [updateParams]
-  )
-
-  const updatePaymentMethod = useCallback(
-    (paymentMethodId: string) => {
-      updateParams({
-        [PARAM_PAYMENT_METHOD]: paymentMethodId,
-      })
-    },
-    [updateParams]
-  )
-
   const handleClearFilters = useCallback(() => {
     const params = new URLSearchParams()
-    // Keep date range, clear category and payment_mode
     params.set(PARAM_FROM, formatToLocalDate(dateFrom))
     params.set(PARAM_TO, formatToLocalDate(dateTo))
     router.replace(`/logs?${params.toString()}`, { scroll: false })
-  }, [])
-
-  useEffect(() => {
-    if (!fromParam && !toParam) {
-      const params = new URLSearchParams(searchParams.toString())
-      params.set(PARAM_FROM, formatToLocalDate(DATE_MONTH_START))
-      params.set(PARAM_TO, formatToLocalDate(DATE_NOW))
-      router.replace(`/logs?${params.toString()}`, { scroll: false })
-    }
-  }, [fromParam, toParam])
+  }, [dateFrom, dateTo, router])
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -122,26 +125,21 @@ function LogsContent() {
           dateRange={{ from: dateFrom, to: dateTo }}
           setDateRange={updateDateRange}
           category={categoryParam}
-          setCategory={updateCategory}
+          setCategory={(id) => updateParams({ [PARAM_CATEGORY]: id })}
           paymentMode={paymentMethodParam}
-          setPaymentMode={updatePaymentMethod}
+          setPaymentMode={(id) => updateParams({ [PARAM_PAYMENT_METHOD]: id })}
+          transactionType={typeParam}
+          setTransactionType={(type) =>
+            updateParams({ [PARAM_TRANSACTION_TYPE]: type })
+          }
           onClear={handleClearFilters}
         />
 
-        {loading ? (
+        {/* Initial Full Page Loading */}
+        {loading && page === 0 ? (
           <div className="mt-3 flex flex-col gap-3">
             {Array.from({ length: 8 }).map((_, i) => (
-              <div key={i} className="flex items-center gap-3">
-                <Skeleton className="size-10 rounded-lg" />
-                <div className="flex flex-1 flex-col gap-1.5">
-                  <Skeleton className="h-3.5 w-1/3" />
-                  <Skeleton className="h-3 w-1/4" />
-                </div>
-                <div className="flex flex-col items-end gap-1.5">
-                  <Skeleton className="h-3.5 w-16" />
-                  <Skeleton className="h-3 w-12" />
-                </div>
-              </div>
+              <LogSkeleton key={i} />
             ))}
           </div>
         ) : error ? (
@@ -149,16 +147,47 @@ function LogsContent() {
         ) : logs.length === 0 ? (
           <LogsEmptyState />
         ) : (
-          <DatedLogs logs={logs} />
+          <>
+            <DatedLogs logs={logs} />
+
+            {/* The Infinite Scroll Trigger */}
+            <div
+              ref={observerTarget}
+              className="mt-6 flex h-20 w-full items-center justify-center"
+            >
+              {loading && page > 0 && (
+                <div className="flex w-full flex-col gap-3">
+                  <LogSkeleton />
+                  <LogSkeleton />
+                </div>
+              )}
+            </div>
+          </>
         )}
       </main>
     </div>
   )
 }
 
+function LogSkeleton() {
+  return (
+    <div className="flex items-center gap-3">
+      <Skeleton className="size-10 rounded-lg" />
+      <div className="flex flex-1 flex-col gap-1.5">
+        <Skeleton className="h-3.5 w-1/3" />
+        <Skeleton className="h-3 w-1/4" />
+      </div>
+      <div className="flex flex-col items-end gap-1.5">
+        <Skeleton className="h-3.5 w-16" />
+        <Skeleton className="h-3 w-12" />
+      </div>
+    </div>
+  )
+}
+
 export default function LogsPage() {
   return (
-    <Suspense>
+    <Suspense fallback={null}>
       <LogsContent />
     </Suspense>
   )

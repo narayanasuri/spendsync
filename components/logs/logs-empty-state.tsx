@@ -12,7 +12,7 @@ import Link from "next/link"
 
 export function LogsEmptyState() {
   return (
-    <Empty className="my-[50%] w-full">
+    <Empty className="my-[25%] w-full">
       <EmptyHeader>
         <EmptyMedia variant="icon" className="size-8">
           <BadgeIndianRupeeIcon className="size-6" />
