@@ -25,7 +25,7 @@ import {
   ItemTitle,
 } from "@/components/ui/item"
 
-function EmptyPaymentMethodsState({ onAdd }: { onAdd: () => void }) {
+const EmptyPaymentMethodsState = ({ onAdd }: { onAdd: () => void }) => {
   return (
     <Empty className="my-[25%] w-full">
       <EmptyHeader>
@@ -44,7 +44,7 @@ function EmptyPaymentMethodsState({ onAdd }: { onAdd: () => void }) {
   )
 }
 
-export function PaymentMethodsList({
+export const PaymentMethodsList = ({
   paymentMethods,
   onAdd,
   onEdit,
@@ -52,7 +52,7 @@ export function PaymentMethodsList({
   paymentMethods: PaymentMethod[]
   onAdd: () => void
   onEdit: (paymentMethod: PaymentMethod) => void
-}) {
+}) => {
   if (paymentMethods.length === 0) {
     return <EmptyPaymentMethodsState onAdd={onAdd} />
   }

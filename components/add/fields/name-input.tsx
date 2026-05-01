@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input"
 import { LogFormInput, LogFormValues } from "@/lib/schemas/expense.schema"
 import { useFormContext } from "react-hook-form"
 
-export function NameInput() {
+export const NameInput = () => {
   const methods = useFormContext<LogFormInput, unknown, LogFormValues>()
   const {
     register,

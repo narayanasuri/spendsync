@@ -11,29 +11,29 @@ const supabaseUrl = process.env.SUPABASE_URL
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
 const supabaseAnonKey = process.env.SUPABASE_ANON_KEY
 
-function getSupabase() {
+const getSupabase = () => {
   const key = supabaseServiceKey ?? supabaseAnonKey
   if (!supabaseUrl || !key) return null
   return createClient<Database>(supabaseUrl, key)
 }
 
-function missingCreds() {
+const missingCreds = () => {
   return NextResponse.json(
     { error: "Server misconfiguration: missing Supabase credentials" },
     { status: 500 }
   )
 }
 
-function parseId(id: string) {
+const parseId = (id: string) => {
   const n = parseInt(id)
   return isNaN(n) ? null : n
 }
 
 // GET /api/logs/:id
-export async function GET(
+export const GET = async (
   _req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
-) {
+) => {
   const { id } = await params
   const supabase = getSupabase()
   if (!supabase) return missingCreds()
@@ -57,10 +57,10 @@ export async function GET(
 }
 
 // PATCH /api/logs/:id
-export async function PATCH(
+export const PATCH = async (
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
-) {
+) => {
   const { id } = await params
   const supabase = getSupabase()
   if (!supabase) return missingCreds()
@@ -120,10 +120,10 @@ export async function PATCH(
 }
 
 // DELETE /api/logs/:id
-export async function DELETE(
+export const DELETE = async (
   _req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
-) {
+) => {
   const { id } = await params
   const supabase = getSupabase()
   if (!supabase) return missingCreds()

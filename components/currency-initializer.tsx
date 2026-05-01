@@ -4,7 +4,7 @@ import { useEffect } from "react"
 import { useCurrency } from "@/hooks/use-currency"
 import { CURRENCY_LOCAL_STORAGE_KEY } from "@/lib/constants"
 
-export function CurrencyInitializer() {
+export const CurrencyInitializer = () => {
   const { updateCurrency } = useCurrency()
 
   useEffect(() => {

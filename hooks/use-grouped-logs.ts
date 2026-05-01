@@ -6,7 +6,7 @@ import { useEffect, useMemo, useState } from "react"
 const LOG_GROUP_DATE_FORMAT = "EEE, d MMM"
 const LOG_GROUP_DATE_FORMAT_YEAR = "EEE, d MMM, YYYY"
 
-export function useGroupedLogs(logs: Expense[]): GroupedLogsType[] {
+export const useGroupedLogs = (logs: Expense[]): GroupedLogsType[] => {
   const [groups, setGroups] = useState<GroupedLogsType[]>([])
 
   const groupNameDateFormat = useMemo<string>(() => {

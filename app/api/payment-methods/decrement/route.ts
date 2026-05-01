@@ -3,7 +3,7 @@ import { getSupabase, missingCreds } from "@/lib/supabase-server"
 import { DecrementType } from "@/lib/types"
 
 // POST /api/payment-methods/decrement
-export async function POST(req: NextRequest) {
+export const POST = async (req: NextRequest) => {
   const supabase = getSupabase()
   if (!supabase) return missingCreds()
 

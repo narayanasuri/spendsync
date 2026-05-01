@@ -35,7 +35,7 @@ import { useMediaQuery } from "@/hooks/use-media-query"
 import { Button } from "../ui/button"
 import Link from "next/link"
 
-export function CreditCardLimitCardSkeleton() {
+export const CreditCardLimitCardSkeleton = () => {
   return (
     <Card className="w-full">
       <CardHeader>
@@ -49,11 +49,11 @@ export function CreditCardLimitCardSkeleton() {
   )
 }
 
-export function CreditLimitCard({
+export const CreditLimitCard = ({
   paymentMethod,
 }: {
   paymentMethod: PaymentMethod
-}) {
+}) => {
   const { id, balance, name, due } = paymentMethod
   const { currency } = useCurrency()
   const [showLimit, setShowLimit] = useState<boolean>(false)

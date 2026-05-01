@@ -22,7 +22,7 @@ import { useState } from "react"
 
 const SELECTED_TIMESTAMP_FORMAT = "d MMM yyyy, hh:mm a"
 
-export function TimestampSelect() {
+export const TimestampSelect = () => {
   const methods = useFormContext<LogFormInput, unknown, LogFormValues>()
   const {
     control,
@@ -42,7 +42,7 @@ export function TimestampSelect() {
               : "00:00"
           )
 
-          function handleDateSelect(date: Date | undefined) {
+          const handleDateSelect = (date: Date | undefined) => {
             if (!date) return
             const updated = new Date(date)
             if (field.value) {
@@ -51,7 +51,7 @@ export function TimestampSelect() {
             field.onChange(updated)
           }
 
-          function handleTimeChange(e: React.ChangeEvent<HTMLInputElement>) {
+          const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
             const val = e.target.value
             setTimeInput(val)
             if (!/^\d{2}:\d{2}$/.test(val)) return

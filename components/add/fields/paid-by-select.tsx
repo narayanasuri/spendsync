@@ -6,7 +6,7 @@ import { useLastSelectedUser } from "@/hooks/use-last-selected-user"
 import { LogFormInput, LogFormValues } from "@/lib/schemas/expense.schema"
 import { Controller, useFormContext, useWatch } from "react-hook-form"
 
-export function PaidBySelect() {
+export const PaidBySelect = () => {
   const methods = useFormContext<LogFormInput, unknown, LogFormValues>()
   const {
     control,

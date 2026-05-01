@@ -8,7 +8,7 @@ import { PaymentModeSelect } from "@/components/shared/payment-mode-select"
 import { CategorySelect } from "@/components/shared/category-select"
 import { LogTypeSelect } from "@/components/shared/log-type-select"
 
-export function FilterFields({
+export const FilterFields = ({
   dateRange,
   setDateRange,
   category,
@@ -18,7 +18,7 @@ export function FilterFields({
   transactionType,
   setTransactionType,
   onClear,
-}: FilterBarProps) {
+}: FilterBarProps) => {
   const hasFilters =
     category !== "all" || paymentMode !== "all" || transactionType !== "all"
 

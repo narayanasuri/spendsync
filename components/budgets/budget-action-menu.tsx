@@ -17,10 +17,10 @@ interface BudgetActionMenuProps {
   onEdit: () => void
 }
 
-export function BudgetActionMenu({
+export const BudgetActionMenu = ({
   onViewLogs,
   onEdit,
-}: BudgetActionMenuProps) {
+}: BudgetActionMenuProps) => {
   return (
     <>
       <DropdownMenu>

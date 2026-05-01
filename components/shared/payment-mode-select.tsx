@@ -1,3 +1,5 @@
+"use client"
+
 import {
   Select,
   SelectContent,
@@ -9,17 +11,15 @@ import {
 import { useAppStore } from "@/lib/store"
 import { CreditCardIcon, LandmarkIcon } from "lucide-react"
 
-interface PaymentModeSelectProps {
-  value: string
-  onChange: (value: string) => void
-  allowSelectAll?: boolean
-}
-
-export function PaymentModeSelect({
+export const PaymentModeSelect = ({
   value,
   onChange,
   allowSelectAll = false,
-}: PaymentModeSelectProps) {
+}: {
+  value: string
+  onChange: (value: string) => void
+  allowSelectAll?: boolean
+}) => {
   const { paymentMethods } = useAppStore()
 
   return (

@@ -1,21 +1,23 @@
 {
-  "name": "cheeez",
-  "short_name": "cheeez",
-  "description": "Personal expense tracker",
-  "start_url": "/",
-  "display": "standalone",
-  "background_color": "#38BDFF",
-  "theme_color": "#FFFFFF",
+  "short_name": "SpendSync",
+  "name": "SpendSync - Expense Tracker",
   "icons": [
-    {
-      "src": "/icon.png",
-      "sizes": "192x192",
-      "type": "image/png"
-    },
     {
       "src": "/icon.png",
       "sizes": "512x512",
       "type": "image/png"
+    },
+    {
+      "src": "/icon.png",
+      "sizes": "192x192",
+      "type": "image/png"
     }
-  ]
+  ],
+  "id": "/?source=pwa",
+  "start_url": "/?source=pwa",
+  "background_color": "#e8e6de",
+  "display": "standalone",
+  "scope": "/",
+  "theme_color": "#e8e6de",
+  "description": "Expense Tracker"
 }

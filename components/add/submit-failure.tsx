@@ -1,3 +1,5 @@
+"use client"
+
 import { CircleAlertIcon, RefreshCcwIcon } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -10,13 +12,13 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty"
 
-export function SubmitFailure({
+export const SubmitFailure = ({
   message,
   onRetry,
 }: {
   message: string
   onRetry: () => void
-}) {
+}) => {
   return (
     <Empty className="h-full bg-muted/30">
       <EmptyHeader>

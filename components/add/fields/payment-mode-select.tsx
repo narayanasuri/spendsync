@@ -5,7 +5,7 @@ import { Field, FieldError, FieldLabel } from "@/components/ui/field"
 import { LogFormInput, LogFormValues } from "@/lib/schemas/expense.schema"
 import { Controller, useFormContext } from "react-hook-form"
 
-export function PaymentModeSelect() {
+export const PaymentModeSelect = () => {
   const methods = useFormContext<LogFormInput, unknown, LogFormValues>()
   const {
     control,

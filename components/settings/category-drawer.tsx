@@ -60,19 +60,19 @@ type Props = {
   category?: Category // present → edit mode
 }
 
-export function CategoryDrawer({
+export const CategoryDrawer = ({
   open,
   onOpenChange,
   category,
   defaultType = "expense",
-}: Props) {
+}: Props) => {
   const isDesktop = useMediaQuery("(min-width: 768px)")
   const { refreshCategories } = useAppStore()
   const isEditing = !!category
 
   const title = isEditing ? "Update Category" : "Add Category"
 
-  async function handleDelete() {
+  const handleDelete = async () => {
     if (!category) return
     await fetch(`/api/categories/${category.id}`, {
       method: "DELETE",
@@ -138,7 +138,7 @@ export function CategoryDrawer({
   )
 }
 
-function CategoryForm({
+const CategoryForm = ({
   category,
   onSuccess,
   defaultType = "expense",
@@ -148,7 +148,7 @@ function CategoryForm({
   onSuccess: () => void
   defaultType?: "expense" | "income"
   className?: string
-}) {
+}) => {
   const { refreshCategories } = useAppStore()
   const isEditing = !!category
 
@@ -162,7 +162,7 @@ function CategoryForm({
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
-  async function handleSubmit(e: React.FormEvent) {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!name.trim()) {
       setError("Category name is required.")

@@ -1,3 +1,5 @@
+"use client"
+
 import {
   Empty,
   EmptyContent,
@@ -10,7 +12,7 @@ import { PiggyBankIcon, PlusIcon } from "lucide-react"
 import { Budget } from "@/lib/types"
 import { BudgetCard } from "./budget-card"
 
-function BudgetsEmptyState({ onAdd }: { onAdd: () => void }) {
+const BudgetsEmptyState = ({ onAdd }: { onAdd: () => void }) => {
   return (
     <Empty className="my-[25%] w-full">
       <EmptyHeader>
@@ -29,7 +31,7 @@ function BudgetsEmptyState({ onAdd }: { onAdd: () => void }) {
   )
 }
 
-export function BudgetList({
+export const BudgetList = ({
   budgets,
   onAdd,
   onEdit,
@@ -37,7 +39,7 @@ export function BudgetList({
   budgets: Budget[]
   onAdd: () => void
   onEdit: (budget: Budget) => void
-}) {
+}) => {
   if (budgets.length === 0) return <BudgetsEmptyState onAdd={onAdd} />
 
   return (

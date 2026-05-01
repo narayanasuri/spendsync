@@ -11,7 +11,7 @@ const DATE_MONTH_START = new Date(
 
 const PAGE_SIZE = 20
 
-export function useLogs({
+export const useLogs = ({
   from = DATE_MONTH_START,
   to = DATE_NOW,
   categoryId,
@@ -25,7 +25,7 @@ export function useLogs({
   paymentMethodId?: string
   transactionType?: string
   page?: number
-}) {
+}) => {
   const [logs, setLogs] = useState<Expense[]>([])
   const [loading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | undefined>(undefined)

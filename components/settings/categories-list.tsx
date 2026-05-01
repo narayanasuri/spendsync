@@ -20,7 +20,7 @@ import {
   ItemTitle,
 } from "@/components/ui/item"
 
-function EmptyCategoriesState({ onAdd }: { onAdd: () => void }) {
+const EmptyCategoriesState = ({ onAdd }: { onAdd: () => void }) => {
   return (
     <Empty className="my-[25%] w-full md:my-[40%]">
       <EmptyHeader>
@@ -39,7 +39,7 @@ function EmptyCategoriesState({ onAdd }: { onAdd: () => void }) {
   )
 }
 
-export function CategoriesList({
+export const CategoriesList = ({
   categories,
   onAdd,
   onEdit,
@@ -47,7 +47,7 @@ export function CategoriesList({
   categories: Category[]
   onAdd: () => void
   onEdit: (category: Category) => void
-}) {
+}) => {
   if (categories.length === 0) {
     return <EmptyCategoriesState onAdd={onAdd} />
   }

@@ -21,14 +21,8 @@ import { LogDrawerFooter } from "./log-drawer-footer"
 import { LogForm } from "./log-form"
 import { useEffect, useState } from "react"
 import { SubmitFailure } from "./submit-failure"
-import { useAppStore } from "@/lib/store"
 import { useLastSelectedUser } from "@/hooks/use-last-selected-user"
-
-type Props = {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  log?: Expense
-}
+import { useLogDrawerStore } from "@/lib/log-drawer-store"
 
 const DEFAULT_EXPENSE: LogFormInput = {
   transaction_type: "expense",
@@ -54,11 +48,12 @@ const getDefaultsFromLog = (log: Expense): LogFormInput => {
   }
 }
 
-export function LogDrawer({ open, onOpenChange, log }: Props) {
-  const { setEditingLog } = useAppStore()
+export const LogDrawer = () => {
+  const { isOpen, toggleDrawer, editingLog, setEditingLog } =
+    useLogDrawerStore()
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const { user } = useLastSelectedUser()
-  const isEditing = !!log
+  const isEditing = !!editingLog
 
   const methods = useForm<LogFormInput, unknown, LogFormValues>({
     resolver: zodResolver(logSchema),
@@ -69,28 +64,20 @@ export function LogDrawer({ open, onOpenChange, log }: Props) {
 
   const onClose = () => {
     reset(DEFAULT_EXPENSE)
-    setEditingLog(null)
     setErrorMessage(null)
+    setEditingLog(null)
   }
 
   useEffect(() => {
     reset(
-      log
-        ? getDefaultsFromLog(log)
+      editingLog
+        ? getDefaultsFromLog(editingLog)
         : { ...DEFAULT_EXPENSE, paid_by: user.toString() }
     )
-  }, [log, reset, user])
+  }, [editingLog, reset, user])
 
   return (
-    <Drawer
-      open={open}
-      onOpenChange={(open) => {
-        if (!open) {
-          onClose()
-        }
-        onOpenChange(open)
-      }}
-    >
+    <Drawer open={isOpen} onOpenChange={toggleDrawer}>
       <DrawerContent className="mx-auto w-full max-w-4xl flex-1 p-2 md:p-6">
         <FormProvider {...methods}>
           <DrawerHeader className="text-left">
@@ -111,13 +98,8 @@ export function LogDrawer({ open, onOpenChange, log }: Props) {
           </div>
           {!errorMessage && (
             <LogDrawerFooter
-              onSuccess={() => {
-                onClose()
-                onOpenChange(false)
-              }}
-              onError={(error) => {
-                setErrorMessage(error)
-              }}
+              onClose={onClose}
+              setErrorMessage={setErrorMessage}
             />
           )}
         </FormProvider>

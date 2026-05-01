@@ -24,7 +24,7 @@ const PARAM_FROM = "from"
 const PARAM_TO = "to"
 const PARAM_TRANSACTION_TYPE = "type"
 
-function LogsContent() {
+const LogsContent = () => {
   const router = useRouter()
   const searchParams = useSearchParams()
 
@@ -169,7 +169,7 @@ function LogsContent() {
   )
 }
 
-function LogSkeleton() {
+const LogSkeleton = () => {
   return (
     <div className="flex items-center gap-3">
       <Skeleton className="size-10 rounded-lg" />
@@ -185,7 +185,7 @@ function LogSkeleton() {
   )
 }
 
-export default function LogsPage() {
+export default () => {
   return (
     <Suspense fallback={null}>
       <LogsContent />

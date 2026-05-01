@@ -10,7 +10,7 @@ import { format } from "date-fns"
 
 const LOG_TIME_FORMAT = "h:mm a"
 
-export function LogItem({ log }: { log: Expense }) {
+export const LogItem = ({ log }: { log: Expense }) => {
   const router = useRouter()
   const { paymentMethods } = useAppStore()
   const {

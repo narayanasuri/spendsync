@@ -1,3 +1,5 @@
+"use client"
+
 import {
   Select,
   SelectContent,
@@ -16,12 +18,12 @@ interface CategorySelectProps {
   transactionType?: "expense" | "income"
 }
 
-export function CategorySelect({
+export const CategorySelect = ({
   value,
   onChange,
   allowSelectAll = false,
   transactionType,
-}: CategorySelectProps) {
+}: CategorySelectProps) => {
   const { categories } = useAppStore()
 
   const filteredCategories = transactionType

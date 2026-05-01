@@ -9,7 +9,7 @@ import { User } from "@/lib/types"
 import { UsersList } from "@/components/settings/user-list"
 import { UserDrawer } from "@/components/settings/user-drawer"
 
-export default function UsersSettingsPage() {
+export default () => {
   const { users } = useAppStore()
   const [open, setOpen] = useState<boolean>(false)
   const [editingUser, setEditingUser] = useState<User | undefined>()
@@ -31,7 +31,12 @@ export default function UsersSettingsPage() {
     <div className="flex min-h-screen flex-col">
       <main className="mx-auto w-full max-w-4xl flex-1 p-6">
         <div className="mb-6 flex items-center gap-3">
-          <Button variant="ghost" size="icon-xs" onClick={back}>
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            aria-label="Go back to settings"
+            onClick={back}
+          >
             <ArrowLeftIcon />
           </Button>
           <h2 className="text-xl font-semibold tracking-tight">Users</h2>

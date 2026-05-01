@@ -1,6 +1,6 @@
 import { useAppStore } from "@/lib/store"
 
-export function useCategory(categoryId: number) {
+export const useCategory = (categoryId: number) => {
   const { categories } = useAppStore()
   const category = categories.find((c) => c.id === categoryId)
 

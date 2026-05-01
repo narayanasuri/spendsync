@@ -17,7 +17,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { abbreviate, cn } from "@/lib/utils"
 import Link from "next/link"
 
-export function BalanceCardSkeleton() {
+export const BalanceCardSkeleton = () => {
   return (
     <Card className="w-full md:basis-1/2">
       <CardHeader>
@@ -31,11 +31,11 @@ export function BalanceCardSkeleton() {
   )
 }
 
-export function BalanceCard({
+export const BalanceCard = ({
   paymentMethod,
 }: {
   paymentMethod: PaymentMethod
-}) {
+}) => {
   const { balance, name } = paymentMethod
   const { currency } = useCurrency()
   const [visibilityStatus, setVisibilityStatus] = useState<

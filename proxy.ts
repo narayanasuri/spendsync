@@ -4,7 +4,7 @@ const UI_PASSWORD = process.env.UI_PASSWORD
 const API_SECRET_KEY = process.env.API_SECRET_KEY
 const AUTH_COOKIE = "ui_auth"
 
-export function proxy(req: NextRequest) {
+export const proxy = (req: NextRequest) => {
   const { pathname } = req.nextUrl
 
   // Auth endpoints are always public

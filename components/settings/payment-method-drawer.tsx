@@ -12,7 +12,6 @@ import {
 } from "@/components/ui/dialog"
 import {
   Drawer,
-  DrawerClose,
   DrawerContent,
   DrawerDescription,
   DrawerFooter,
@@ -52,18 +51,18 @@ type Props = {
   paymentMethod?: PaymentMethod // present → edit mode
 }
 
-export function PaymentMethodDrawer({
+export const PaymentMethodDrawer = ({
   open,
   onOpenChange,
   paymentMethod,
-}: Props) {
+}: Props) => {
   const isDesktop = useMediaQuery("(min-width: 768px)")
   const { refreshPaymentMethods } = useAppStore()
   const isEditing = !!paymentMethod
 
   const title = isEditing ? "Update Payment Method" : "Add Payment Method"
 
-  async function handleDelete() {
+  const handleDelete = async () => {
     if (!paymentMethod) return
     await fetch(`/api/payment-methods/${paymentMethod.id}`, {
       method: "DELETE",
@@ -128,7 +127,7 @@ export function PaymentMethodDrawer({
   )
 }
 
-function PaymentMethodForm({
+const PaymentMethodForm = ({
   paymentMethod,
   onSuccess,
   className,
@@ -136,7 +135,7 @@ function PaymentMethodForm({
   paymentMethod?: PaymentMethod
   onSuccess: () => void
   className?: string
-}) {
+}) => {
   const { refreshPaymentMethods } = useAppStore()
   const isEditing = !!paymentMethod
 
@@ -145,12 +144,12 @@ function PaymentMethodForm({
     (paymentMethod?.type as "savings" | "credit") ?? "savings"
   )
   const [balance, setBalance] = useState<number>(paymentMethod?.balance ?? 0)
-  const [due, setDue] = useState<number>(1)
+  const [due, setDue] = useState<number>(paymentMethod?.due ?? 1)
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const { currency } = useCurrency()
 
-  async function handleSubmit(e: React.FormEvent) {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!name.trim()) {
       setError("Name is required.")

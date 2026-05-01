@@ -4,7 +4,7 @@ const UI_PASSWORD = process.env.UI_PASSWORD
 const AUTH_COOKIE = "ui_auth"
 const THIRTY_DAYS = 60 * 60 * 24 * 30
 
-export async function POST(req: NextRequest) {
+export const POST = async (req: NextRequest) => {
   const { password } = await req.json()
 
   if (!UI_PASSWORD || password !== UI_PASSWORD) {

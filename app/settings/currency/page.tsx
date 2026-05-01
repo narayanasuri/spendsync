@@ -15,7 +15,7 @@ import { CURRENCIES } from "@/lib/constants"
 import { ArrowLeftIcon, CheckIcon } from "lucide-react"
 import { useCurrency } from "@/hooks/use-currency"
 
-export default function CurrencySettingsPage() {
+export default () => {
   const { currency, updateCurrency } = useCurrency()
   const back = useBackButton("/settings")
 
@@ -23,7 +23,12 @@ export default function CurrencySettingsPage() {
     <div className="flex min-h-screen flex-col">
       <main className="mx-auto w-full max-w-4xl flex-1 p-6">
         <div className="mb-6 flex gap-3">
-          <Button variant="ghost" size="icon-xs" onClick={back}>
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            aria-label="Go back to settings"
+            onClick={back}
+          >
             <ArrowLeftIcon />
           </Button>
           <h2 className="text-xl font-semibold tracking-tight">Currency</h2>

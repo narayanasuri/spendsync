@@ -1,3 +1,5 @@
+"use client"
+
 import { Button } from "@/components/ui/button"
 import {
   Empty,
@@ -10,7 +12,7 @@ import {
 import { useBackButton } from "@/hooks/use-back-button"
 import { BrushCleaningIcon } from "lucide-react"
 
-export function LogNotFound() {
+export const LogNotFound = () => {
   const back = useBackButton("logs")
 
   return (

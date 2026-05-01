@@ -27,7 +27,7 @@ import { useMediaQuery } from "@/hooks/use-media-query"
 import { BudgetActionMenu } from "./budget-action-menu"
 import { useRouter } from "next/navigation"
 
-function calculateTimeRemaining(period: "weekly" | "monthly" | "yearly") {
+const calculateTimeRemaining = (period: "weekly" | "monthly" | "yearly") => {
   const now = new Date()
   const year = now.getFullYear()
   const month = now.getMonth()
@@ -50,7 +50,7 @@ function calculateTimeRemaining(period: "weekly" | "monthly" | "yearly") {
   return daysLeft
 }
 
-export function BudgetCardSkeleton() {
+export const BudgetCardSkeleton = () => {
   return (
     <Card className="w-full md:basis-1/2">
       <CardHeader>
@@ -64,13 +64,13 @@ export function BudgetCardSkeleton() {
   )
 }
 
-export function BudgetCard({
+export const BudgetCard = ({
   budget,
   onEdit,
 }: {
   budget: Budget
   onEdit: () => void
-}) {
+}) => {
   const { budget_amount, category_id, period } = budget
   const { found, emoji, label } = useCategory(category_id)
   const { currency } = useCurrency()

@@ -9,7 +9,7 @@ import { useBackButton } from "@/hooks/use-back-button"
 import { PaymentMethodsList } from "@/components/settings/payment-methods-list"
 import { PaymentMethod } from "@/lib/types"
 
-export default function PaymentsSettingsPage() {
+export default () => {
   const { paymentMethods } = useAppStore()
   const [open, setOpen] = useState<boolean>(false)
   const [editingMethod, setEditingMethod] = useState<
@@ -33,7 +33,12 @@ export default function PaymentsSettingsPage() {
     <div className="flex min-h-screen flex-col">
       <main className="mx-auto w-full max-w-4xl flex-1 p-6">
         <div className="mb-6 flex items-center gap-3">
-          <Button variant="ghost" size="icon-xs" onClick={back}>
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            aria-label="Go back to settings"
+            onClick={back}
+          >
             <ArrowLeftIcon />
           </Button>
           <h2 className="text-xl font-semibold tracking-tight">Payments</h2>

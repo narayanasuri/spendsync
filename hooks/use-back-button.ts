@@ -1,7 +1,7 @@
 import { useRouter } from "next/navigation"
 import { useCallback } from "react"
 
-export function useBackButton(target: string) {
+export const useBackButton = (target: string) => {
   const router = useRouter()
 
   const goBack = useCallback(() => {

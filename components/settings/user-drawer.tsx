@@ -12,7 +12,6 @@ import {
 } from "@/components/ui/dialog"
 import {
   Drawer,
-  DrawerClose,
   DrawerContent,
   DrawerDescription,
   DrawerFooter,
@@ -37,14 +36,14 @@ type Props = {
   user?: User // present → edit mode
 }
 
-export function UserDrawer({ open, onOpenChange, user }: Props) {
+export const UserDrawer = ({ open, onOpenChange, user }: Props) => {
   const isDesktop = useMediaQuery("(min-width: 768px)")
   const { refreshUsers } = useAppStore()
   const isEditing = !!user
 
   const title = isEditing ? "Update User" : "Add User"
 
-  async function handleDelete() {
+  const handleDelete = async () => {
     if (!user) return
     await fetch(`/api/users/${user.id}`, {
       method: "DELETE",
@@ -107,7 +106,7 @@ export function UserDrawer({ open, onOpenChange, user }: Props) {
   )
 }
 
-function UserForm({
+const UserForm = ({
   user,
   onSuccess,
   className,
@@ -115,7 +114,7 @@ function UserForm({
   user?: User
   onSuccess: () => void
   className?: string
-}) {
+}) => {
   const { refreshUsers } = useAppStore()
   const isEditing = !!user
 
@@ -123,7 +122,7 @@ function UserForm({
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
-  async function handleSubmit(e: React.FormEvent) {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!name.trim()) {
       setError("Username is required.")

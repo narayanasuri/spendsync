@@ -1,3 +1,5 @@
+"use client"
+
 import {
   Select,
   SelectContent,
@@ -7,13 +9,13 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 
-export function PeriodSelect({
+export const PeriodSelect = ({
   value,
   onChange,
 }: {
   value: "weekly" | "monthly" | "yearly"
   onChange: (value: "weekly" | "monthly" | "yearly") => void
-}) {
+}) => {
   return (
     <Select value={value} onValueChange={onChange}>
       <SelectTrigger id="category">

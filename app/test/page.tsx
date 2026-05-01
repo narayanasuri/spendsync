@@ -3,7 +3,7 @@
 import { formatToLocalDate } from "@/lib/utils"
 import { format, parse } from "date-fns"
 
-export default function TestPage() {
+export default () => {
   const date = new Date()
   const str = formatToLocalDate(date)
   const formatted = format(date, "yyyy-MM-dd")

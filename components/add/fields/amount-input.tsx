@@ -11,7 +11,7 @@ import { useCurrency } from "@/hooks/use-currency"
 import { LogFormInput, LogFormValues } from "@/lib/schemas/expense.schema"
 import { useFormContext } from "react-hook-form"
 
-export function AmountInput() {
+export const AmountInput = () => {
   const methods = useFormContext<LogFormInput, unknown, LogFormValues>()
   const { currency } = useCurrency()
   const {

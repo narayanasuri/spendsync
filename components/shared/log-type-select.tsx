@@ -17,12 +17,12 @@ interface LogTypeSelectProps {
   allowSelectAll?: boolean
 }
 
-export function LogTypeSelect({
+export const LogTypeSelect = ({
   value,
   onChange,
   defaultValue = "expense",
   allowSelectAll = false,
-}: LogTypeSelectProps) {
+}: LogTypeSelectProps) => {
   return (
     <Select defaultValue={defaultValue} value={value} onValueChange={onChange}>
       <SelectTrigger id="transactionType" className="text-base md:text-sm">

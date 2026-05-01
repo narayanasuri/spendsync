@@ -17,7 +17,7 @@ import { ChevronRightIcon } from "lucide-react"
 import { useTheme } from "next-themes"
 import Link from "next/link"
 
-export default function SettingsPage() {
+export default () => {
   const { resolvedTheme, setTheme } = useTheme()
   const { categories, paymentMethods, users } = useAppStore()
   const { currency } = useCurrency()

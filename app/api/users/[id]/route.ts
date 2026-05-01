@@ -4,7 +4,7 @@ import { getSupabase, missingCreds } from "@/lib/supabase-server"
 type Params = { params: Promise<{ id: string }> }
 
 // PATCH /api/users/:id  { name? }
-export async function PATCH(req: NextRequest, { params }: Params) {
+export const PATCH = async (req: NextRequest, { params }: Params) => {
   const supabase = getSupabase()
   if (!supabase) return missingCreds()
 
@@ -23,7 +23,7 @@ export async function PATCH(req: NextRequest, { params }: Params) {
 }
 
 // DELETE /api/users/:id
-export async function DELETE(_req: NextRequest, { params }: Params) {
+export const DELETE = async (_req: NextRequest, { params }: Params) => {
   const supabase = getSupabase()
   if (!supabase) return missingCreds()
 

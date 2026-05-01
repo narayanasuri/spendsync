@@ -1,3 +1,5 @@
+"use client"
+
 import { Button } from "@/components/ui/button"
 import {
   Empty,
@@ -7,10 +9,12 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty"
+import { useLogDrawerStore } from "@/lib/log-drawer-store"
 import { BadgeIndianRupeeIcon, PlusIcon } from "lucide-react"
-import Link from "next/link"
 
-export function LogsEmptyState() {
+export const LogsEmptyState = () => {
+  const { openDrawer } = useLogDrawerStore()
+
   return (
     <Empty className="my-[25%] w-full">
       <EmptyHeader>
@@ -23,11 +27,9 @@ export function LogsEmptyState() {
         </EmptyDescription>
       </EmptyHeader>
       <EmptyContent>
-        <Button variant="outline" asChild>
-          <Link href="/add" replace>
-            <PlusIcon />
-            Add New
-          </Link>
+        <Button variant="outline" onClick={() => openDrawer()}>
+          <PlusIcon />
+          Add New
         </Button>
       </EmptyContent>
     </Empty>

@@ -1,25 +1,15 @@
 "use client"
 
-import {
-  BudgetCard,
-  BudgetCardSkeleton,
-} from "@/components/budgets/budget-card"
+import { BudgetCardSkeleton } from "@/components/budgets/budget-card"
 import { BudgetDrawer } from "@/components/budgets/budget-drawer"
 import { BudgetList } from "@/components/budgets/budget-list"
 import { Button } from "@/components/ui/button"
-import {
-  Empty,
-  EmptyContent,
-  EmptyHeader,
-  EmptyMedia,
-  EmptyTitle,
-} from "@/components/ui/empty"
 import { useAppStore } from "@/lib/store"
 import { Budget } from "@/lib/types"
-import { PlusIcon, WalletCardsIcon } from "lucide-react"
+import { PlusIcon } from "lucide-react"
 import { useState } from "react"
 
-export default function BudgetsPage() {
+export default () => {
   const [open, setOpen] = useState<boolean>(false)
   const { budgets, hydrated, loading } = useAppStore()
   const [editingBudget, setEditingBudget] = useState<Budget | undefined>()

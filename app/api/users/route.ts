@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { getSupabase, missingCreds } from "@/lib/supabase-server"
 
 // GET /api/users
-export async function GET() {
+export const GET = async () => {
   const supabase = getSupabase()
   if (!supabase) return missingCreds()
 
@@ -13,7 +13,7 @@ export async function GET() {
 }
 
 // POST /api/users  { name }
-export async function POST(req: NextRequest) {
+export const POST = async (req: NextRequest) => {
   const supabase = getSupabase()
   if (!supabase) return missingCreds()
 

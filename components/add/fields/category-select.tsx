@@ -5,7 +5,7 @@ import { Field, FieldError, FieldLabel } from "@/components/ui/field"
 import { LogFormInput, LogFormValues } from "@/lib/schemas/expense.schema"
 import { Controller, useFormContext, useWatch } from "react-hook-form"
 
-export function CategorySelect() {
+export const CategorySelect = () => {
   const methods = useFormContext<LogFormInput, unknown, LogFormValues>()
   const {
     control,

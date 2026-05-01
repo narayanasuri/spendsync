@@ -7,7 +7,7 @@ import { Separator } from "@/components/ui/separator"
 import { LogItem } from "./log-item"
 import { abbreviate } from "@/lib/utils"
 
-function GroupView({ group }: { group: GroupedLogsType }) {
+const GroupView = ({ group }: { group: GroupedLogsType }) => {
   const total = group.logs.reduce((acc, log) => {
     if (log.transaction_type === "expense") {
       return acc - log.amount
@@ -42,7 +42,7 @@ function GroupView({ group }: { group: GroupedLogsType }) {
   )
 }
 
-export function DatedLogs({ logs }: { logs: Expense[] }) {
+export const DatedLogs = ({ logs }: { logs: Expense[] }) => {
   const groups = useGroupedLogs(logs)
 
   return (

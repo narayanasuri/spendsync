@@ -20,7 +20,7 @@ import {
   ItemTitle,
 } from "@/components/ui/item"
 
-function EmptyUsersState({ onAdd }: { onAdd: () => void }) {
+const EmptyUsersState = ({ onAdd }: { onAdd: () => void }) => {
   return (
     <Empty className="my-[25%] w-full">
       <EmptyHeader>
@@ -39,7 +39,7 @@ function EmptyUsersState({ onAdd }: { onAdd: () => void }) {
   )
 }
 
-export function UsersList({
+export const UsersList = ({
   users,
   onAdd,
   onEdit,
@@ -47,7 +47,7 @@ export function UsersList({
   users: User[]
   onAdd: () => void
   onEdit: (user: User) => void
-}) {
+}) => {
   if (users.length === 0) {
     return <EmptyUsersState onAdd={onAdd} />
   }

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react"
 
 const LOCAL_STORAGE_KEY = "user"
 
-export function useLastSelectedUser() {
+export const useLastSelectedUser = () => {
   // 1. Start with the default to match the Server-Side Render
   const [user, setUser] = useState<number>(1)
 

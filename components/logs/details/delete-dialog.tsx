@@ -1,3 +1,5 @@
+"use client"
+
 import { Trash2Icon } from "lucide-react"
 
 import {
@@ -14,7 +16,7 @@ import {
 } from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
 
-export function ExpenseDeleteDialog() {
+export const ExpenseDeleteDialog = () => {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>

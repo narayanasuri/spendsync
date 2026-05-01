@@ -22,7 +22,7 @@ export interface FilterBarProps {
   onClear: () => void
 }
 
-export function FilterBar({
+export const FilterBar = ({
   dateRange,
   setDateRange,
   category,
@@ -32,7 +32,7 @@ export function FilterBar({
   transactionType,
   setTransactionType,
   onClear,
-}: FilterBarProps) {
+}: FilterBarProps) => {
   const hasFilters =
     category !== "all" || paymentMode !== "all" || transactionType !== "all"
 
@@ -68,7 +68,7 @@ export function FilterBar({
       </div>
 
       {/* Desktop: flat row */}
-      <div className="hidden sm:flex sm:flex-row sm:items-end sm:gap-3">
+      <div className="hidden sm:flex sm:flex-row sm:items-start sm:gap-3">
         <FilterFields
           dateRange={dateRange}
           setDateRange={setDateRange}

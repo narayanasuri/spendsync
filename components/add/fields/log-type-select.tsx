@@ -5,7 +5,7 @@ import { LogFormInput, LogFormValues } from "@/lib/schemas/expense.schema"
 import { Controller, useFormContext } from "react-hook-form"
 import { LogTypeSelect as LogTypeSelectRaw } from "@/components/shared/log-type-select"
 
-export function LogTypeSelect() {
+export const LogTypeSelect = () => {
   const methods = useFormContext<LogFormInput, unknown, LogFormValues>()
   const {
     control,

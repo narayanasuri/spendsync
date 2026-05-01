@@ -19,7 +19,7 @@ interface DateRangeInputProps {
 
 const DATE_RANGE_LABEL_FORMAT = "d MMM"
 
-function formatRange(range: DateRange): string {
+const formatRange = (range: DateRange): string => {
   const from = range.from
     ? format(range.from, DATE_RANGE_LABEL_FORMAT)
     : "Unknown"
@@ -28,11 +28,11 @@ function formatRange(range: DateRange): string {
   return from + " - " + to
 }
 
-export function DateRangeInput({ value, onChange }: DateRangeInputProps) {
+export const DateRangeInput = ({ value, onChange }: DateRangeInputProps) => {
   const [draft, setDraft] = useState<DateRange>(value)
   const [open, setOpen] = useState(false)
 
-  function handleSelect(range: DateRange | undefined) {
+  const handleSelect = (range: DateRange | undefined) => {
     // 1. If the user clicks the current 'from' date again,
     // they might want to clear the selection or restart.
     if (!range || (!range.from && !range.to)) {
@@ -62,14 +62,14 @@ export function DateRangeInput({ value, onChange }: DateRangeInputProps) {
     setDraft(newRange)
   }
 
-  function handleApply() {
+  const handleApply = () => {
     if (draft.from && draft.to) {
       onChange({ from: draft.from, to: draft.to })
       setOpen(false)
     }
   }
 
-  function handleOpenChange(next: boolean) {
+  const handleOpenChange = (next: boolean) => {
     // Reset draft to committed value if popover closes without applying
     if (!next) setDraft(value)
     setOpen(next)

@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { useParams } from "next/navigation"
 import { ArrowLeftIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -14,25 +14,34 @@ import { format } from "date-fns"
 import type { Expense } from "@/lib/types"
 import { parseTimestamp } from "@/lib/utils"
 import { useBackButton } from "@/hooks/use-back-button"
+import { useLogDrawerStore } from "@/lib/log-drawer-store"
 
 const DETAIL_DATE_FORMAT = "EEEE, d MMMM yyyy"
 const DETAIL_TIME_FORMAT = "h:mm a"
 
-export default function ExpenseDetailPage() {
+export default () => {
   const { id } = useParams<{ id: string }>()
   const [expense, setExpense] = useState<Expense | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const { setEditingLog } = useAppStore()
+  const { openDrawer, setEditingLog } = useLogDrawerStore()
   const back = useBackButton("/logs")
 
-  async function handleDelete() {
+  const handleDelete = async () => {
     const res = await fetch(`/api/logs/${id}`, { method: "DELETE" })
     if (res.ok) back()
   }
 
+  const editLog = useCallback(
+    (expense: Expense) => {
+      setEditingLog(expense)
+      openDrawer()
+    },
+    [openDrawer, setEditingLog]
+  )
+
   useEffect(() => {
-    async function fetchExpense() {
+    const fetchExpense = async () => {
       try {
         const res = await fetch(`/api/logs/${id}`)
         const json = await res.json()
@@ -65,7 +74,7 @@ export default function ExpenseDetailPage() {
           </Button>
           {expense && (
             <ExpenseActionMenu
-              onEdit={() => setEditingLog(expense)}
+              onEdit={() => editLog(expense)}
               onDelete={handleDelete}
             />
           )}
@@ -84,7 +93,7 @@ export default function ExpenseDetailPage() {
   )
 }
 
-function ExpenseDetail({ expense }: { expense: Expense }) {
+const ExpenseDetail = ({ expense }: { expense: Expense }) => {
   const categoryId = expense.category
   const paymentModeId = expense.payment_mode
   const paidBy = expense.paid_by
@@ -138,13 +147,13 @@ function ExpenseDetail({ expense }: { expense: Expense }) {
   )
 }
 
-function DetailRow({
+const DetailRow = ({
   label,
   value,
 }: {
   label: string
   value: React.ReactNode
-}) {
+}) => {
   return (
     <div className="flex items-center justify-between px-4 py-3">
       <span className="text-sm text-muted-foreground">{label}</span>
@@ -153,7 +162,7 @@ function DetailRow({
   )
 }
 
-function DetailSkeleton() {
+const DetailSkeleton = () => {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex items-start gap-4">

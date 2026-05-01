@@ -3,7 +3,7 @@ import { getSupabase, missingCreds } from "@/lib/supabase-server"
 import { differenceInDays } from "date-fns"
 
 // GET /api/logs/total?categoryId=10&from=2026-04-1&to=2026-04-18
-export async function GET(req: NextRequest) {
+export const GET = async (req: NextRequest) => {
   const supabase = getSupabase()
   if (!supabase) return missingCreds()
 

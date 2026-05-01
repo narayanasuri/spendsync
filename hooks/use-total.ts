@@ -9,7 +9,7 @@ const DATE_MONTH_START = new Date(
   1
 )
 
-export function useTotal({
+export const useTotal = ({
   from = DATE_MONTH_START,
   to = DATE_NOW,
   categoryId,
@@ -21,7 +21,7 @@ export function useTotal({
   categoryId?: string
   paymentId?: string
   excludeIncome?: boolean
-}) {
+}) => {
   const [totals, setTotals] = useState<TotalItem[]>([])
   const [loading, setLoading] = useState<boolean>(false)
   const [error, setError] = useState<string | undefined>(undefined)

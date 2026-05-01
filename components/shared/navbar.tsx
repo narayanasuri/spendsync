@@ -11,8 +11,7 @@ import { GridIcon } from "./icons/grid-icon"
 import { Button } from "@/components/ui/button"
 import { PlusIcon } from "./icons/plus-icon"
 import { LogDrawer } from "../add/log-drawer"
-import { useEffect, useState } from "react"
-import { useAppStore } from "@/lib/store"
+import { useLogDrawerStore } from "@/lib/log-drawer-store"
 
 const navItems = [
   { label: "Overview", href: "/", icon: ChartIcon },
@@ -22,20 +21,9 @@ const navItems = [
   { label: "Settings", href: "/settings", icon: CogIcon },
 ]
 
-export function Navbar() {
+export const Navbar = () => {
   const pathname = usePathname()
-  const [open, setOpen] = useState<boolean>(false)
-  const { editingLog } = useAppStore()
-
-  useEffect(() => {
-    if (editingLog) {
-      setOpen(true)
-    }
-  }, [editingLog])
-
-  const handleOpenChange = (open: boolean) => {
-    setOpen(open)
-  }
+  const { openDrawer } = useLogDrawerStore()
 
   if (pathname === "/login") return null
 
@@ -53,7 +41,7 @@ export function Navbar() {
                   <Button
                     size="icon"
                     aria-label="Submit"
-                    onClick={() => handleOpenChange(true)}
+                    onClick={openDrawer}
                     className="w-[56px] bg-foreground"
                   >
                     <Icon className="size-5" />
@@ -89,11 +77,7 @@ export function Navbar() {
         </div>
       </nav>
 
-      <LogDrawer
-        open={open}
-        onOpenChange={handleOpenChange}
-        log={editingLog ?? undefined}
-      />
+      <LogDrawer />
     </>
   )
 }

@@ -7,29 +7,31 @@ import { useAppStore } from "@/lib/store"
 import { haptic } from "ios-haptics"
 import { useFormContext } from "react-hook-form"
 import { Spinner } from "../ui/spinner"
+import { useLogDrawerStore } from "@/lib/log-drawer-store"
 
 // Formats a Date as a local ISO string (no UTC conversion)
-function formatLocalISO(date: Date): string {
+const formatLocalISO = (date: Date): string => {
   const pad = (n: number) => String(n).padStart(2, "0")
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`
 }
 
-export function LogDrawerFooter({
-  onSuccess,
-  onError,
+export const LogDrawerFooter = ({
+  setErrorMessage,
+  onClose,
 }: {
-  onSuccess: () => void
-  onError: (error: string) => void
-}) {
+  setErrorMessage: (error: any) => void
+  onClose: () => void
+}) => {
   const methods = useFormContext<LogFormInput, unknown, LogFormValues>()
   const {
     formState: { isSubmitting },
     handleSubmit,
     reset,
   } = methods
-  const { editingLog, refreshPaymentMethods } = useAppStore()
+  const { refreshPaymentMethods } = useAppStore()
+  const { editingLog, closeDrawer } = useLogDrawerStore()
 
-  async function onSubmit(data: LogFormValues) {
+  const onSubmit = async (data: LogFormValues) => {
     try {
       const res = await fetch(
         `/api/logs${editingLog ? `/${editingLog.id}` : ``}`,
@@ -56,7 +58,9 @@ export function LogDrawerFooter({
 
       await refreshPaymentMethods()
 
-      onSuccess()
+      onClose()
+
+      closeDrawer()
 
       haptic.confirm()
 
@@ -69,7 +73,7 @@ export function LogDrawerFooter({
             ? err
             : "An unknown error occurred"
 
-      onError(errorMessage)
+      setErrorMessage(errorMessage)
       haptic.error()
       console.error("[ExpenseForm] Fetch error:", err)
     }
@@ -86,7 +90,7 @@ export function LogDrawerFooter({
         {isSubmitting ? "Submitting" : "Submit"}
       </Button>
       <DrawerClose asChild>
-        <Button variant="outline" className="mb-3 w-full">
+        <Button variant="outline" className="mb-3 w-full" onClick={onClose}>
           Cancel
         </Button>
       </DrawerClose>

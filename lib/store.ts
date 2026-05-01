@@ -2,8 +2,6 @@ import { create } from "zustand"
 import { Budget, Category, Expense, PaymentMethod, User } from "./types"
 
 type AppStore = {
-  editingLog: Expense | null
-
   loading: boolean
   hydrated: boolean
 
@@ -11,8 +9,6 @@ type AppStore = {
   paymentMethods: PaymentMethod[]
   users: User[]
   budgets: Budget[]
-
-  setEditingLog: (expense: Expense | null) => void
 
   refreshCategories: () => Promise<void>
   refreshPaymentMethods: () => Promise<void>
@@ -25,9 +21,6 @@ type AppStore = {
 export const useAppStore = create<AppStore>((set, get) => ({
   loading: false,
   hydrated: false,
-
-  editingLog: null,
-  setEditingLog: (expense: Expense | null) => set({ editingLog: expense }),
 
   categories: [],
   refreshCategories: async () => {

@@ -41,7 +41,7 @@ const COLOR_CLASSES = [
   "bg-amber-300",
 ]
 
-export function CategoryChartCardSkeleton() {
+export const CategoryChartCardSkeleton = () => {
   return (
     <Card className="w-full">
       <CardHeader>
@@ -55,7 +55,7 @@ export function CategoryChartCardSkeleton() {
   )
 }
 
-function HoverLegend({
+const HoverLegend = ({
   label,
   amount,
   colorString,
@@ -65,7 +65,7 @@ function HoverLegend({
   amount: number
   colorString: string
   children: ReactNode
-}) {
+}) => {
   const {
     currency: { symbol },
   } = useCurrency()
@@ -93,7 +93,7 @@ function HoverLegend({
   )
 }
 
-export function CategoryChartCard() {
+export const CategoryChartCard = () => {
   const {
     currency: { symbol },
   } = useCurrency()
@@ -172,60 +172,72 @@ export function CategoryChartCard() {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="flex h-[26px] w-full rounded-md bg-muted">
-          {items.map((item, index) => {
-            return (
-              <HoverLegend
-                key={item.categoryId}
-                label={item.categoryName}
-                amount={item.sum}
-                colorString={item.color}
-              >
-                <span
-                  className={`h-full ${
-                    index === 0
-                      ? "rounded-s-md"
-                      : index === items.length - 1
-                        ? "rounded-e-md"
-                        : "rounded-none"
-                  }`}
-                  style={{
-                    width: `${item.percentage}%`,
-                    backgroundColor: item.color,
-                  }}
-                />
-              </HoverLegend>
-            )
-          })}
-        </div>
+        {items.length === 0 ? (
+          <Empty className="h-full bg-muted/30">
+            <EmptyHeader>
+              <EmptyDescription className="max-w-xs text-pretty">
+                No logs found for this month
+              </EmptyDescription>
+            </EmptyHeader>
+          </Empty>
+        ) : (
+          <div className="flex h-[26px] w-full rounded-md bg-muted">
+            {items.map((item, index) => {
+              return (
+                <HoverLegend
+                  key={item.categoryId}
+                  label={item.categoryName}
+                  amount={item.sum}
+                  colorString={item.color}
+                >
+                  <span
+                    className={`h-full ${
+                      index === 0
+                        ? "rounded-s-md"
+                        : index === items.length - 1
+                          ? "rounded-e-md"
+                          : "rounded-none"
+                    }`}
+                    style={{
+                      width: `${item.percentage}%`,
+                      backgroundColor: item.color,
+                    }}
+                  />
+                </HoverLegend>
+              )
+            })}
+          </div>
+        )}
       </CardContent>
-      <CardFooter className="flex-col items-start gap-2 text-sm">
-        <div className="flex w-full flex-col gap-2">
-          {items.map((item) => (
-            <div
-              key={item.categoryId}
-              className="flex w-full items-center justify-between"
-            >
-              <div className="flex items-center gap-2">
-                <span
-                  className="h-[12px] w-[12px] rounded-xs"
-                  style={{ backgroundColor: item.color }}
-                />
-                <p className="text-sm font-medium">
-                  {item.categoryEmoji} {item.categoryName}
-                </p>
+      {items.length > 0 && (
+        <CardFooter className="flex-col items-start gap-2 text-sm">
+          <div className="flex w-full flex-col gap-2">
+            {items.map((item) => (
+              <div
+                key={item.categoryId}
+                className="flex w-full items-center justify-between"
+              >
+                <div className="flex items-center gap-2">
+                  <span
+                    className="h-[12px] w-[12px] rounded-xs"
+                    style={{ backgroundColor: item.color }}
+                  />
+                  <p className="text-sm font-medium">
+                    {item.categoryEmoji} {item.categoryName}
+                  </p>
+                </div>
+                <Button variant="link" asChild className="p-0">
+                  <Link href={`/logs?categoryId=${item.categoryId}`} replace>
+                    {symbol}
+                    {abbreviate(item.sum)}
+                    <ArrowUpRightIcon />
+                  </Link>
+                </Button>
               </div>
-              <Button variant="link" asChild className="p-0">
-                <Link href={`/logs?categoryId=${item.categoryId}`} replace>
-                  {symbol}
-                  {abbreviate(item.sum)}
-                  <ArrowUpRightIcon />
-                </Link>
-              </Button>
-            </div>
-          ))}
-        </div>
-      </CardFooter>
+            ))}
+          </div>
+        </CardFooter>
+      )}
     </Card>
   )
 }

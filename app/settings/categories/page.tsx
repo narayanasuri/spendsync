@@ -15,7 +15,7 @@ import { useBackButton } from "@/hooks/use-back-button"
 import { CategoriesList } from "@/components/settings/categories-list"
 import type { Category } from "@/lib/types"
 
-export default function CategoriesSettingsPage() {
+export default () => {
   const { categories } = useAppStore()
   const [activeTab, setActiveTab] = useState<"expense" | "income">("expense")
   const [open, setOpen] = useState<boolean>(false)
@@ -38,7 +38,12 @@ export default function CategoriesSettingsPage() {
     <div className="flex min-h-screen flex-col">
       <main className="mx-auto w-full max-w-4xl flex-1 p-6">
         <div className="mb-6 flex items-center gap-3">
-          <Button variant="ghost" size="icon-xs" onClick={back}>
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            aria-label="Go back to settings"
+            onClick={back}
+          >
             <ArrowLeftIcon />
           </Button>
           <h2 className="text-xl font-semibold tracking-tight">Categories</h2>

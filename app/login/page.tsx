@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Spinner } from "@/components/ui/spinner"
 import { APP_NAME } from "@/lib/constants"
 
-function LoginForm() {
+const LoginForm = () => {
   const [password, setPassword] = useState("")
   const [error, setError] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -36,7 +36,7 @@ function LoginForm() {
       .catch(() => setLoading(false))
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
-  function onLogin() {
+  const onLogin = () => {
     setLoading(true)
     fetch("/api/auth/login", {
       method: "POST",
@@ -88,7 +88,7 @@ function LoginForm() {
   )
 }
 
-export default function LoginPage() {
+export default () => {
   return (
     <div className="flex min-h-screen items-center justify-center">
       <Suspense>

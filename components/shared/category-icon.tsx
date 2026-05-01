@@ -1,7 +1,9 @@
+"use client"
+
 import { COLORS } from "@/lib/constants"
 import { useAppStore } from "@/lib/store"
 
-export function CategoryIcon({
+export const CategoryIcon = ({
   categoryId,
   onlyIcon = true,
   size = 40,
@@ -11,7 +13,7 @@ export function CategoryIcon({
   onlyIcon?: boolean
   size?: number
   iconSize?: number
-}) {
+}) => {
   const { categories } = useAppStore()
 
   const category = categories.find((c) => c.id === categoryId)

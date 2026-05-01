@@ -1,3 +1,5 @@
+"use client"
+
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import {
@@ -10,7 +12,7 @@ import {
 } from "@/components/ui/empty"
 import { MapIcon } from "lucide-react"
 
-export default function NotFound() {
+export default () => {
   return (
     <div className="flex min-h-screen items-center justify-center p-6">
       <Empty>

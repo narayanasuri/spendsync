@@ -5,7 +5,7 @@ import type { TablesInsert } from "@/lib/database.types"
 type ExpenseInsert = TablesInsert<"Expenses">
 
 // GET /api/logs?page=0&from=...
-export async function GET(req: NextRequest) {
+export const GET = async (req: NextRequest) => {
   const supabase = getSupabase()
   if (!supabase) return missingCreds()
 
@@ -59,7 +59,7 @@ export async function GET(req: NextRequest) {
 }
 
 // POST /api/logs
-export async function POST(req: NextRequest) {
+export const POST = async (req: NextRequest) => {
   const supabase = getSupabase()
   if (!supabase) return missingCreds()
 

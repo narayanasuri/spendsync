@@ -3,7 +3,7 @@ import { useMemo, useState, useEffect } from "react"
 
 const LOCAL_STORAGE_KEY = "currency"
 
-export function useCurrency() {
+export const useCurrency = () => {
   // 1. Start with the default to match the Server-Side Render
   const [currencyId, setCurrencyId] = useState<number>(1)
 

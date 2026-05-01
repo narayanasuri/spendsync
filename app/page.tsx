@@ -14,7 +14,7 @@ import {
 } from "@/components/overview/credit-limit-card"
 import { useAppStore } from "@/lib/store"
 
-function Skeleton() {
+const Skeleton = () => {
   return (
     <div className="mt-3 flex flex-col gap-3">
       <div className="-mx-1.5 flex flex-wrap gap-y-3">
@@ -41,7 +41,7 @@ function Skeleton() {
   )
 }
 
-export default function OverviewPage() {
+export default () => {
   const { paymentMethods, hydrated, loading } = useAppStore()
 
   return (

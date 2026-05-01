@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { getSupabase, missingCreds } from "@/lib/supabase-server"
 
 // GET /api/budgets?user_id=1
-export async function GET(req: NextRequest) {
+export const GET = async (req: NextRequest) => {
   const supabase = getSupabase()
   if (!supabase) return missingCreds()
 
@@ -22,7 +22,7 @@ export async function GET(req: NextRequest) {
 }
 
 // POST /api/budgets  { category_id, budget_amount, user? }
-export async function POST(req: NextRequest) {
+export const POST = async (req: NextRequest) => {
   const supabase = getSupabase()
   if (!supabase) return missingCreds()
 

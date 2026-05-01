@@ -28,14 +28,14 @@ interface ExpenseActionMenuProps {
   onDelete: () => Promise<void>
 }
 
-export function ExpenseActionMenu({
+export const ExpenseActionMenu = ({
   onEdit,
   onDelete,
-}: ExpenseActionMenuProps) {
+}: ExpenseActionMenuProps) => {
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [deleting, setDeleting] = useState(false)
 
-  async function handleConfirmDelete() {
+  const handleConfirmDelete = async () => {
     setDeleting(true)
     await onDelete()
     setDeleting(false)

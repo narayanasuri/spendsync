@@ -37,14 +37,14 @@ type Props = {
   budget?: Budget // present → edit mode
 }
 
-export function BudgetDrawer({ open, onOpenChange, budget }: Props) {
+export const BudgetDrawer = ({ open, onOpenChange, budget }: Props) => {
   const isDesktop = useMediaQuery("(min-width: 768px)")
   const { refreshBudgets } = useAppStore()
   const isEditing = !!budget
 
   const title = isEditing ? "Modify Budget" : "New Budget"
 
-  async function handleDelete() {
+  const handleDelete = async () => {
     if (!budget) return
     await fetch(`/api/budgets/${budget.id}`, {
       method: "DELETE",
@@ -104,7 +104,7 @@ export function BudgetDrawer({ open, onOpenChange, budget }: Props) {
   )
 }
 
-function BudgetForm({
+const BudgetForm = ({
   budget,
   onSuccess,
   className,
@@ -112,7 +112,7 @@ function BudgetForm({
   budget?: Budget
   onSuccess: () => void
   className?: string
-}) {
+}) => {
   const { refreshBudgets } = useAppStore()
   const isEditing = !!budget
 
@@ -126,7 +126,7 @@ function BudgetForm({
   const [categoryError, setCategoryError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
-  async function handleSubmit(e: React.FormEvent) {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!limit) {
       setLimitError("Limit is required.")

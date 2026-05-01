@@ -3,7 +3,7 @@
 import { useEffect } from "react"
 import { useAppStore } from "@/lib/store"
 
-export function AppStoreInitializer() {
+export const AppStoreInitializer = () => {
   const { hydrated, refresh } = useAppStore()
 
   useEffect(() => {

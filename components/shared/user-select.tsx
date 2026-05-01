@@ -1,3 +1,5 @@
+"use client"
+
 import {
   Select,
   SelectContent,
@@ -8,12 +10,13 @@ import {
 } from "@/components/ui/select"
 import { useAppStore } from "@/lib/store"
 
-interface CategorySelectProps {
+export const UserSelect = ({
+  value,
+  onChange,
+}: {
   value: string
   onChange: (value: string) => void
-}
-
-export function UserSelect({ value, onChange }: CategorySelectProps) {
+}) => {
   const { users } = useAppStore()
 
   return (
