@@ -18,7 +18,6 @@ import { abbreviate, formatToLocalDate } from "@/lib/utils"
 import { useCurrency } from "@/hooks/use-currency"
 import { startOfMonth } from "date-fns"
 import { GroupedItem } from "@/lib/types"
-import { useAppStore } from "@/lib/store"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
@@ -29,6 +28,7 @@ import {
   EmptyHeader,
   EmptyMedia,
 } from "@/components/ui/empty"
+import { useCategories } from "@/lib/queries"
 
 const DATE_NOW = new Date()
 const DATE_FROM = startOfMonth(DATE_NOW)
@@ -97,7 +97,7 @@ export const CategoryChartCard = () => {
   const {
     currency: { symbol },
   } = useCurrency()
-  const { categories, hydrated, loading } = useAppStore()
+  const { data: categories = [], isLoading } = useCategories()
   const [groups, setGroups] = useState<GroupedItem<"category">[]>([])
   const [error, setError] = useState<string | undefined>(undefined)
 
@@ -161,7 +161,7 @@ export const CategoryChartCard = () => {
     )
   }
 
-  return !hydrated || loading ? (
+  return isLoading ? (
     <CategoryChartCardSkeleton />
   ) : (
     <Card className="w-full">

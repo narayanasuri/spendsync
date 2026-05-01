@@ -40,7 +40,11 @@ import {
   EmojiPickerFooter,
   EmojiPickerSearch,
 } from "@/components/ui/emoji-picker"
-import { useAppStore } from "@/lib/store"
+import {
+  useCategoryMutation,
+  useDeleteCategoryMutation,
+  useInvalidateCategories,
+} from "@/lib/queries"
 import { Category } from "@/lib/types"
 import { LogTypeSelect } from "@/components/shared/log-type-select"
 import {
@@ -67,18 +71,16 @@ export const CategoryDrawer = ({
   defaultType = "expense",
 }: Props) => {
   const isDesktop = useMediaQuery("(min-width: 768px)")
-  const { refreshCategories } = useAppStore()
+  const deleteMutation = useDeleteCategoryMutation()
   const isEditing = !!category
 
   const title = isEditing ? "Update Category" : "Add Category"
 
-  const handleDelete = async () => {
+  const handleDelete = () => {
     if (!category) return
-    await fetch(`/api/categories/${category.id}`, {
-      method: "DELETE",
+    deleteMutation.mutate(category.id.toString(), {
+      onSuccess: () => onOpenChange(false),
     })
-    await refreshCategories()
-    onOpenChange(false)
   }
 
   if (isDesktop) {
@@ -149,59 +151,33 @@ const CategoryForm = ({
   defaultType?: "expense" | "income"
   className?: string
 }) => {
-  const { refreshCategories } = useAppStore()
   const isEditing = !!category
 
+  const mutation = useCategoryMutation()
   const [icon, setIcon] = useState(category?.icon ?? "❓")
-  const [name, setName] = useState(category?.name ?? "")
+  const [name, setName] = useState(category?.name ?? "New category")
   const [type, setType] = useState<"expense" | "income">(
     (category?.type as "expense" | "income") ?? defaultType
   )
   const [color, setColor] = useState<string>(category?.color ?? COLORS[0].value)
   const [emojiOpen, setEmojiOpen] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [loading, setLoading] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!name.trim()) {
-      setError("Category name is required.")
-      return
-    }
+    if (!name.trim()) return
 
-    setError(null)
-    setLoading(true)
-
-    try {
-      const url = isEditing
-        ? `/api/categories/${category.id}`
-        : "/api/categories"
-      const method = isEditing ? "PATCH" : "POST"
-
-      const res = await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: name.trim(),
-          icon: icon || null,
-          type,
-          color,
-        }),
-      })
-
-      const json = await res.json()
-      if (!res.ok) {
-        setError(json.error ?? "Something went wrong.")
-        return
+    mutation.mutate(
+      {
+        name: name.trim(),
+        icon: icon || null,
+        type,
+        color,
+        id: category?.id.toString(),
+      },
+      {
+        onSuccess: () => onSuccess(),
       }
-
-      await refreshCategories()
-      onSuccess()
-    } catch {
-      setError("Something went wrong.")
-    } finally {
-      setLoading(false)
-    }
+    )
   }
 
   return (
@@ -245,7 +221,6 @@ const CategoryForm = ({
                 </PopoverContent>
               </Popover>
             </div>
-            {error && <FieldError>{error}</FieldError>}
           </Field>
 
           <Field>
@@ -257,7 +232,7 @@ const CategoryForm = ({
               value={name}
               onChange={(e) => setName(e.target.value)}
             />
-            {error && <FieldError>{error}</FieldError>}
+            {!name && <FieldError>Name is required</FieldError>}
           </Field>
 
           <Field>
@@ -300,8 +275,8 @@ const CategoryForm = ({
         </FieldGroup>
       </FieldSet>
 
-      <Button type="submit" disabled={loading}>
-        {loading ? "Saving..." : isEditing ? "Save" : "Create"}
+      <Button type="submit" disabled={mutation.isPending}>
+        {mutation.isPending ? "Saving..." : isEditing ? "Save" : "Create"}
       </Button>
     </form>
   )

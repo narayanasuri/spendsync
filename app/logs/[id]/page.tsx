@@ -1,6 +1,5 @@
 "use client"
 
-import { useEffect, useState } from "react"
 import { useParams } from "next/navigation"
 import { ArrowLeftIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -8,7 +7,12 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { CategoryIcon } from "@/components/shared/category-icon"
 import { ExpenseActionMenu } from "@/components/logs/details/action-menu"
 import { LogNotFound } from "@/components/logs/details/log-not-found"
-import { useAppStore } from "@/lib/store"
+import {
+  useCategories,
+  usePaymentMethods,
+  useUsers,
+  useLog,
+} from "@/lib/queries"
 import { useCurrency } from "@/hooks/use-currency"
 import { format } from "date-fns"
 import type { Expense } from "@/lib/types"
@@ -20,29 +24,9 @@ const DETAIL_TIME_FORMAT = "h:mm a"
 
 export default () => {
   const { id } = useParams<{ id: string }>()
-  const [log, setLog] = useState<Expense | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
   const back = useBackButton("/logs")
 
-  useEffect(() => {
-    const fetchExpense = async () => {
-      try {
-        const res = await fetch(`/api/logs/${id}`)
-        const json = await res.json()
-        if (!res.ok) {
-          setError(json.error ?? "Failed to load expense.")
-          return
-        }
-        setLog(json)
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to load expense.")
-      } finally {
-        setLoading(false)
-      }
-    }
-    fetchExpense()
-  }, [id])
+  const { data: log, isLoading, error } = useLog(id)
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -60,7 +44,7 @@ export default () => {
           {log && <ExpenseActionMenu log={log} />}
         </div>
 
-        {loading ? (
+        {isLoading ? (
           <DetailSkeleton />
         ) : error ? (
           <LogNotFound />
@@ -76,7 +60,9 @@ const ExpenseDetail = ({ expense }: { expense: Expense }) => {
   const categoryId = expense.category
   const paymentModeId = expense.payment_mode
   const paidBy = expense.paid_by
-  const { categories, paymentMethods, users } = useAppStore()
+  const { data: categories = [] } = useCategories()
+  const { data: paymentMethods = [] } = usePaymentMethods()
+  const { data: users = [] } = useUsers()
   const { currency } = useCurrency()
 
   const date = parseTimestamp(expense.spent_at)

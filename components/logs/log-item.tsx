@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation"
 import { abbreviate, parseTimestamp } from "@/lib/utils"
 import { CategoryIcon } from "@/components/shared/category-icon"
 import { Expense } from "@/lib/types"
-import { useAppStore } from "@/lib/store"
+import { usePaymentMethods } from "@/lib/queries"
 import { useCurrency } from "@/hooks/use-currency"
 import { format } from "date-fns"
 
@@ -12,7 +12,7 @@ const LOG_TIME_FORMAT = "h:mm a"
 
 export const LogItem = ({ log }: { log: Expense }) => {
   const router = useRouter()
-  const { paymentMethods } = useAppStore()
+  const { data: paymentMethods = [] } = usePaymentMethods()
   const {
     id,
     amount,

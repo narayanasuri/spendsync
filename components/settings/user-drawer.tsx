@@ -27,7 +27,7 @@ import {
   FieldLabel,
   FieldSet,
 } from "@/components/ui/field"
-import { useAppStore } from "@/lib/store"
+import { useDeleteUserMutation, useUserMutation } from "@/lib/queries"
 import { User } from "@/lib/types"
 
 type Props = {
@@ -38,18 +38,16 @@ type Props = {
 
 export const UserDrawer = ({ open, onOpenChange, user }: Props) => {
   const isDesktop = useMediaQuery("(min-width: 768px)")
-  const { refreshUsers } = useAppStore()
+  const deleteMutation = useDeleteUserMutation()
   const isEditing = !!user
 
   const title = isEditing ? "Update User" : "Add User"
 
-  const handleDelete = async () => {
+  const handleDelete = () => {
     if (!user) return
-    await fetch(`/api/users/${user.id}`, {
-      method: "DELETE",
+    deleteMutation.mutate(user.id.toString(), {
+      onSuccess: () => onOpenChange(false),
     })
-    await refreshUsers()
-    onOpenChange(false)
   }
 
   if (isDesktop) {
@@ -115,46 +113,21 @@ const UserForm = ({
   onSuccess: () => void
   className?: string
 }) => {
-  const { refreshUsers } = useAppStore()
+  const [name, setName] = useState(user?.name ?? "")
   const isEditing = !!user
 
-  const [name, setName] = useState(user?.name ?? "")
-  const [error, setError] = useState<string | null>(null)
-  const [loading, setLoading] = useState(false)
+  const mutation = useUserMutation()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!name.trim()) {
-      setError("Username is required.")
-      return
-    }
+    if (!name.trim()) return
 
-    setError(null)
-    setLoading(true)
-
-    try {
-      const url = isEditing ? `/api/users/${user.id}` : "/api/users"
-      const method = isEditing ? "PATCH" : "POST"
-
-      const res = await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: name.trim() }),
-      })
-
-      const json = await res.json()
-      if (!res.ok) {
-        setError(json.error ?? "Something went wrong.")
-        return
+    mutation.mutate(
+      { name: name.trim(), id: user?.id.toString() },
+      {
+        onSuccess: () => onSuccess(),
       }
-
-      await refreshUsers()
-      onSuccess()
-    } catch {
-      setError("Something went wrong.")
-    } finally {
-      setLoading(false)
-    }
+    )
   }
 
   return (
@@ -173,13 +146,15 @@ const UserForm = ({
               value={name}
               onChange={(e) => setName(e.target.value)}
             />
-            {error && <FieldError>{error}</FieldError>}
+            {mutation.isError && (
+              <FieldError>{mutation.error.message}</FieldError>
+            )}
           </Field>
         </FieldGroup>
       </FieldSet>
 
-      <Button type="submit" disabled={loading}>
-        {loading ? "Saving..." : isEditing ? "Save" : "Create"}
+      <Button type="submit" disabled={mutation.isPending}>
+        {mutation.isPending ? "Saving..." : isEditing ? "Save" : "Create"}
       </Button>
     </form>
   )

@@ -8,7 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { useAppStore } from "@/lib/store"
+import { usePaymentMethods } from "@/lib/queries"
 import { CreditCardIcon, LandmarkIcon } from "lucide-react"
 
 export const PaymentModeSelect = ({
@@ -20,7 +20,7 @@ export const PaymentModeSelect = ({
   onChange: (value: string) => void
   allowSelectAll?: boolean
 }) => {
-  const { paymentMethods } = useAppStore()
+  const { data: paymentMethods = [] } = usePaymentMethods()
 
   return (
     <Select value={value} onValueChange={onChange}>

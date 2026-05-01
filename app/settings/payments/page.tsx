@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { useAppStore } from "@/lib/store"
+import { usePaymentMethods } from "@/lib/queries"
 import { Button } from "@/components/ui/button"
 import { ArrowLeftIcon, PlusIcon } from "lucide-react"
 import { PaymentMethodDrawer } from "@/components/settings/payment-method-drawer"
@@ -10,7 +10,7 @@ import { PaymentMethodsList } from "@/components/settings/payment-methods-list"
 import { PaymentMethod } from "@/lib/types"
 
 export default () => {
-  const { paymentMethods } = useAppStore()
+  const { data: paymentMethods = [] } = usePaymentMethods()
   const [open, setOpen] = useState<boolean>(false)
   const [editingMethod, setEditingMethod] = useState<
     PaymentMethod | undefined

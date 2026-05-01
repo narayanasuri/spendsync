@@ -8,7 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { useAppStore } from "@/lib/store"
+import { useUsers } from "@/lib/queries"
 
 export const UserSelect = ({
   value,
@@ -17,7 +17,7 @@ export const UserSelect = ({
   value: string
   onChange: (value: string) => void
 }) => {
-  const { users } = useAppStore()
+  const { data: users = [] } = useUsers()
 
   return (
     <Select value={value} onValueChange={onChange} disabled={users.length <= 1}>

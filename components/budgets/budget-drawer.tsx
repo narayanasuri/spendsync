@@ -11,7 +11,6 @@ import {
 } from "@/components/ui/dialog"
 import {
   Drawer,
-  DrawerClose,
   DrawerContent,
   DrawerFooter,
   DrawerHeader,
@@ -26,10 +25,10 @@ import {
   FieldLabel,
   FieldSet,
 } from "@/components/ui/field"
-import { useAppStore } from "@/lib/store"
 import { Budget } from "@/lib/types"
 import { CategorySelect } from "../shared/category-select"
 import { PeriodSelect } from "../shared/period-select"
+import { useInvalidateBudgets } from "@/lib/queries"
 
 type Props = {
   open: boolean
@@ -39,7 +38,7 @@ type Props = {
 
 export const BudgetDrawer = ({ open, onOpenChange, budget }: Props) => {
   const isDesktop = useMediaQuery("(min-width: 768px)")
-  const { refreshBudgets } = useAppStore()
+  const invalidateBudgets = useInvalidateBudgets()
   const isEditing = !!budget
 
   const title = isEditing ? "Modify Budget" : "New Budget"
@@ -49,7 +48,7 @@ export const BudgetDrawer = ({ open, onOpenChange, budget }: Props) => {
     await fetch(`/api/budgets/${budget.id}`, {
       method: "DELETE",
     })
-    await refreshBudgets()
+    await invalidateBudgets()
     onOpenChange(false)
   }
 
@@ -113,7 +112,7 @@ const BudgetForm = ({
   onSuccess: () => void
   className?: string
 }) => {
-  const { refreshBudgets } = useAppStore()
+  const invalidateBudgets = useInvalidateBudgets()
   const isEditing = !!budget
 
   const [limit, setLimit] = useState(budget?.budget_amount ?? 1000)
@@ -162,7 +161,7 @@ const BudgetForm = ({
         return
       }
 
-      await refreshBudgets()
+      await invalidateBudgets()
       onSuccess()
     } catch {
       setServerError("Something went wrong.")

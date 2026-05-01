@@ -11,20 +11,26 @@ import {
 } from "@/components/ui/alert-dialog"
 import { useBackButton } from "@/hooks/use-back-button"
 import { useLogDeleteDialogStore } from "@/lib/log-delete-dialog-store"
+import { useDeleteLog } from "@/lib/mutations/use-log-mutations"
 import { Trash2Icon } from "lucide-react"
-import { useCallback, useState } from "react"
+import { useCallback } from "react"
 
 export const DeleteLogDialog = () => {
   const { isOpen, toggleDialog, logIdToDelete } = useLogDeleteDialogStore()
-  const [deleting, setDeleting] = useState(false)
   const back = useBackButton("/logs")
+  const deleteLogMutation = useDeleteLog()
 
   const onConfirmDeletion = useCallback(async () => {
-    setDeleting(true)
-    await fetch(`/api/logs/${logIdToDelete}`, { method: "DELETE" })
-    setDeleting(false)
-    back()
-  }, [logIdToDelete, setDeleting])
+    if (!logIdToDelete) return
+
+    try {
+      await deleteLogMutation.mutateAsync(parseInt(logIdToDelete))
+      back()
+    } catch (error) {
+      console.error("Failed to delete log:", error)
+      // Error is already handled by the mutation
+    }
+  }, [logIdToDelete, deleteLogMutation, back])
 
   return (
     <AlertDialog open={isOpen} onOpenChange={toggleDialog}>
@@ -39,15 +45,18 @@ export const DeleteLogDialog = () => {
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel variant="outline" disabled={deleting}>
+          <AlertDialogCancel
+            variant="outline"
+            disabled={deleteLogMutation.isPending}
+          >
             Cancel
           </AlertDialogCancel>
           <AlertDialogAction
             variant="destructive"
-            disabled={deleting}
+            disabled={deleteLogMutation.isPending}
             onClick={onConfirmDeletion}
           >
-            {deleting ? "Deleting..." : "Delete"}
+            {deleteLogMutation.isPending ? "Deleting..." : "Delete"}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

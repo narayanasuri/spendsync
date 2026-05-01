@@ -1,4 +1,4 @@
-import type { TablesInsert } from "./database.types"
+import type { TablesInsert, TablesUpdate } from "./database.types"
 import type { Tables } from "./database.types"
 
 export type OptionType = {
@@ -19,6 +19,10 @@ export type TransactionType = Expense["transaction_type"]
 export type ExpenseInsert = TablesInsert<"Expenses">
 
 export type Category = Tables<"Categories">
+
+export type CategoryInsert = TablesInsert<"Categories">
+
+export type CategoryUpdate = TablesUpdate<"Categories">
 
 export type PaymentMethod = Tables<"PaymentMethods">
 

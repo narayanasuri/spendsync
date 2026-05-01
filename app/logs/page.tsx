@@ -29,8 +29,8 @@ const LogsContent = () => {
   const searchParams = useSearchParams()
 
   // --- Infinite Scroll State ---
-  const [page, setPage] = useState(0)
   const observerTarget = useRef<HTMLDivElement>(null)
+  const [isHydrated, setIsHydrated] = useState(false)
 
   const fromParam = searchParams.get(PARAM_FROM)
   const toParam = searchParams.get(PARAM_TO)
@@ -45,42 +45,20 @@ const LogsContent = () => {
         : new Date(new Date().getFullYear(), new Date().getMonth(), 1),
     [fromParam]
   )
+
   const dateTo = useMemo(
     () => (toParam ? parseLocalDate(toParam) : new Date()),
     [toParam]
   )
 
-  const { logs, loading, error, hasMore } = useLogs({
-    from: dateFrom,
-    to: dateTo,
-    categoryId: categoryParam,
-    paymentMethodId: paymentMethodParam,
-    transactionType: typeParam,
-    page: page,
-  })
-
-  // Reset page when filters change
-  useEffect(() => {
-    setPage(0)
-  }, [fromParam, toParam, categoryParam, paymentMethodParam, typeParam])
-
-  // --- Intersection Observer Logic ---
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && hasMore && !loading) {
-          setPage((prev) => prev + 1)
-        }
-      },
-      { rootMargin: "200px", threshold: 0.1 }
-    )
-
-    if (observerTarget.current) {
-      observer.observe(observerTarget.current)
-    }
-
-    return () => observer.disconnect()
-  }, [hasMore, loading, logs.length])
+  const { logs, loading, error, hasMore, fetchNextPage, isFetchingNextPage } =
+    useLogs({
+      from: dateFrom,
+      to: dateTo,
+      categoryId: categoryParam,
+      paymentMethodId: paymentMethodParam,
+      transactionType: typeParam,
+    })
 
   // --- Navigation Handlers ---
   const updateParams = useCallback(
@@ -114,6 +92,41 @@ const LogsContent = () => {
     router.replace(`/logs?${params.toString()}`, { scroll: false })
   }, [dateFrom, dateTo, router])
 
+  // Initialize URL params with default values on first render
+  useEffect(() => {
+    setIsHydrated(true)
+
+    // If no date params exist, set them to the default values
+    if (!fromParam || !toParam) {
+      const params = new URLSearchParams(searchParams.toString())
+      if (!fromParam) {
+        params.set(PARAM_FROM, formatToLocalDate(dateFrom))
+      }
+      if (!toParam) {
+        params.set(PARAM_TO, formatToLocalDate(dateTo))
+      }
+      router.replace(`/logs?${params.toString()}`, { scroll: false })
+    }
+  }, []) // Empty deps - only run once on mount
+
+  // --- Intersection Observer Logic ---
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore && !isFetchingNextPage) {
+          fetchNextPage()
+        }
+      },
+      { rootMargin: "200px", threshold: 0.1 }
+    )
+
+    if (observerTarget.current) {
+      observer.observe(observerTarget.current)
+    }
+
+    return () => observer.disconnect()
+  }, [hasMore, isFetchingNextPage, fetchNextPage])
+
   return (
     <div className="flex min-h-screen flex-col">
       <main className="mx-auto w-full max-w-4xl flex-1 p-6">
@@ -121,47 +134,61 @@ const LogsContent = () => {
           <h2 className="text-xl font-semibold tracking-tight">Logs</h2>
         </div>
 
-        <FilterBar
-          dateRange={{ from: dateFrom, to: dateTo }}
-          setDateRange={updateDateRange}
-          category={categoryParam}
-          setCategory={(id) => updateParams({ [PARAM_CATEGORY]: id })}
-          paymentMode={paymentMethodParam}
-          setPaymentMode={(id) => updateParams({ [PARAM_PAYMENT_METHOD]: id })}
-          transactionType={typeParam}
-          setTransactionType={(type) =>
-            updateParams({ [PARAM_TRANSACTION_TYPE]: type })
-          }
-          onClear={handleClearFilters}
-        />
-
-        {/* Initial Full Page Loading */}
-        {loading && page === 0 ? (
+        {!isHydrated ? (
           <div className="mt-3 flex flex-col gap-3">
             {Array.from({ length: 8 }).map((_, i) => (
               <LogSkeleton key={i} />
             ))}
           </div>
-        ) : error ? (
-          <p className="py-12 text-center text-sm text-destructive">{error}</p>
-        ) : logs.length === 0 ? (
-          <LogsEmptyState />
         ) : (
           <>
-            <DatedLogs logs={logs} />
+            <FilterBar
+              dateRange={{ from: dateFrom, to: dateTo }}
+              setDateRange={updateDateRange}
+              category={categoryParam}
+              setCategory={(id) => updateParams({ [PARAM_CATEGORY]: id })}
+              paymentMode={paymentMethodParam}
+              setPaymentMode={(id) =>
+                updateParams({ [PARAM_PAYMENT_METHOD]: id })
+              }
+              transactionType={typeParam}
+              setTransactionType={(type) =>
+                updateParams({ [PARAM_TRANSACTION_TYPE]: type })
+              }
+              onClear={handleClearFilters}
+            />
 
-            {/* The Infinite Scroll Trigger */}
-            <div
-              ref={observerTarget}
-              className="mt-6 flex h-20 w-full items-center justify-center"
-            >
-              {loading && page > 0 && (
-                <div className="flex w-full flex-col gap-3">
-                  <LogSkeleton />
-                  <LogSkeleton />
+            {/* Initial Full Page Loading */}
+            {loading ? (
+              <div className="mt-3 flex flex-col gap-3">
+                {Array.from({ length: 8 }).map((_, i) => (
+                  <LogSkeleton key={i} />
+                ))}
+              </div>
+            ) : error ? (
+              <p className="py-12 text-center text-sm text-destructive">
+                {error}
+              </p>
+            ) : logs.length === 0 ? (
+              <LogsEmptyState />
+            ) : (
+              <>
+                <DatedLogs logs={logs} />
+
+                {/* The Infinite Scroll Trigger */}
+                <div
+                  ref={observerTarget}
+                  className="mt-6 flex h-20 w-full items-center justify-center"
+                >
+                  {isFetchingNextPage && (
+                    <div className="flex w-full flex-col gap-3">
+                      <LogSkeleton />
+                      <LogSkeleton />
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
+              </>
+            )}
           </>
         )}
       </main>

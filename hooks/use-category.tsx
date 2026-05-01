@@ -1,9 +1,9 @@
 "use client"
 
-import { useAppStore } from "@/lib/store"
+import { useCategories } from "@/lib/queries"
 
 export const useCategory = (categoryId: number) => {
-  const { categories } = useAppStore()
+  const { data: categories = [] } = useCategories()
   const category = categories.find((c) => c.id === categoryId)
 
   return {

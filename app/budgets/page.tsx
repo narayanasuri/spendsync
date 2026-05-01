@@ -4,14 +4,14 @@ import { BudgetCardSkeleton } from "@/components/budgets/budget-card"
 import { BudgetDrawer } from "@/components/budgets/budget-drawer"
 import { BudgetList } from "@/components/budgets/budget-list"
 import { Button } from "@/components/ui/button"
-import { useAppStore } from "@/lib/store"
+import { useBudgets } from "@/lib/queries"
 import { Budget } from "@/lib/types"
 import { PlusIcon } from "lucide-react"
 import { useState } from "react"
 
 export default () => {
   const [open, setOpen] = useState<boolean>(false)
-  const { budgets, hydrated, loading } = useAppStore()
+  const { data: budgets = [], isLoading } = useBudgets()
   const [editingBudget, setEditingBudget] = useState<Budget | undefined>()
 
   const handleOpenChange = (open: boolean) => {
@@ -26,7 +26,7 @@ export default () => {
     setOpen(true)
   }
 
-  if (!hydrated || loading) {
+  if (isLoading) {
     return (
       <main className="mx-auto w-full max-w-4xl flex-1 p-6">
         <div className="mb-6 flex h-[32px] items-center gap-3">

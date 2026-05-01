@@ -10,6 +10,7 @@ import { AppStoreInitializer } from "@/components/app-store-initializer"
 import { APP_NAME } from "@/lib/constants"
 import { CurrencyInitializer } from "@/components/currency-initializer"
 import { DialogProvider } from "@/components/dialog-provider"
+import { QueryProvider } from "@/components/query-provider"
 
 import "./globals.css"
 
@@ -293,17 +294,19 @@ const RootLayout = ({
         />
       </head>
       <body>
-        <ThemeProvider>
-          <TooltipProvider>
-            <Navbar />
-            <DialogProvider />
-            <AppStoreInitializer />
-            <CurrencyInitializer />
-            {children}
-            {/* Prevent content from being hidden behind the mobile bottom nav */}
-            <div className="h-16 sm:hidden" />
-          </TooltipProvider>
-        </ThemeProvider>
+        <QueryProvider>
+          <ThemeProvider>
+            <TooltipProvider>
+              <Navbar />
+              <DialogProvider />
+              <AppStoreInitializer />
+              <CurrencyInitializer />
+              {children}
+              {/* Prevent content from being hidden behind the mobile bottom nav */}
+              <div className="h-16 sm:hidden" />
+            </TooltipProvider>
+          </ThemeProvider>
+        </QueryProvider>
       </body>
     </html>
   )

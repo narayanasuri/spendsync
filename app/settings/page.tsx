@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/item"
 import { Switch } from "@/components/ui/switch"
 import { useCurrency } from "@/hooks/use-currency"
-import { useAppStore } from "@/lib/store"
+import { useCategories, usePaymentMethods, useUsers } from "@/lib/queries"
 import { haptic } from "ios-haptics"
 import { ChevronRightIcon } from "lucide-react"
 import { useTheme } from "next-themes"
@@ -19,7 +19,9 @@ import Link from "next/link"
 
 export default () => {
   const { resolvedTheme, setTheme } = useTheme()
-  const { categories, paymentMethods, users } = useAppStore()
+  const { data: categories = [] } = useCategories()
+  const { data: paymentMethods = [] } = usePaymentMethods()
+  const { data: users = [] } = useUsers()
   const { currency } = useCurrency()
 
   const toggleTheme = () => {

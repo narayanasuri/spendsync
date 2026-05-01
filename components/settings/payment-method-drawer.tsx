@@ -35,7 +35,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { useAppStore } from "@/lib/store"
+import {
+  useDeletePaymentMethodMutation,
+  usePaymentMethodMutation,
+} from "@/lib/queries"
 import { PaymentMethod } from "@/lib/types"
 import {
   InputGroup,
@@ -57,18 +60,16 @@ export const PaymentMethodDrawer = ({
   paymentMethod,
 }: Props) => {
   const isDesktop = useMediaQuery("(min-width: 768px)")
-  const { refreshPaymentMethods } = useAppStore()
+  const deleteMutation = useDeletePaymentMethodMutation()
   const isEditing = !!paymentMethod
 
   const title = isEditing ? "Update Payment Method" : "Add Payment Method"
 
-  const handleDelete = async () => {
+  const handleDelete = () => {
     if (!paymentMethod) return
-    await fetch(`/api/payment-methods/${paymentMethod.id}`, {
-      method: "DELETE",
+    deleteMutation.mutate(paymentMethod.id.toString(), {
+      onSuccess: () => onOpenChange(false),
     })
-    await refreshPaymentMethods()
-    onOpenChange(false)
   }
 
   if (isDesktop) {
@@ -136,54 +137,33 @@ const PaymentMethodForm = ({
   onSuccess: () => void
   className?: string
 }) => {
-  const { refreshPaymentMethods } = useAppStore()
   const isEditing = !!paymentMethod
 
-  const [name, setName] = useState(paymentMethod?.name ?? "")
+  const mutation = usePaymentMethodMutation()
+  const [name, setName] = useState(paymentMethod?.name ?? "New payment method")
   const [type, setType] = useState<"savings" | "credit">(
     (paymentMethod?.type as "savings" | "credit") ?? "savings"
   )
   const [balance, setBalance] = useState<number>(paymentMethod?.balance ?? 0)
   const [due, setDue] = useState<number>(paymentMethod?.due ?? 1)
-  const [error, setError] = useState<string | null>(null)
-  const [loading, setLoading] = useState(false)
   const { currency } = useCurrency()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!name.trim()) {
-      setError("Name is required.")
-      return
-    }
+    if (!name.trim()) return
 
-    setError(null)
-    setLoading(true)
-
-    try {
-      const url = isEditing
-        ? `/api/payment-methods/${paymentMethod.id}`
-        : "/api/payment-methods"
-      const method = isEditing ? "PATCH" : "POST"
-
-      const res = await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: name.trim(), type, balance, due }),
-      })
-
-      const json = await res.json()
-      if (!res.ok) {
-        setError(json.error ?? "Something went wrong.")
-        return
+    mutation.mutate(
+      {
+        name: name.trim(),
+        type,
+        balance,
+        due,
+        id: paymentMethod?.id.toString(),
+      },
+      {
+        onSuccess: () => onSuccess(),
       }
-
-      await refreshPaymentMethods()
-      onSuccess()
-    } catch {
-      setError("Something went wrong.")
-    } finally {
-      setLoading(false)
-    }
+    )
   }
 
   return (
@@ -202,7 +182,7 @@ const PaymentMethodForm = ({
               value={name}
               onChange={(e) => setName(e.target.value)}
             />
-            {error && <FieldError>{error}</FieldError>}
+            {!name && <FieldError>Name is required</FieldError>}
           </Field>
 
           <Field>
@@ -252,7 +232,6 @@ const PaymentMethodForm = ({
                 <InputGroupText>{currency.shortLabel}</InputGroupText>
               </InputGroupAddon>
             </InputGroup>
-            {error && <FieldError>{error}</FieldError>}
           </Field>
 
           {type === "credit" && (
@@ -274,8 +253,11 @@ const PaymentMethodForm = ({
         </FieldGroup>
       </FieldSet>
 
-      <Button type="submit" disabled={loading || due < 1 || due > 31}>
-        {loading ? "Saving..." : isEditing ? "Save" : "Create"}
+      <Button
+        type="submit"
+        disabled={mutation.isPending || due < 1 || due > 31}
+      >
+        {mutation.isPending ? "Saving..." : isEditing ? "Save" : "Create"}
       </Button>
     </form>
   )

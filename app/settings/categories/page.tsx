@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { useAppStore } from "@/lib/store"
+import { useCategories } from "@/lib/queries"
 import { Button } from "@/components/ui/button"
 import {
   ArrowLeftIcon,
@@ -16,7 +16,7 @@ import { CategoriesList } from "@/components/settings/categories-list"
 import type { Category } from "@/lib/types"
 
 export default () => {
-  const { categories } = useAppStore()
+  const { data: categories = [] } = useCategories()
   const [activeTab, setActiveTab] = useState<"expense" | "income">("expense")
   const [open, setOpen] = useState<boolean>(false)
   const [editingCategory, setEditingCategory] = useState<Category | undefined>()

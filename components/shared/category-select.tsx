@@ -9,7 +9,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { CategoryIcon } from "./category-icon"
-import { useAppStore } from "@/lib/store"
+import { useCategories } from "@/lib/queries"
 
 interface CategorySelectProps {
   value: string
@@ -24,7 +24,7 @@ export const CategorySelect = ({
   allowSelectAll = false,
   transactionType,
 }: CategorySelectProps) => {
-  const { categories } = useAppStore()
+  const { data: categories = [] } = useCategories()
 
   const filteredCategories = transactionType
     ? categories.filter((c) => c.type === transactionType)

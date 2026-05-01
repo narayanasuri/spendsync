@@ -1,14 +1,40 @@
 "use client"
 
 import { useEffect } from "react"
-import { useAppStore } from "@/lib/store"
+import {
+  CATEGORIES_QUERY_KEY,
+  PAYMENT_METHODS_QUERY_KEY,
+  USERS_QUERY_KEY,
+} from "@/lib/queries"
+import { useQueryClient } from "@tanstack/react-query"
 
 export const AppStoreInitializer = () => {
-  const { hydrated, refresh } = useAppStore()
+  const queryClient = useQueryClient()
 
   useEffect(() => {
-    if (!hydrated) refresh()
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+    // Prefetch all core data on app mount
+    queryClient.prefetchQuery({
+      queryKey: CATEGORIES_QUERY_KEY,
+      queryFn: async () => {
+        const res = await fetch("/api/categories")
+        return res.json()
+      },
+    })
+    queryClient.prefetchQuery({
+      queryKey: PAYMENT_METHODS_QUERY_KEY,
+      queryFn: async () => {
+        const res = await fetch("/api/payment-methods")
+        return res.json()
+      },
+    })
+    queryClient.prefetchQuery({
+      queryKey: USERS_QUERY_KEY,
+      queryFn: async () => {
+        const res = await fetch("/api/users")
+        return res.json()
+      },
+    })
+  }, [queryClient])
 
   return null
 }

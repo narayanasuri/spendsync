@@ -1,7 +1,7 @@
 "use client"
 
 import { COLORS } from "@/lib/constants"
-import { useAppStore } from "@/lib/store"
+import { useCategories } from "@/lib/queries"
 
 export const CategoryIcon = ({
   categoryId,
@@ -14,7 +14,7 @@ export const CategoryIcon = ({
   size?: number
   iconSize?: number
 }) => {
-  const { categories } = useAppStore()
+  const { data: categories = [] } = useCategories()
 
   const category = categories.find((c) => c.id === categoryId)
 

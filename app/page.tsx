@@ -12,7 +12,7 @@ import {
   CreditCardLimitCardSkeleton,
   CreditLimitCard,
 } from "@/components/overview/credit-limit-card"
-import { useAppStore } from "@/lib/store"
+import { usePaymentMethods } from "@/lib/queries"
 
 const Skeleton = () => {
   return (
@@ -42,7 +42,7 @@ const Skeleton = () => {
 }
 
 export default () => {
-  const { paymentMethods, hydrated, loading } = useAppStore()
+  const { data: paymentMethods = [], isLoading } = usePaymentMethods()
 
   return (
     <main className="mx-auto w-full max-w-4xl flex-1 p-6">
@@ -50,7 +50,7 @@ export default () => {
         <h2 className="text-xl font-semibold tracking-tight">Overview</h2>
       </div>
 
-      {!hydrated || loading ? (
+      {isLoading ? (
         <Skeleton />
       ) : (
         <>

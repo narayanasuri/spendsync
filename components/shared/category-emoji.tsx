@@ -1,9 +1,9 @@
 "use client"
 
-import { useAppStore } from "@/lib/store"
+import { useCategories } from "@/lib/queries"
 
 export const CategoryEmoji = ({ categoryId }: { categoryId: number }) => {
-  const { categories } = useAppStore()
+  const { data: categories = [] } = useCategories()
 
   return categories.find((c) => c.id === categoryId)?.icon || "❓"
 }

@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { useAppStore } from "@/lib/store"
+import { useUsers } from "@/lib/queries"
 import { Button } from "@/components/ui/button"
 import { ArrowLeftIcon, PlusIcon } from "lucide-react"
 import { useBackButton } from "@/hooks/use-back-button"
@@ -10,7 +10,7 @@ import { UsersList } from "@/components/settings/user-list"
 import { UserDrawer } from "@/components/settings/user-drawer"
 
 export default () => {
-  const { users } = useAppStore()
+  const { data: users = [] } = useUsers()
   const [open, setOpen] = useState<boolean>(false)
   const [editingUser, setEditingUser] = useState<User | undefined>()
   const back = useBackButton("/settings")
