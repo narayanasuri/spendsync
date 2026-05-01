@@ -1,3 +1,5 @@
+"use client"
+
 import { TotalItem } from "@/lib/types"
 import { formatToLocalDate } from "@/lib/utils"
 import { useEffect, useMemo, useState } from "react"

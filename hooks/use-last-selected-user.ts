@@ -1,3 +1,5 @@
+"use client"
+
 import { useState, useEffect } from "react"
 
 const LOCAL_STORAGE_KEY = "user"

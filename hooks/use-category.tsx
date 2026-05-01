@@ -1,3 +1,5 @@
+"use client"
+
 import { useAppStore } from "@/lib/store"
 
 export const useCategory = (categoryId: number) => {

@@ -1,3 +1,5 @@
+"use client"
+
 import { Expense } from "@/lib/types"
 import { formatToLocalDate } from "@/lib/utils"
 import { useEffect, useState, useRef } from "react"

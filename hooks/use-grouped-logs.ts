@@ -1,3 +1,5 @@
+"use client"
+
 import { Expense, GroupedLogsType } from "@/lib/types"
 import { parseTimestamp } from "@/lib/utils"
 import { format, isSameYear } from "date-fns"

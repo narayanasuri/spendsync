@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { useParams } from "next/navigation"
 import { ArrowLeftIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -14,31 +14,16 @@ import { format } from "date-fns"
 import type { Expense } from "@/lib/types"
 import { parseTimestamp } from "@/lib/utils"
 import { useBackButton } from "@/hooks/use-back-button"
-import { useLogDrawerStore } from "@/lib/log-drawer-store"
 
 const DETAIL_DATE_FORMAT = "EEEE, d MMMM yyyy"
 const DETAIL_TIME_FORMAT = "h:mm a"
 
 export default () => {
   const { id } = useParams<{ id: string }>()
-  const [expense, setExpense] = useState<Expense | null>(null)
+  const [log, setLog] = useState<Expense | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const { openDrawer, setEditingLog } = useLogDrawerStore()
   const back = useBackButton("/logs")
-
-  const handleDelete = async () => {
-    const res = await fetch(`/api/logs/${id}`, { method: "DELETE" })
-    if (res.ok) back()
-  }
-
-  const editLog = useCallback(
-    (expense: Expense) => {
-      setEditingLog(expense)
-      openDrawer()
-    },
-    [openDrawer, setEditingLog]
-  )
 
   useEffect(() => {
     const fetchExpense = async () => {
@@ -49,7 +34,7 @@ export default () => {
           setError(json.error ?? "Failed to load expense.")
           return
         }
-        setExpense(json)
+        setLog(json)
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to load expense.")
       } finally {
@@ -72,21 +57,15 @@ export default () => {
             <ArrowLeftIcon className="size-4" />
             Back
           </Button>
-          {expense && (
-            <ExpenseActionMenu
-              onEdit={() => editLog(expense)}
-              onDelete={handleDelete}
-            />
-          )}
+          {log && <ExpenseActionMenu log={log} />}
         </div>
 
         {loading ? (
           <DetailSkeleton />
         ) : error ? (
-          // <p className="py-12 text-center text-sm text-destructive">{error}</p>
           <LogNotFound />
-        ) : expense ? (
-          <ExpenseDetail expense={expense} />
+        ) : log ? (
+          <ExpenseDetail expense={log} />
         ) : null}
       </main>
     </div>

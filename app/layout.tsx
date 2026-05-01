@@ -5,11 +5,13 @@ import { ThemeProvider } from "@/components/theme-provider"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { cn } from "@/lib/utils"
 
-import "./globals.css"
 import { Navbar } from "@/components/shared/navbar"
 import { AppStoreInitializer } from "@/components/app-store-initializer"
 import { APP_NAME } from "@/lib/constants"
 import { CurrencyInitializer } from "@/components/currency-initializer"
+import { DialogProvider } from "@/components/dialog-provider"
+
+import "./globals.css"
 
 const geist = Geist({ subsets: ["latin"], variable: "--font-sans" })
 
@@ -294,6 +296,7 @@ const RootLayout = ({
         <ThemeProvider>
           <TooltipProvider>
             <Navbar />
+            <DialogProvider />
             <AppStoreInitializer />
             <CurrencyInitializer />
             {children}

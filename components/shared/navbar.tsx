@@ -10,7 +10,6 @@ import { ChartIcon } from "./icons/chart-icon"
 import { GridIcon } from "./icons/grid-icon"
 import { Button } from "@/components/ui/button"
 import { PlusIcon } from "./icons/plus-icon"
-import { LogDrawer } from "../add/log-drawer"
 import { useLogDrawerStore } from "@/lib/log-drawer-store"
 
 const navItems = [
@@ -24,6 +23,11 @@ const navItems = [
 export const Navbar = () => {
   const pathname = usePathname()
   const { openDrawer } = useLogDrawerStore()
+
+  const onNewLog = () => {
+    haptic()
+    openDrawer()
+  }
 
   if (pathname === "/login") return null
 
@@ -41,7 +45,7 @@ export const Navbar = () => {
                   <Button
                     size="icon"
                     aria-label="Submit"
-                    onClick={openDrawer}
+                    onClick={onNewLog}
                     className="w-[56px] bg-foreground"
                   >
                     <Icon className="size-5" />
@@ -76,8 +80,6 @@ export const Navbar = () => {
           })}
         </div>
       </nav>
-
-      <LogDrawer />
     </>
   )
 }

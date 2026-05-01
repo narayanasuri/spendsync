@@ -1,3 +1,5 @@
+"use client"
+
 import { CURRENCIES } from "@/lib/constants"
 import { useMemo, useState, useEffect } from "react"
 
