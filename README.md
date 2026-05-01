@@ -1,7 +1,7 @@
 <br />
 
 <p align="center">
-<img src="https://raw.githubusercontent.com/narayanasuri/spendsync/refs/heads/main/public/icon.png" width="200" height="200" style="text-align: center; border-radius: 40px;" alt="SpendSync">
+<img src="https://raw.githubusercontent.com/narayanasuri/spendsync/refs/heads/main/public/icons/icon.png" width="200" height="200" style="text-align: center; border-radius: 40px;" alt="SpendSync">
 </p>
 
 <br />

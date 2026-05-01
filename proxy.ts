@@ -32,8 +32,14 @@ export const proxy = (req: NextRequest) => {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
 
-  // --- Login page: always accessible ---
-  if (pathname.startsWith("/login")) {
+  // --- Login page and manifest: always accessible ---
+  if (
+    pathname.startsWith("/login") ||
+    pathname.startsWith("/icons") ||
+    pathname.startsWith("/screenshots") ||
+    pathname.startsWith("/splash") ||
+    pathname === "/manifest.json"
+  ) {
     return NextResponse.next()
   }
 

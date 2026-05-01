@@ -1,6 +1,6 @@
 import type { CurrencyType } from "./types"
 
-export const APP_NAME = "spendsync"
+export const APP_NAME = "SpendSync"
 
 export const CURRENCY_LOCAL_STORAGE_KEY = "currency"
 
