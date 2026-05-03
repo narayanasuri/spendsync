@@ -34,8 +34,6 @@ export const LogDrawerFooter = ({
         await updateLogMutation.mutateAsync({
           ...data,
           id: editingLog.id,
-          old_amount: editingLog.amount,
-          old_payment_method_id: editingLog.payment_mode,
         })
       } else {
         // Create new log

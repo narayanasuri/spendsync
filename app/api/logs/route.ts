@@ -70,7 +70,7 @@ export const POST = async (req: NextRequest) => {
     return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 })
   }
 
-  const { name, amount, category, payment_mode } = body
+  const { name, amount, category, payment_mode, transaction_type } = body
 
   if (!name?.trim())
     return NextResponse.json(
@@ -93,21 +93,34 @@ export const POST = async (req: NextRequest) => {
       { status: 422 }
     )
 
+  // 1. Insert the transaction
   const { data, error } = await supabase
     .from("Expenses")
     .insert(body)
     .select()
     .single()
 
-  const { error: expenseError } = await supabase.rpc("decrement_balance", {
-    payment_mode: body.payment_mode,
-    amount: body.amount,
-  })
-
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
 
-  if (expenseError)
-    return NextResponse.json({ error: expenseError.message }, { status: 500 })
+  // 2. Update the balance
+  // If expense: subtract money (positive decrement)
+  // If income: add money (negative decrement)
+  const balanceChange =
+    transaction_type === "income" ? -body.amount : body.amount
+
+  const { error: balanceError } = await supabase.rpc("decrement_balance", {
+    payment_mode: body.payment_mode,
+    amount: balanceChange,
+  })
+
+  if (balanceError) {
+    // Rollback: delete the inserted transaction
+    await supabase.from("Expenses").delete().eq("id", data.id)
+    return NextResponse.json(
+      { error: "Failed to update balance" },
+      { status: 500 }
+    )
+  }
 
   return NextResponse.json(data, { status: 201 })
 }

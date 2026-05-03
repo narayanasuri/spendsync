@@ -28,8 +28,6 @@ interface CreateLogInput {
 
 interface UpdateLogInput extends CreateLogInput {
   id: number
-  old_amount: number
-  old_payment_method_id: number
 }
 
 // CREATE LOG
@@ -76,8 +74,6 @@ const updateLog = async (data: UpdateLogInput): Promise<Expense> => {
       ...updateData,
       amount: updateData.amount.toString(),
       spent_at: formatLocalISO(updateData.spent_at),
-      old_amount: data.old_amount,
-      old_payment_method_id: data.old_payment_method_id,
     }),
   })
 

@@ -14,9 +14,9 @@ export type CategoryDraftType = {
 
 export type Expense = Tables<"Expenses">
 
-export type TransactionType = Expense["transaction_type"]
-
 export type ExpenseInsert = TablesInsert<"Expenses">
+
+export type TransactionType = Expense["transaction_type"]
 
 export type Category = Tables<"Categories">
 
